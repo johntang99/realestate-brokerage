@@ -12,15 +12,42 @@
   "menu": {
     "variant": "transparent",
     "items": [
-      { "text": "Home", "url": "/en" },
-      { "text": "Services", "url": "/en/services" },
-      { "text": "Conditions", "url": "/en/conditions" },
-      { "text": "About", "url": "/en/about" },
-      { "text": "Case Studies", "url": "/en/case-studies" },
-      { "text": "Gallery", "url": "/en/gallery" },
-      { "text": "New Visit", "url": "/en/new-patients" },
-      { "text": "Blog", "url": "/en/blog" },
-      { "text": "Contact", "url": "/en/contact" }
+      {
+        "text": "Home",
+        "url": "/en"
+      },
+      {
+        "text": "Services",
+        "url": "/en/services"
+      },
+      {
+        "text": "Conditions",
+        "url": "/en/conditions"
+      },
+      {
+        "text": "About",
+        "url": "/en/about"
+      },
+      {
+        "text": "Case Studies",
+        "url": "/en/case-studies"
+      },
+      {
+        "text": "Gallery",
+        "url": "/en/gallery"
+      },
+      {
+        "text": "New Visit",
+        "url": "/en/new-patients"
+      },
+      {
+        "text": "Blog",
+        "url": "/en/blog"
+      },
+      {
+        "text": "Contact",
+        "url": "/en/contact"
+      }
     ],
     "cta": {
       "text": "Book Online",
@@ -29,10 +56,10 @@
   },
   "hero": {
     "variant": "split-photo-right",
-    "image": "/uploads/dr-huang-clinic/home/hero-bg.jpg",
-    "clinicName": "Welcome to Dr Huang Clinic",
-    "tagline": "Traditional Chinese Medicine, Acupuncture, and More",
-    "description": "Experience the healing power of Traditional Chinese Medicine. Our holistic approach combines acupuncture, herbal medicine, and time-tested therapies to restore balance and promote natural healing.",
+    "image": "/uploads/dr-huang-clinic/home/drhuang-photo-1.jpg",
+    "clinicName": "Acupuncture & Traditional Chinese Medicine in Middletown",
+    "tagline": "Holistic Acupuncture & Traditional Chinese Medicine Care",
+    "description": "Experience the healing power of Traditional Chinese Medicine in Middletown, NY. Our holistic approach combines acupuncture, herbal medicine, and time-tested therapies to restore balance, relieve pain, and support natural healing.",
     "primaryCta": {
       "text": "Book Appointment",
       "link": "/en/contact"
