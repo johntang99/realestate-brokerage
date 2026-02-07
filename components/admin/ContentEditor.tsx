@@ -314,6 +314,14 @@ export function ContentEditor({
       .replace(/([^\n])\n\*\s+/g, '$1\n\n- ');
 
   const isSeoFile = activeFile?.path === 'seo.json';
+  const galleryCategories = Array.isArray(formData?.categories)
+    ? formData.categories
+        .map((category: any) => ({
+          id: typeof category?.id === 'string' ? category.id : '',
+          name: typeof category?.name === 'string' ? category.name : '',
+        }))
+        .filter((category: any) => category.id && category.name)
+    : [];
 
   const addSeoPage = () => {
     if (!formData) return;
@@ -335,6 +343,33 @@ export function ContentEditor({
       setFormData(next);
       setContent(JSON.stringify(next, null, 2));
     }
+  };
+
+  const addGalleryImage = () => {
+    if (!formData) return;
+    const images = Array.isArray(formData.images) ? [...formData.images] : [];
+    const maxOrder = images.reduce((max: number, image: any) => {
+      const order = typeof image?.order === 'number' ? image.order : 0;
+      return Math.max(max, order);
+    }, 0);
+    images.push({
+      id: `gallery-${Date.now()}`,
+      src: '',
+      alt: '',
+      title: '',
+      category: '',
+      description: '',
+      featured: false,
+      order: maxOrder + 1,
+    });
+    updateFormValue(['images'], images);
+  };
+
+  const removeGalleryImage = (index: number) => {
+    if (!formData || !Array.isArray(formData.images)) return;
+    const images = [...formData.images];
+    images.splice(index, 1);
+    updateFormValue(['images'], images);
   };
 
   const populateSeoFromHeroes = async () => {
@@ -902,8 +937,17 @@ export function ContentEditor({
 
               {Array.isArray(formData?.images) && (
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-xs font-semibold text-gray-500 uppercase mb-3">
-                    Gallery Photos
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-xs font-semibold text-gray-500 uppercase">
+                      Gallery Photos
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addGalleryImage}
+                      className="px-3 py-1 rounded-md border border-gray-200 text-xs"
+                    >
+                      Add Photo
+                    </button>
                   </div>
                   <div className="space-y-4">
                     {formData.images.map((image: any, index: number) => (
@@ -911,6 +955,18 @@ export function ContentEditor({
                         key={image.id || index}
                         className="border border-gray-100 rounded-lg p-4"
                       >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="text-xs font-semibold text-gray-500">
+                            Photo {index + 1}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => removeGalleryImage(index)}
+                            className="text-xs text-red-600 hover:text-red-700"
+                          >
+                            Remove
+                          </button>
+                        </div>
                         <div className="grid gap-3 md:grid-cols-2">
                           <div>
                             <label className="block text-xs text-gray-500">Title</label>
@@ -927,29 +983,64 @@ export function ContentEditor({
                           </div>
                           <div>
                             <label className="block text-xs text-gray-500">Category</label>
-                            <input
-                              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                              value={image.category || ''}
-                              onChange={(event) =>
-                                updateFormValue(
-                                  ['images', index, 'category'] as string[],
-                                  event.target.value
-                                )
-                              }
-                            />
+                            {galleryCategories.length > 0 ? (
+                              <select
+                                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm bg-white"
+                                value={image.category || ''}
+                                onChange={(event) =>
+                                  updateFormValue(
+                                    ['images', index, 'category'] as string[],
+                                    event.target.value
+                                  )
+                                }
+                              >
+                                <option value="">Select category</option>
+                                {galleryCategories.map((category: any) => (
+                                  <option key={category.id} value={category.id}>
+                                    {category.name}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                                value={image.category || ''}
+                                onChange={(event) =>
+                                  updateFormValue(
+                                    ['images', index, 'category'] as string[],
+                                    event.target.value
+                                  )
+                                }
+                              />
+                            )}
                           </div>
                           <div>
                             <label className="block text-xs text-gray-500">Source</label>
-                            <input
-                              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                              value={image.src || ''}
-                              onChange={(event) =>
-                                updateFormValue(
-                                  ['images', index, 'src'] as string[],
-                                  event.target.value
-                                )
-                              }
-                            />
+                            <div className="mt-1 flex gap-2">
+                              <input
+                                readOnly
+                                className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm bg-gray-50"
+                                value={image.src || ''}
+                              />
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  openImagePicker(['images', index, 'src'] as string[])
+                                }
+                                className="px-3 rounded-md border border-gray-200 text-xs"
+                              >
+                                Choose
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  updateFormValue(['images', index, 'src'] as string[], '')
+                                }
+                                className="px-3 rounded-md border border-gray-200 text-xs"
+                              >
+                                Clear
+                              </button>
+                            </div>
                           </div>
                           <div>
                             <label className="block text-xs text-gray-500">Alt</label>

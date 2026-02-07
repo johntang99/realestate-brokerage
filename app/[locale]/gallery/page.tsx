@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
  import Image from 'next/image';
  import Link from 'next/link';
  import { notFound } from 'next/navigation';
-import fs from 'fs/promises';
-import path from 'path';
 import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale, SiteInfo } from '@/lib/types';
@@ -57,40 +55,6 @@ import { Locale, SiteInfo } from '@/lib/types';
    };
  }
  
-const GALLERY_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.svg']);
-
-function titleCaseFromFilename(filename: string) {
-  const base = filename.replace(/\.[^/.]+$/, '');
-  return base
-    .replace(/[-_]+/g, ' ')
-    .replace(/\b\w/g, (match) => match.toUpperCase());
-}
-
-async function loadGalleryFolderImages(siteId: string): Promise<GalleryImage[]> {
-  try {
-    const folder = path.join(process.cwd(), 'public', 'uploads', siteId, 'gallery');
-    const files = await fs.readdir(folder);
-    const images = files.filter((file) =>
-      GALLERY_EXTENSIONS.has(path.extname(file).toLowerCase())
-    );
-
-    return images.map((file, index) => {
-      const title = titleCaseFromFilename(file);
-      return {
-        id: `${siteId}-gallery-${index + 1}`,
-        src: `/uploads/${siteId}/gallery/${file}`,
-        alt: title,
-        title,
-        category: 'details',
-        description: '',
-        order: index + 1,
-      };
-    });
-  } catch (error) {
-    return [];
-  }
-}
-
  export async function generateMetadata({ params }: GalleryPageProps): Promise<Metadata> {
    const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -118,15 +82,10 @@ async function loadGalleryFolderImages(siteId: string): Promise<GalleryImage[]> 
    }
  
   const { hero, introduction, categories, images, cta } = content;
-  const folderImages = await loadGalleryFolderImages(siteId);
-  const displayImages = folderImages.length ? folderImages : images;
-  const displayCategories = folderImages.length
-    ? categories.filter(
-        (category) =>
-          category.id === 'all' ||
-          folderImages.some((image) => image.category === category.id)
-      )
-    : categories;
+  const displayImages = images
+    .filter((image) => Boolean(image?.src))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const displayCategories = categories;
    const heroFeatures = [
      { icon: Camera, text: locale === 'en' ? 'Virtual tour' : '虚拟参观' },
      { icon: Sparkles, text: locale === 'en' ? 'Clean & modern' : '干净现代' },
