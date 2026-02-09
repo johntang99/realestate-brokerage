@@ -22,7 +22,8 @@ async function listJsonSlugs(dirPath: string): Promise<string[]> {
 async function listPageSlugs(siteId: string, locale: Locale) {
   const pagesDir = path.join(CONTENT_DIR, siteId, locale, 'pages');
   const slugs = await listJsonSlugs(pagesDir);
-  return slugs.filter((slug) => slug !== 'home');
+  const excluded = /-(copy|new)$/;
+  return slugs.filter((slug) => slug !== 'home' && !excluded.test(slug));
 }
 
 async function listBlogSlugs(siteId: string, locale: Locale) {

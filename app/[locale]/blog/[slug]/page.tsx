@@ -41,6 +41,16 @@ interface BlogPostData {
   relatedConditions?: string[];
 }
 
+interface BlogListItem {
+  slug: string;
+  title: string;
+  excerpt?: string;
+  image?: string;
+  category?: string;
+  readTime?: string;
+  type?: 'article' | 'video';
+}
+
 interface BlogDetailPageProps {
   params: {
     locale: Locale;
@@ -82,7 +92,7 @@ async function loadBlogPost(
   }
 }
 
-async function loadBlogList(siteId: string, locale: Locale) {
+async function loadBlogList(siteId: string, locale: Locale): Promise<BlogListItem[]> {
   try {
     const filePath = path.join(process.cwd(), 'content', siteId, locale, 'pages', 'blog.json');
     const fileContents = await fs.readFile(filePath, 'utf8');
@@ -136,9 +146,9 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     loadPageContent<ServicesPageData>('services', locale, siteId),
     loadPageContent<ConditionsPageData>('conditions', locale, siteId),
   ]);
-  const relatedPosts = post.relatedPosts 
-    ? allPosts.filter((p: any) => post.relatedPosts?.includes(p.slug)).slice(0, 3)
-    : allPosts.filter((p: any) => p.category === post.category && p.slug !== post.slug).slice(0, 3);
+  const relatedPosts: BlogListItem[] = post.relatedPosts 
+    ? allPosts.filter((p) => post.relatedPosts?.includes(p.slug)).slice(0, 3)
+    : allPosts.filter((p) => p.category === post.category && p.slug !== post.slug).slice(0, 3);
   const postType = post.type || 'article';
 
   const services = servicesContent?.services || [];
@@ -428,6 +438,51 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                     <Badge key={index} variant="secondary" size="sm">
                       {tag}
                     </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {relatedPosts.length > 0 && (
+              <div className="mt-12">
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {locale === 'en' ? 'Related Reading' : '相关阅读'}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {locale === 'en'
+                        ? 'Explore more topics that pair with this article.'
+                        : '探索与本文相关的更多主题。'}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/${locale}/blog`}
+                    className="text-primary text-sm font-semibold hover:text-primary-dark"
+                  >
+                    {locale === 'en' ? 'All articles' : '全部文章'}
+                  </Link>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  {relatedPosts.map((related) => (
+                    <Link
+                      key={related.slug}
+                      href={`/${locale}/blog/${related.slug}`}
+                      className="block rounded-xl border border-gray-200 bg-white p-4 hover:border-primary/40 hover:shadow-sm transition"
+                    >
+                      <Badge variant="secondary" size="sm">
+                        {related.category || (locale === 'en' ? 'Wellness' : '健康')}
+                      </Badge>
+                      <h4 className="font-semibold text-gray-900 mt-3 mb-2 line-clamp-2">
+                        {related.title}
+                      </h4>
+                      {related.excerpt && (
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                          {related.excerpt}
+                        </p>
+                      )}
+                    </Link>
                   ))}
                 </div>
               </div>
