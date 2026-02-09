@@ -63,6 +63,47 @@ async function ensureFooterFile(siteId: string, locale: string) {
   }
 }
 
+async function ensureHeaderFile(siteId: string, locale: string) {
+  const headerPath = path.join(CONTENT_DIR, siteId, locale, 'header.json');
+  try {
+    await fs.access(headerPath);
+  } catch (error) {
+    try {
+      await fs.mkdir(path.dirname(headerPath), { recursive: true });
+      const payload = {
+        topbar: {
+          phone: '',
+          phoneHref: '',
+          address: '',
+          addressHref: '',
+          hours: '',
+          badge: '',
+        },
+        menu: {
+          logo: {
+            emoji: '',
+            text: '',
+            subtext: '',
+            image: {
+              src: '',
+              alt: '',
+            },
+          },
+          items: [],
+        },
+        languages: [],
+        cta: {
+          text: '',
+          link: '',
+        },
+      };
+      await fs.writeFile(headerPath, JSON.stringify(payload, null, 2));
+    } catch (writeError) {
+      // ignore write failures (read-only environments)
+    }
+  }
+}
+
 export async function listContentFiles(
   siteId: string,
   locale: string
@@ -70,6 +111,7 @@ export async function listContentFiles(
   const items: ContentFileItem[] = [];
   await ensureSeoFile(siteId, locale);
   await ensureFooterFile(siteId, locale);
+  await ensureHeaderFile(siteId, locale);
 
   const pagesDir = path.join(CONTENT_DIR, siteId, locale, 'pages');
   try {
@@ -128,6 +170,12 @@ export async function listContentFiles(
     scope: 'locale',
   });
   items.push({
+    id: 'header',
+    label: 'Header',
+    path: 'header.json',
+    scope: 'locale',
+  });
+  items.push({
     id: 'seo',
     label: 'SEO',
     path: 'seo.json',
@@ -162,6 +210,10 @@ export function resolveContentPath(siteId: string, locale: string, filePath: str
 
   if (filePath === 'navigation.json') {
     return path.join(CONTENT_DIR, siteId, locale, 'navigation.json');
+  }
+
+  if (filePath === 'header.json') {
+    return path.join(CONTENT_DIR, siteId, locale, 'header.json');
   }
 
   if (filePath === 'site.json') {

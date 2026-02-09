@@ -247,13 +247,13 @@ export default function Header({
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="xl:hidden border-t bg-white">
-            <div className="container-custom py-4">
-              <div className="flex flex-col gap-4">
+            <div className="container-custom py-2">
+              <div className="flex flex-col gap-1">
                 {navigation.map((item) => (
                   <Link
                     key={item.url}
                     href={item.url}
-                    className="text-gray-700 hover:text-primary font-medium py-2"
+                    className="text-gray-700 hover:text-primary font-medium py-1"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.text}
@@ -261,7 +261,7 @@ export default function Header({
                 ))}
                 <Link
                   href={cta.link}
-                  className="btn-primary text-center"
+                  className="btn-primary text-center mt-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {cta.text}

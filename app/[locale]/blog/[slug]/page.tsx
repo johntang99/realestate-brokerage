@@ -4,11 +4,13 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { Locale } from '@/lib/types';
-import { getRequestSiteId } from '@/lib/content';
+import { getRequestSiteId, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Button, Badge, Icon, Card, CardHeader, CardTitle, CardDescription } from '@/components/ui';
 import { promises as fs } from 'fs';
 import path from 'path';
+
+export const dynamic = 'force-dynamic';
 
 interface BlogContentBlock {
   type: 'paragraph' | 'heading' | 'list' | 'quote' | 'image' | 'video';
@@ -35,6 +37,8 @@ interface BlogPostData {
   contentMarkdown?: string;
   videoUrl?: string;
   relatedPosts?: string[];
+  relatedServices?: string[];
+  relatedConditions?: string[];
 }
 
 interface BlogDetailPageProps {
@@ -43,6 +47,26 @@ interface BlogDetailPageProps {
     slug: string;
   };
 }
+
+interface ServicesPageData {
+  services: Array<{
+    id: string;
+    title: string;
+    shortDescription?: string;
+  }>;
+}
+
+interface ConditionsPageData {
+  conditions: Array<{
+    id: string;
+    title: string;
+    category?: string;
+    featured?: boolean;
+  }>;
+}
+
+type ServiceItem = ServicesPageData['services'][number];
+type ConditionItem = ConditionsPageData['conditions'][number];
 
 async function loadBlogPost(
   siteId: string,
@@ -108,10 +132,87 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
 
   // Load all posts for related posts
   const allPosts = await loadBlogList(siteId, locale);
+  const [servicesContent, conditionsContent] = await Promise.all([
+    loadPageContent<ServicesPageData>('services', locale, siteId),
+    loadPageContent<ConditionsPageData>('conditions', locale, siteId),
+  ]);
   const relatedPosts = post.relatedPosts 
     ? allPosts.filter((p: any) => post.relatedPosts?.includes(p.slug)).slice(0, 3)
     : allPosts.filter((p: any) => p.category === post.category && p.slug !== post.slug).slice(0, 3);
   const postType = post.type || 'article';
+
+  const services = servicesContent?.services || [];
+  const featuredConditions = (conditionsContent?.conditions || []).filter(
+    (condition) => condition.featured
+  );
+  const fallbackConditions = (conditionsContent?.conditions || []).filter(
+    (condition) => !featuredConditions.includes(condition)
+  );
+  const isService = (value: ServiceItem | undefined): value is ServiceItem => Boolean(value);
+  const isCondition = (value: ConditionItem | undefined): value is ConditionItem => Boolean(value);
+  const slugHint = `${post.category || ''} ${post.slug || ''}`
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ');
+  const serviceMap: Array<{ match: string[]; ids: string[] }> = [
+    { match: ['acupuncture', 'needles'], ids: ['acupuncture'] },
+    { match: ['herbal', 'herb'], ids: ['chinese-herbal-medicine'] },
+    { match: ['cupping'], ids: ['cupping-therapy'] },
+    { match: ['moxibustion', 'moxa'], ids: ['moxibustion'] },
+    { match: ['tuina', 'massage'], ids: ['tuina-massage'] },
+    { match: ['gua sha', 'guasha', 'scraping'], ids: ['gua-sha'] },
+    { match: ['diet', 'nutrition', 'food', 'digestive'], ids: ['dietary-therapy'] },
+    { match: ['stress', 'sleep', 'anxiety', 'lifestyle'], ids: ['lifestyle-counseling'] },
+  ];
+  const conditionMap: Array<{ match: string[]; ids: string[] }> = [
+    { match: ['back pain', 'lower back', 'sciatica'], ids: ['back-pain'] },
+    { match: ['neck', 'shoulder'], ids: ['neck-shoulder-pain'] },
+    { match: ['arthritis', 'joint'], ids: ['arthritis'] },
+    { match: ['headache', 'migraine'], ids: ['headaches-migraines'] },
+    { match: ['anxiety', 'panic'], ids: ['anxiety'] },
+    { match: ['depression', 'low mood'], ids: ['depression'] },
+    { match: ['insomnia', 'sleep'], ids: ['insomnia'] },
+    { match: ['allergy', 'sinus'], ids: ['seasonal-allergies'] },
+    { match: ['digestive', 'ibs', 'bloating'], ids: ['digestive-issues'] },
+    { match: ['fertility'], ids: ['fertility-support'] },
+    { match: ['stress'], ids: ['stress-burnout'] },
+  ];
+
+  const pickIds = (mapList: Array<{ match: string[]; ids: string[] }>) => {
+    const matches = mapList
+      .filter((entry) => entry.match.some((term) => slugHint.includes(term)))
+      .flatMap((entry) => entry.ids);
+    return Array.from(new Set(matches));
+  };
+
+  const selectedServices: ServiceItem[] = (post.relatedServices?.length
+    ? post.relatedServices
+        .map((id) => services.find((service) => service.id === id))
+        .filter(isService)
+    : pickIds(serviceMap)
+        .map((id) => services.find((service) => service.id === id))
+        .filter(isService));
+  const selectedConditions: ConditionItem[] = (post.relatedConditions?.length
+    ? post.relatedConditions
+        .map((id) =>
+          [...featuredConditions, ...fallbackConditions].find(
+            (condition) => condition.id === id
+          )
+        )
+        .filter(isCondition)
+    : pickIds(conditionMap)
+        .map((id) =>
+          [...featuredConditions, ...fallbackConditions].find(
+            (condition) => condition.id === id
+          )
+        )
+        .filter(isCondition));
+
+  if (selectedServices.length === 0) {
+    selectedServices.push(...services.slice(0, 3));
+  }
+  if (selectedConditions.length === 0) {
+    selectedConditions.push(...[...featuredConditions, ...fallbackConditions].slice(0, 3));
+  }
 
   const normalizeMarkdown = (text: string) =>
     text
@@ -328,6 +429,69 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                       {tag}
                     </Badge>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {(selectedServices.length > 0 || selectedConditions.length > 0) && (
+              <div className="mt-12 p-6 bg-gradient-to-br from-backdrop-secondary to-white rounded-2xl border border-gray-200">
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {locale === 'en' ? 'Explore Treatments' : '了解相关疗法'}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      {locale === 'en'
+                        ? 'Jump to related services and conditions.'
+                        : '快速跳转到相关服务与常见症状。'}
+                    </p>
+                  </div>
+                  <Link
+                    href={`/${locale}/services`}
+                    className="text-primary text-sm font-semibold hover:text-primary-dark"
+                  >
+                    {locale === 'en' ? 'All services' : '全部服务'}
+                  </Link>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  {selectedServices.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 mb-3">
+                        {locale === 'en' ? 'Services' : '服务项目'}
+                      </p>
+                      <div className="space-y-2">
+                        {selectedServices.map((service) => (
+                          <Link
+                            key={service.id}
+                            href={`/${locale}/services#${service.id}`}
+                            className="block rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 hover:border-primary hover:text-primary transition-colors"
+                          >
+                            {service.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedConditions.length > 0 && (
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 mb-3">
+                        {locale === 'en' ? 'Conditions' : '常见症状'}
+                      </p>
+                      <div className="space-y-2">
+                        {selectedConditions.map((condition) => (
+                          <Link
+                            key={condition.id}
+                            href={`/${locale}/conditions#${condition.id}`}
+                            className="block rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-900 hover:border-primary hover:text-primary transition-colors"
+                          >
+                            {condition.title}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

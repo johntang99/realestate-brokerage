@@ -94,7 +94,8 @@ export default async function HomePage({ params }: PageProps) {
   const { locale } = params;
   
   // Load homepage content
-  const content = await loadPageContent<HomePageContent>('home', locale);
+  const siteId = await getRequestSiteId();
+  const content = await loadPageContent<HomePageContent>('home', locale, siteId);
   
   if (!content) {
     notFound();

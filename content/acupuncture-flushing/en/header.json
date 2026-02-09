@@ -1,0 +1,40 @@
+{
+  "topbar": {
+    "phone": "917-385-1605",
+    "phoneHref": "tel:9173851605",
+    "address": "143-26 41st Ave Fl 1, Flushing, NY 11355",
+    "addressHref": "https://google.com/maps/search/?api=1&query=40.7600194,-73.8224919",
+    "hours": "By Appointment",
+    "badge": "Accepting New Patients"
+  },
+  "menu": {
+    "logo": {
+      "emoji": "🌿",
+      "text": "Dr Huang Clinic",
+      "subtext": "Traditional Chinese Medicine & Acupuncture",
+      "image": {
+        "src": "/uploads/acupuncture-flushing/home/drhuang-2.svg",
+        "alt": "Dr Huang Clinic logo"
+      }
+    },
+    "items": [
+      { "text": "Home", "url": "/en" },
+      { "text": "Services", "url": "/en/services" },
+      { "text": "Conditions", "url": "/en/conditions" },
+      { "text": "About", "url": "/en/about" },
+      { "text": "Case Studies", "url": "/en/case-studies" },
+      { "text": "Gallery", "url": "/en/gallery" },
+      { "text": "New Visit", "url": "/en/new-patients" },
+      { "text": "Blog", "url": "/en/blog" },
+      { "text": "Contact", "url": "/en/contact" }
+    ]
+  },
+  "languages": [
+    { "label": "English", "locale": "en", "url": "/en" },
+    { "label": "中文", "locale": "zh", "url": "/zh" }
+  ],
+  "cta": {
+    "text": "Book Appointment",
+    "link": "/en/contact"
+  }
+}

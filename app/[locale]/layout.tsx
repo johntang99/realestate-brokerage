@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
-import { locales, type Locale } from '@/lib/i18n';
+import { defaultLocale, locales, type Locale } from '@/lib/i18n';
 import { getDefaultSite, getSiteByHost } from '@/lib/sites';
 import { loadFooter, loadPageContent, loadSeo, loadTheme, loadSiteInfo } from '@/lib/content';
 import type { FooterSection, HomePage, SeoConfig, SiteInfo } from '@/lib/types';
@@ -40,6 +40,11 @@ export async function generateMetadata({
     siteInfo?.description ||
     'Traditional Chinese medicine and acupuncture services.';
   const titleDefault = seo?.title || titleBase;
+  const canonical = new URL(`/${locale}`, baseUrl).toString();
+  const languageAlternates = locales.reduce<Record<string, string>>((acc, entry) => {
+    acc[entry] = new URL(`/${entry}`, baseUrl).toString();
+    return acc;
+  }, {});
 
   return {
     metadataBase: baseUrl,
@@ -48,10 +53,17 @@ export async function generateMetadata({
       template: `%s | ${titleBase}`,
     },
     description,
+    alternates: {
+      canonical,
+      languages: {
+        ...languageAlternates,
+        'x-default': new URL(`/${defaultLocale}`, baseUrl).toString(),
+      },
+    },
     openGraph: {
       title: titleDefault,
       description,
-      url: new URL(`/${locale}`, baseUrl).toString(),
+      url: canonical,
       siteName: titleBase,
       locale,
       type: 'website',

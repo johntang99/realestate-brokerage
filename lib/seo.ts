@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import type { Locale } from '@/lib/i18n';
+import {
+  addLocaleToPathname,
+  defaultLocale,
+  locales,
+  type Locale,
+  removeLocaleFromPathname,
+} from '@/lib/i18n';
 import { loadSeo, loadSiteInfo } from '@/lib/content';
 import type { SeoConfig, SiteInfo } from '@/lib/types';
 
@@ -40,6 +46,7 @@ export async function buildPageMetadata({
   title,
   description,
   canonicalPath,
+  pathWithoutLocale,
 }: {
   siteId: string;
   locale: Locale;
@@ -47,6 +54,7 @@ export async function buildPageMetadata({
   title?: string;
   description?: string;
   canonicalPath?: string;
+  pathWithoutLocale?: string;
 }): Promise<Metadata> {
   const baseUrl = getBaseUrlFromRequest();
   const [seo, siteInfo] = await Promise.all([
@@ -64,16 +72,30 @@ export async function buildPageMetadata({
     siteInfo?.description ||
     '';
 
-  const path =
-    canonicalPath ??
-    `/${locale}${slug && slug !== 'home' ? `/${slug}` : ''}`;
-  const canonical = new URL(path, baseUrl).toString();
+  const resolvedPathWithoutLocale =
+    pathWithoutLocale ??
+    (canonicalPath ? removeLocaleFromPathname(canonicalPath) : null) ??
+    (slug && slug !== 'home' ? `/${slug}` : '/');
+  const canonicalPathname = addLocaleToPathname(resolvedPathWithoutLocale, locale);
+  const canonical = new URL(canonicalPathname, baseUrl).toString();
+  const languageAlternates = locales.reduce<Record<string, string>>((acc, entry) => {
+    acc[entry] = new URL(addLocaleToPathname(resolvedPathWithoutLocale, entry), baseUrl).toString();
+    return acc;
+  }, {});
+  const xDefault = new URL(
+    addLocaleToPathname(resolvedPathWithoutLocale, defaultLocale),
+    baseUrl
+  ).toString();
 
   return {
     title: resolvedTitle,
     description: resolvedDescription || undefined,
     alternates: {
       canonical,
+      languages: {
+        ...languageAlternates,
+        'x-default': xDefault,
+      },
     },
     openGraph: {
       title: resolvedTitle,

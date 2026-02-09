@@ -49,10 +49,6 @@
         "url": "/en/blog"
       },
       {
-        "text": "Book Now",
-        "url": "/en/book"
-      },
-      {
         "text": "Contact",
         "url": "/en/contact"
       }
@@ -332,13 +328,22 @@
     "subtitle": "Educational resources about TCM and wellness",
     "posts": [
       {
+        "slug": "first-visit-acupuncture-guide",
+        "type": "article",
+        "image": "/uploads/dr-huang-clinic/general/Acupuncture-14.webp",
+        "category": "Patient Education",
+        "readTime": "5 min read",
+        "title": "Your First Acupuncture Visit: A Step-by-Step Guide",
+        "excerpt": "A clear, patient-friendly overview of what your first acupuncture visit looks like and how to prepare."
+      },
+      {
         "slug": "acupuncture-pain-relief-science",
         "type": "article",
         "image": "/uploads/dr-huang-clinic/general/acupuncture-11.jpeg",
         "category": "Acupuncture",
-        "readTime": "8 min read",
-        "title": "The Science Behind Acupuncture: How It Works",
-        "excerpt": "Discover how acupuncture stimulates your body's natural healing mechanisms based on modern research."
+        "readTime": "7 min read",
+        "title": "The Science Behind Acupuncture for Pain Relief",
+        "excerpt": "A research-informed overview of how acupuncture can reduce pain and what the evidence suggests."
       },
       {
         "slug": "chinese-herbal-formulas",
@@ -346,17 +351,8 @@
         "image": "/uploads/dr-huang-clinic/general/chinese-herb-10.webp",
         "category": "Herbal Medicine",
         "readTime": "6 min read",
-        "title": "Chinese Herbal Medicine 101",
-        "excerpt": "Learn about the fundamentals of Chinese herbal medicine and how custom formulas are created."
-      },
-      {
-        "slug": "first-visit-acupuncture-guide",
-        "type": "video",
-        "image": "/uploads/dr-huang-clinic/general/Acupuncture-14.webp",
-        "category": "Patient Education",
-        "readTime": "5 min watch",
-        "title": "What to Expect at Your First Acupuncture Visit",
-        "excerpt": "Watch this video to learn what happens during your initial consultation and treatment."
+        "title": "Chinese Herbal Formulas: How We Customize Care",
+        "excerpt": "Learn how formulas are tailored to your pattern, symptoms, and goals with safety in mind."
       }
     ],
     "moreLink": {

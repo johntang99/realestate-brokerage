@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadAllItems, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon, Tabs } from '@/components/ui';
@@ -56,6 +56,15 @@ interface ConditionsPageProps {
   };
 }
 
+interface BlogListItem {
+  slug: string;
+  title: string;
+  excerpt?: string;
+  image?: string;
+  category?: string;
+  publishDate?: string;
+}
+
 export async function generateMetadata({ params }: ConditionsPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -76,12 +85,27 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
   // Load page content
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<ConditionsPageData>('conditions', locale, siteId);
+  const blogPosts = await loadAllItems<BlogListItem>(siteId, locale, 'blog');
   
   if (!content) {
     notFound();
   }
 
   const { hero, introduction, categories, conditions, cta } = content;
+  const blogBySlug = new Map(blogPosts.map((post) => [post.slug, post]));
+  const preferredSlugs = [
+    'digestive-balance-tcm',
+    'seasonal-allergy-support',
+    'sleep-restoration-tips',
+  ];
+  const preferredPosts = preferredSlugs
+    .map((slug) => blogBySlug.get(slug))
+    .filter((post): post is BlogListItem => Boolean(post));
+  const relatedPosts = preferredPosts.length
+    ? preferredPosts
+    : [...blogPosts]
+        .sort((a, b) => (b.publishDate || '').localeCompare(a.publishDate || ''))
+        .slice(0, 3);
   const reassuranceItems = [
     {
       icon: Shield,
@@ -423,6 +447,55 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
       </section>
 
       {/* CTA Section */}
+      {relatedPosts.length > 0 && (
+        <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex items-center justify-between gap-4 mb-10">
+                <div>
+                  <h2 className="text-heading font-bold text-gray-900">
+                    {locale === 'en' ? 'Related Reading' : '相关阅读'}
+                  </h2>
+                  <p className="text-gray-600">
+                    {locale === 'en'
+                      ? 'Learn more about conditions and how TCM can help.'
+                      : '了解常见病症及中医如何调理。'}
+                  </p>
+                </div>
+                <Link
+                  href={`/${locale}/blog`}
+                  className="text-primary font-semibold hover:text-primary-dark"
+                >
+                  {locale === 'en' ? 'View all' : '查看全部'}
+                </Link>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                {relatedPosts.map((post) => (
+                  <Link key={post.slug} href={`/${locale}/blog/${post.slug}`}>
+                    <Card className="h-full hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <Badge variant="secondary" size="sm">
+                          {post.category || (locale === 'en' ? 'Wellness' : '健康')}
+                        </Badge>
+                        <CardTitle className="text-base mt-3 line-clamp-2">
+                          {post.title}
+                        </CardTitle>
+                        {post.excerpt && (
+                          <CardDescription className="line-clamp-2">
+                            {post.excerpt}
+                          </CardDescription>
+                        )}
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]">
         <div className="container mx-auto max-w-4xl text-center text-white">
           <h2 className="text-heading text-white mb-4">
