@@ -5,12 +5,14 @@ import type { Metadata } from 'next';
 import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale, SiteInfo } from '@/lib/types';
+import CTASection from '@/components/sections/CTASection';
  
  import GalleryGrid, { GalleryCategory, GalleryImage } from '@/components/gallery/GalleryGrid';
  import { Camera, Sparkles, Award, MapPin, Clock } from 'lucide-react';
  
  interface GalleryPageData {
    hero: {
+    variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'photo-background';
      title: string;
      subtitle: string;
      backgroundImage?: string;
@@ -21,6 +23,7 @@ import { Locale, SiteInfo } from '@/lib/types';
    categories: GalleryCategory[];
    images: GalleryImage[];
    cta: {
+    variant?: 'centered' | 'split' | 'banner' | 'card-elevated';
      title: string;
      description: string;
      primaryCta: {
@@ -55,6 +58,10 @@ import { Locale, SiteInfo } from '@/lib/types';
    };
  }
  
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
+}
+
  export async function generateMetadata({ params }: GalleryPageProps): Promise<Metadata> {
    const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -74,6 +81,7 @@ import { Locale, SiteInfo } from '@/lib/types';
  
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<GalleryPageData>('gallery', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('gallery.layout', locale, siteId);
   const contactContent = await loadPageContent<ContactPageData>('contact', locale, siteId);
   const siteInfo = await loadSiteInfo(siteId, locale) as SiteInfo | null;
  
@@ -91,19 +99,41 @@ import { Locale, SiteInfo } from '@/lib/types';
      { icon: Sparkles, text: locale === 'en' ? 'Clean & modern' : '干净现代' },
      { icon: Award, text: locale === 'en' ? 'Professional care' : '专业护理' },
    ];
+  const layoutOrder = new Map<string, number>(
+    layout?.sections?.map((section, index) => [section.id, index]) || []
+  );
+  const useLayout = layoutOrder.size > 0;
+  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
+  const sectionStyle = (sectionId: string) =>
+    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
+  const heroVariant = hero.variant || 'split-photo-right';
+  const centeredHero = heroVariant === 'centered';
+  const imageLeftHero = heroVariant === 'split-photo-left';
+  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
  
    return (
-     <main>
+    <main className="flex flex-col">
        {/* Hero Section */}
-       <section className="relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden">
+      {isEnabled('hero') && (
+        <section
+          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+            backgroundHero
+              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
+              : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
+          }`}
+          style={{
+            ...(sectionStyle('hero') || {}),
+            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+          }}
+        >
          <div className="absolute inset-0 opacity-10">
            <div className="absolute top-10 right-10 w-64 h-64 bg-primary-100 rounded-full blur-3xl"></div>
            <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary-50 rounded-full blur-3xl"></div>
          </div>
  
          <div className="container mx-auto max-w-7xl relative z-10">
-           <div className="grid lg:grid-cols-2 gap-12 items-center">
-             <div className="text-center lg:text-left">
+          <div className={`grid gap-12 items-center ${centeredHero ? 'max-w-4xl mx-auto' : 'lg:grid-cols-2'}`}>
+            <div className={`text-center ${centeredHero ? '' : 'lg:text-left'}`}>
                <h1 className="text-display font-bold text-gray-900 mb-6 leading-tight">
                  {hero.title}
                </h1>
@@ -136,7 +166,8 @@ import { Locale, SiteInfo } from '@/lib/types';
                </div>
              </div>
  
-            <div className="hidden md:block w-full">
+            {!centeredHero && (
+            <div className={`hidden md:block w-full ${imageLeftHero ? 'lg:order-first' : ''}`}>
               <div className="rounded-3xl overflow-hidden shadow-2xl">
                 {hero.backgroundImage ? (
                   <Image
@@ -159,12 +190,18 @@ import { Locale, SiteInfo } from '@/lib/types';
                 )}
               </div>
             </div>
+            )}
            </div>
          </div>
-       </section>
+        </section>
+      )}
  
        {/* Gallery Grid */}
-       <section className="py-16 px-4 bg-gradient-to-b from-white to-gray-50">
+      {isEnabled('galleryGrid') && (
+        <section
+          className="py-16 px-4 bg-gradient-to-b from-white to-gray-50"
+          style={sectionStyle('galleryGrid')}
+        >
          <div className="container mx-auto max-w-7xl">
            <div className="text-center mb-8">
              <p className="text-small text-gray-600">
@@ -175,10 +212,12 @@ import { Locale, SiteInfo } from '@/lib/types';
            </div>
           <GalleryGrid images={displayImages} categories={displayCategories} />
          </div>
-       </section>
+        </section>
+      )}
  
        {/* Visit Information */}
-       <section className="py-20 px-4 bg-gray-50">
+      {isEnabled('visitInfo') && (
+        <section className="py-20 px-4 bg-gray-50" style={sectionStyle('visitInfo')}>
          <div className="container mx-auto max-w-5xl">
            <div className="text-center mb-12">
              <h2 className="text-heading font-bold text-gray-900 mb-4">
@@ -273,35 +312,22 @@ import { Locale, SiteInfo } from '@/lib/types';
              </div>
            </div>
          </div>
-       </section>
+        </section>
+      )}
  
        {/* CTA Section */}
-       <section className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]">
-         <div className="container mx-auto max-w-4xl text-center text-white">
-          <h2 className="text-heading text-white mb-4">
-             {cta.title}
-           </h2>
-           <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
-             {cta.description}
-           </p>
-           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-             <Link
-               href={cta.primaryCta.link}
-               className="bg-white text-[var(--primary)] px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg"
-             >
-               {cta.primaryCta.text}
-             </Link>
-             <a
-               href={cta.secondaryCta.link}
-               target={cta.secondaryCta.link.startsWith('http') ? '_blank' : undefined}
-               rel={cta.secondaryCta.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-               className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white/10 font-semibold text-subheading transition-all"
-             >
-               {cta.secondaryCta.text}
-             </a>
-           </div>
-         </div>
-       </section>
+      {isEnabled('cta') && (
+        <div style={sectionStyle('cta')}>
+          <CTASection
+            title={cta.title}
+            subtitle={cta.description}
+            primaryCta={cta.primaryCta}
+            secondaryCta={cta.secondaryCta}
+            variant={cta.variant || 'centered'}
+            className="py-16"
+          />
+        </div>
+      )}
      </main>
    );
  }

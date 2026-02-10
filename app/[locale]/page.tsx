@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { notFound } from 'next/navigation';
 import { type Locale } from '@/lib/i18n';
 import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
@@ -58,6 +59,10 @@ interface HomePageContent {
   cta?: any;
 }
 
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
+}
+
 export async function generateMetadata({ params }: PageProps) {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -96,79 +101,81 @@ export default async function HomePage({ params }: PageProps) {
   // Load homepage content
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<HomePageContent>('home', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('home.layout', locale, siteId);
   
   if (!content) {
     notFound();
   }
   
   const { hero } = content;
+  const defaultSections = [
+    'hero',
+    'credentials',
+    'testimonials',
+    'howItWorks',
+    'conditions',
+    'services',
+    'blog',
+    'gallery',
+    'firstVisit',
+    'whyChooseUs',
+    'cta',
+  ];
+  const layoutSections =
+    layout?.sections?.map((section) => section.id).filter(Boolean) || defaultSections;
+
+  const renderSection = (sectionId: string) => {
+    switch (sectionId) {
+      case 'hero':
+        return (
+          <HeroSection
+            variant={hero.variant}
+            clinicName={hero.clinicName}
+            tagline={hero.tagline}
+            description={hero.description}
+            badgeText={content.topBar?.badge?.visible ? content.topBar.badge.text : undefined}
+            primaryCta={hero.primaryCta}
+            secondaryCta={hero.secondaryCta}
+            image={hero.image}
+            video={hero.video}
+            floatingTags={hero.floatingTags}
+            stats={hero.stats}
+          />
+        );
+      case 'credentials':
+        return hero.credentials && hero.credentials.length > 0 ? (
+          <CredentialsSection credentials={hero.credentials} />
+        ) : null;
+      case 'testimonials':
+        return content.testimonials ? (
+          <TestimonialsSection {...content.testimonials} />
+        ) : null;
+      case 'howItWorks':
+        return content.howItWorks ? <HowItWorksSection {...content.howItWorks} /> : null;
+      case 'conditions':
+        return content.conditions ? <ConditionsSection {...content.conditions} /> : null;
+      case 'services':
+        return content.services ? <ServicesSection {...content.services} /> : null;
+      case 'blog':
+        return content.blog ? <BlogPreviewSection locale={locale} {...content.blog} /> : null;
+      case 'gallery':
+        return content.gallery ? <GalleryPreviewSection {...content.gallery} /> : null;
+      case 'firstVisit':
+        return content.firstVisit ? <FirstVisitSection {...content.firstVisit} /> : null;
+      case 'whyChooseUs':
+        return content.whyChooseUs ? <WhyChooseUsSection {...content.whyChooseUs} /> : null;
+      case 'cta':
+        return content.cta ? <CTASection {...content.cta} /> : null;
+      default:
+        return null;
+    }
+  };
   
   return (
     <main>
-      {/* Hero Section */}
-      <HeroSection
-        variant={hero.variant}
-        clinicName={hero.clinicName}
-        tagline={hero.tagline}
-        description={hero.description}
-        badgeText={content.topBar?.badge?.visible ? content.topBar.badge.text : undefined}
-        primaryCta={hero.primaryCta}
-        secondaryCta={hero.secondaryCta}
-        image={hero.image}
-        video={hero.video}
-        floatingTags={hero.floatingTags}
-        stats={hero.stats}
-      />
-      
-      {/* Credentials Section */}
-      {hero.credentials && hero.credentials.length > 0 && (
-        <CredentialsSection credentials={hero.credentials} />
-      )}
-      
-      {/* Testimonials Section */}
-      {content.testimonials && (
-        <TestimonialsSection {...content.testimonials} />
-      )}
-      
-      {/* How It Works Section */}
-      {content.howItWorks && (
-        <HowItWorksSection {...content.howItWorks} />
-      )}
-      
-      {/* Conditions We Treat Section */}
-      {content.conditions && (
-        <ConditionsSection {...content.conditions} />
-      )}
-      
-      {/* Services/Modalities Section */}
-      {content.services && (
-        <ServicesSection {...content.services} />
-      )}
-      
-      {/* Blog Preview Section */}
-      {content.blog && (
-        <BlogPreviewSection locale={locale} {...content.blog} />
-      )}
-      
-      {/* Gallery Preview Section */}
-      {content.gallery && (
-        <GalleryPreviewSection {...content.gallery} />
-      )}
-      
-      {/* First Visit Section */}
-      {content.firstVisit && (
-        <FirstVisitSection {...content.firstVisit} />
-      )}
-      
-      {/* Why Choose Us Section */}
-      {content.whyChooseUs && (
-        <WhyChooseUsSection {...content.whyChooseUs} />
-      )}
-      
-      {/* Final CTA Section */}
-      {content.cta && (
-        <CTASection {...content.cta} />
-      )}
+      {layoutSections.map((sectionId, index) => (
+        <Fragment key={`${sectionId}-${index}`}>{renderSection(sectionId)}</Fragment>
+      ))}
     </main>
   );
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { getSessionFromRequest } from '@/lib/admin/auth';
-import { upsertContentEntry } from '@/lib/contentDb';
+import { fetchContentEntry, upsertContentEntry } from '@/lib/contentDb';
 import { canWriteContent, requireSiteAccess } from '@/lib/admin/permissions';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
   const payload = await request.json();
   const siteId = payload.siteId as string | undefined;
   const locale = payload.locale as string | undefined;
+  const mode = payload.mode === 'overwrite' ? 'overwrite' : 'missing';
 
   if (!siteId || !locale) {
     return NextResponse.json(
@@ -39,6 +40,28 @@ export async function POST(request: NextRequest) {
   }
 
   const tasks: Array<Promise<void>> = [];
+  let skipped = 0;
+
+  const queueUpsert = (path: string, data: unknown) => {
+    tasks.push(
+      (async () => {
+        if (mode === 'missing') {
+          const existing = await fetchContentEntry(siteId, locale, path);
+          if (existing?.data) {
+            skipped += 1;
+            return;
+          }
+        }
+        await upsertContentEntry({
+          siteId,
+          locale,
+          path,
+          data,
+          updatedBy: session.user.email,
+        });
+      })()
+    );
+  };
   const localeRoot = path.join(CONTENT_DIR, siteId, locale);
 
   // Root locale JSON files (navigation.json, header.json, site.json, seo.json, footer.json)
@@ -49,15 +72,9 @@ export async function POST(request: NextRequest) {
       .forEach((file) => {
         const filePath = path.join(localeRoot, file);
         tasks.push(
-          readJson(filePath).then((data) =>
-            upsertContentEntry({
-              siteId,
-              locale,
-              path: file,
-              data,
-              updatedBy: session.user.email,
-            }).then(() => undefined)
-          )
+          readJson(filePath).then((data) => {
+            queueUpsert(file, data);
+          })
         );
       });
   } catch (error) {
@@ -73,15 +90,9 @@ export async function POST(request: NextRequest) {
       .forEach((file) => {
         const filePath = path.join(pagesDir, file);
         tasks.push(
-          readJson(filePath).then((data) =>
-            upsertContentEntry({
-              siteId,
-              locale,
-              path: `pages/${file}`,
-              data,
-              updatedBy: session.user.email,
-            }).then(() => undefined)
-          )
+          readJson(filePath).then((data) => {
+            queueUpsert(`pages/${file}`, data);
+          })
         );
       });
   } catch (error) {
@@ -97,15 +108,9 @@ export async function POST(request: NextRequest) {
       .forEach((file) => {
         const filePath = path.join(blogDir, file);
         tasks.push(
-          readJson(filePath).then((data) =>
-            upsertContentEntry({
-              siteId,
-              locale,
-              path: `blog/${file}`,
-              data,
-              updatedBy: session.user.email,
-            }).then(() => undefined)
-          )
+          readJson(filePath).then((data) => {
+            queueUpsert(`blog/${file}`, data);
+          })
         );
       });
   } catch (error) {
@@ -116,20 +121,12 @@ export async function POST(request: NextRequest) {
   const themePath = path.join(CONTENT_DIR, siteId, 'theme.json');
   try {
     const themeData = await readJson(themePath);
-    tasks.push(
-      upsertContentEntry({
-        siteId,
-        locale,
-        path: 'theme.json',
-        data: themeData,
-        updatedBy: session.user.email,
-      }).then(() => undefined)
-    );
+    queueUpsert('theme.json', themeData);
   } catch (error) {
     // ignore missing theme
   }
 
   await Promise.all(tasks);
 
-  return NextResponse.json({ success: true, imported: tasks.length });
+  return NextResponse.json({ success: true, imported: tasks.length - skipped, skipped });
 }

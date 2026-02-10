@@ -33,6 +33,13 @@ export interface ThemeConfig {
     subheading: string;
     body: string;
     small: string;
+    fonts?: {
+      display?: string;
+      heading?: string;
+      subheading?: string;
+      body?: string;
+      small?: string;
+    };
   };
   colors: {
     primary: {
@@ -413,6 +420,14 @@ export interface HomePage {
 
 export interface ServicesPage {
   hero: {
+    variant?:
+      | 'centered'
+      | 'split-photo-right'
+      | 'split-photo-left'
+      | 'overlap'
+      | 'photo-background'
+      | 'video-background'
+      | 'gallery-background';
     title: string;
     subtitle: string;
     backgroundImage?: string;
@@ -430,6 +445,7 @@ export interface ServicesPage {
     }>;
   };
   cta: {
+    variant?: 'centered' | 'split' | 'banner' | 'card-elevated';
     title: string;
     subtitle?: string;
     primaryCta: {

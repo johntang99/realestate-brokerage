@@ -5,6 +5,7 @@ import { Button, Icon, Input, Textarea, Select } from '@/components/ui';
 import { Locale } from '@/lib/types';
 
 interface FormConfig {
+  variant?: 'single-column' | 'two-column' | 'multi-step' | 'modal' | 'inline-minimal';
   title: string;
   subtitle: string;
   fields: {
@@ -70,53 +71,58 @@ export default function ContactForm({ formConfig, locale }: ContactFormProps) {
   };
 
   const { fields, submitButton, successMessage, errorMessage } = formConfig;
+  const variant = formConfig.variant || 'single-column';
+  const useTwoColumn = variant === 'two-column';
+  const isInlineMinimal = variant === 'inline-minimal';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Name */}
-      <Input
-        label={fields.name.label}
-        type="text"
-        value={formData.name}
-        onChange={(e) => handleChange('name', e.target.value)}
-        placeholder={fields.name.placeholder}
-        required={fields.name.required}
-      />
+    <form onSubmit={handleSubmit} className={isInlineMinimal ? 'space-y-4' : 'space-y-6'}>
+      <div className={useTwoColumn ? 'grid md:grid-cols-2 gap-6' : 'space-y-6'}>
+        {/* Name */}
+        <Input
+          label={fields.name.label}
+          type="text"
+          value={formData.name}
+          onChange={(e) => handleChange('name', e.target.value)}
+          placeholder={fields.name.placeholder}
+          required={fields.name.required}
+        />
 
-      {/* Email */}
-      <Input
-        label={fields.email.label}
-        type="email"
-        value={formData.email}
-        onChange={(e) => handleChange('email', e.target.value)}
-        placeholder={fields.email.placeholder}
-        required={fields.email.required}
-      />
+        {/* Email */}
+        <Input
+          label={fields.email.label}
+          type="email"
+          value={formData.email}
+          onChange={(e) => handleChange('email', e.target.value)}
+          placeholder={fields.email.placeholder}
+          required={fields.email.required}
+        />
 
-      {/* Phone */}
-      <Input
-        label={fields.phone.label}
-        type="tel"
-        value={formData.phone}
-        onChange={(e) => handleChange('phone', e.target.value)}
-        placeholder={fields.phone.placeholder}
-        required={fields.phone.required}
-      />
+        {/* Phone */}
+        <Input
+          label={fields.phone.label}
+          type="tel"
+          value={formData.phone}
+          onChange={(e) => handleChange('phone', e.target.value)}
+          placeholder={fields.phone.placeholder}
+          required={fields.phone.required}
+        />
 
-      {/* Reason */}
-      <Select
-        label={fields.reason.label}
-        value={formData.reason}
-        onChange={(e) => handleChange('reason', e.target.value)}
-        required={fields.reason.required}
-      >
-        <option value="">{fields.reason.placeholder}</option>
-        {fields.reason.options.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
-          </option>
-        ))}
-      </Select>
+        {/* Reason */}
+        <Select
+          label={fields.reason.label}
+          value={formData.reason}
+          onChange={(e) => handleChange('reason', e.target.value)}
+          required={fields.reason.required}
+        >
+          <option value="">{fields.reason.placeholder}</option>
+          {fields.reason.options.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </Select>
+      </div>
 
       {/* Message */}
       <Textarea
@@ -124,7 +130,7 @@ export default function ContactForm({ formConfig, locale }: ContactFormProps) {
         value={formData.message}
         onChange={(e) => handleChange('message', e.target.value)}
         placeholder={fields.message.placeholder}
-        rows={6}
+        rows={isInlineMinimal ? 4 : 6}
         required={fields.message.required}
       />
 

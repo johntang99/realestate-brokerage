@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Star, ArrowRight } from 'lucide-react';
 
 export interface TestimonialsSectionProps {
+  variant?: 'carousel' | 'grid' | 'masonry' | 'slider-vertical' | 'featured-single';
   badge?: string;
   title: string;
   subtitle?: string;
@@ -20,6 +21,7 @@ export interface TestimonialsSectionProps {
 }
 
 export default function TestimonialsSection({
+  variant = 'grid',
   badge,
   title,
   subtitle,
@@ -28,6 +30,9 @@ export default function TestimonialsSection({
   className,
 }: TestimonialsSectionProps) {
   if (!testimonials || testimonials.length === 0) return null;
+
+  const limited = testimonials.slice(0, 6);
+  const single = testimonials[0];
   
   return (
     <section className={cn('py-20 px-4 bg-gradient-to-b from-white to-gray-50', className)}>
@@ -43,33 +48,58 @@ export default function TestimonialsSection({
           {subtitle && <p className="text-subheading text-gray-600">{subtitle}</p>}
         </div>
         
-        {/* Testimonials Grid - Static 3-column layout */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-8 border-2 border-gray-200 hover:border-primary hover:shadow-xl transition-all"
-            >
-              {/* 5 Star Rating */}
-              <div className="flex gap-1 mb-4">
+        {variant === 'featured-single' && single ? (
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-2xl p-10 border-2 border-gray-200 shadow-lg">
+              <div className="flex gap-1 mb-6 justify-center">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-5 h-5" style={{ fill: 'var(--secondary-light)', color: 'var(--secondary-light)' }} />
                 ))}
               </div>
-              
-              {/* Quote */}
-              <p className="text-gray-700 italic mb-6 leading-relaxed text-subheading">
-                &ldquo;{testimonial.quote}&rdquo;
+              <p className="text-gray-700 italic mb-8 leading-relaxed text-subheading text-center">
+                &ldquo;{single.quote}&rdquo;
               </p>
-              
-              {/* Name & Condition */}
-              <div className="border-t border-gray-200 pt-4">
-                <p className="font-semibold text-gray-900">{testimonial.name}</p>
-                <p className="text-sm text-primary">{testimonial.condition}</p>
+              <div className="border-t border-gray-200 pt-4 text-center">
+                <p className="font-semibold text-gray-900">{single.name}</p>
+                <p className="text-sm text-primary">{single.condition}</p>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div
+            className={cn(
+              variant === 'masonry' && 'columns-1 md:columns-2 lg:columns-3 gap-6 [column-fill:_balance]',
+              variant === 'slider-vertical' && 'max-w-3xl mx-auto space-y-6',
+              (variant === 'grid' || variant === 'carousel') && 'grid md:grid-cols-3 gap-8'
+            )}
+          >
+            {limited.map((testimonial, index) => (
+              <div
+                key={index}
+                className={cn(
+                  'bg-white rounded-xl p-8 border-2 border-gray-200 hover:border-primary hover:shadow-xl transition-all',
+                  variant === 'masonry' && 'break-inside-avoid mb-6',
+                  variant === 'slider-vertical' && 'w-full'
+                )}
+              >
+                <div className="flex gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5" style={{ fill: 'var(--secondary-light)', color: 'var(--secondary-light)' }} />
+                  ))}
+                </div>
+                
+                <p className="text-gray-700 italic mb-6 leading-relaxed text-subheading">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+                
+                <div className="border-t border-gray-200 pt-4">
+                  <p className="font-semibold text-gray-900">{testimonial.name}</p>
+                  <p className="text-sm text-primary">{testimonial.condition}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         
         {/* More Link */}
         {moreLink && (

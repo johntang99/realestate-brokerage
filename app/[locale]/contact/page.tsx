@@ -8,8 +8,13 @@ import { Button, Badge, Icon, Card, CardHeader, CardTitle, CardDescription, Card
 import ContactForm from '@/components/ContactForm';
 
 interface ContactPageContent {
-  hero: { title: string; subtitle: string; backgroundImage?: string };
-  introduction: { text: string };
+  hero: {
+    variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'photo-background';
+    title: string;
+    subtitle: string;
+    backgroundImage?: string;
+  };
+  introduction: { variant?: 'centered' | 'left'; text: string };
   contactMethods: Array<{
     icon: string;
     title: string;
@@ -19,11 +24,13 @@ interface ContactPageContent {
     action: { text: string; link: string };
   }>;
   hours: {
+    variant?: 'grid' | 'list';
     title: string;
     schedule: Array<{ day: string; time: string; isOpen: boolean; note?: string }>;
     note: string;
   };
   form: {
+    variant?: 'single-column' | 'two-column' | 'multi-step' | 'modal' | 'inline-minimal';
     title: string;
     subtitle: string;
     fields: {
@@ -38,6 +45,7 @@ interface ContactPageContent {
     errorMessage: string;
   };
   map: {
+    variant?: 'shown' | 'hidden';
     title: string;
     embedUrl: string;
     showMap: boolean;
@@ -50,6 +58,7 @@ interface ContactPageContent {
     visible: boolean;
   };
   faq: {
+    variant?: 'card' | 'simple';
     title: string;
     items: Array<{ question: string; answer: string }>;
   };
@@ -61,10 +70,15 @@ interface ContactPageProps {
   };
 }
 
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
+}
+
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<ContactPageContent>('contact', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('contact.layout', locale, siteId);
 
   return buildPageMetadata({
     siteId,
@@ -81,19 +95,45 @@ export default async function ContactPage({ params }: ContactPageProps) {
   // Load page content
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<ContactPageContent>('contact', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('contact.layout', locale, siteId);
   
   if (!content) {
     notFound();
   }
 
   const { hero, introduction, contactMethods, hours, form, map, emergency, faq } = content;
+  const heroVariant = hero.variant || 'centered';
+  const isCenteredHero = heroVariant === 'centered';
+  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const introVariant = introduction.variant || 'centered';
+  const hoursVariant = hours.variant || 'grid';
+  const showMap = map.variant === 'hidden' ? false : map.showMap;
+  const faqVariant = faq.variant || 'card';
+  const layoutOrder = new Map<string, number>(
+    layout?.sections?.map((section, index) => [section.id, index]) || []
+  );
+  const useLayout = layoutOrder.size > 0;
+  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
+  const sectionStyle = (sectionId: string) =>
+    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary/10 via-backdrop-primary to-primary/5 py-20 lg:py-32">
+      {isEnabled('hero') && (
+        <section
+          className={`relative py-20 lg:py-32 ${
+            backgroundHero
+              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/80'
+              : 'bg-gradient-to-br from-primary/10 via-backdrop-primary to-primary/5'
+          }`}
+          style={{
+            ...(sectionStyle('hero') || {}),
+            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+          }}
+        >
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className={`max-w-4xl mx-auto relative z-10 ${isCenteredHero ? 'text-center' : 'text-left'}`}>
             <h1 className="text-display font-bold text-gray-900 mb-6">
               {hero.title}
             </h1>
@@ -102,22 +142,28 @@ export default async function ContactPage({ params }: ContactPageProps) {
             </p>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Introduction */}
-      <section className="py-12 bg-white">
+      {isEnabled('introduction') && (
+        <section className="py-12 bg-white" style={sectionStyle('introduction')}>
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className={`max-w-4xl mx-auto ${introVariant === 'left' ? 'text-left' : 'text-center'}`}>
             <p className="text-lg text-gray-700">
               {introduction.text}
             </p>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Emergency Notice */}
-      {emergency.visible && (
-        <section className="py-6 bg-red-50 border-y border-red-100">
+      {isEnabled('emergency') && emergency.visible && (
+        <section
+          className="py-6 bg-red-50 border-y border-red-100"
+          style={sectionStyle('emergency')}
+        >
           <div className="container mx-auto px-4">
             <div className="max-w-4xl mx-auto flex items-start gap-4">
               <Icon name="AlertTriangle" className="text-red-600 flex-shrink-0 mt-1" />
@@ -129,11 +175,15 @@ export default async function ContactPage({ params }: ContactPageProps) {
               </div>
             </div>
           </div>
-      </section>
+        </section>
       )}
 
       {/* Contact Methods */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('contactMethods') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('contactMethods')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid md:grid-cols-3 gap-6 mb-16">
@@ -175,7 +225,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className={hoursVariant === 'list' ? 'space-y-3' : 'grid sm:grid-cols-2 gap-4'}>
                   {hours.schedule.map((schedule) => (
                     <div key={schedule.day} className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
                       <div>
@@ -194,10 +244,12 @@ export default async function ContactPage({ params }: ContactPageProps) {
             </Card>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Contact Form & Map */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('formMap') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('formMap')}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12">
@@ -219,7 +271,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
               {/* Map & Quick Answers */}
               <div className="space-y-8">
                 {/* Map */}
-                {map.showMap && (
+                {showMap && (
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4">{map.title}</h3>
                     <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
@@ -238,27 +290,44 @@ export default async function ContactPage({ params }: ContactPageProps) {
                 )}
 
                 {/* Quick Answers */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>{faq.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+                {faqVariant === 'simple' ? (
+                  <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-gray-900">{faq.title}</h3>
                     {faq.items.map((item, index) => (
                       <div key={index}>
                         <h4 className="font-semibold text-gray-900 text-sm mb-1">{item.question}</h4>
                         <p className="text-gray-600 text-sm">{item.answer}</p>
                       </div>
                     ))}
-                  </CardContent>
-                </Card>
+                  </div>
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>{faq.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {faq.items.map((item, index) => (
+                        <div key={index}>
+                          <h4 className="font-semibold text-gray-900 text-sm mb-1">{item.question}</h4>
+                          <p className="text-gray-600 text-sm">{item.answer}</p>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]">
+      {isEnabled('cta') && (
+        <section
+          className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]"
+          style={sectionStyle('cta')}
+        >
         <div className="container mx-auto max-w-4xl text-center text-white">
           <h2 className="text-heading text-white mb-4">
             {locale === 'en' ? 'New to TCM?' : '新手指南'}
@@ -275,7 +344,8 @@ export default async function ContactPage({ params }: ContactPageProps) {
             </Link>
           </div>
         </div>
-      </section>
+        </section>
+      )}
     </main>
   );
 }

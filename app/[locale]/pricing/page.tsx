@@ -5,9 +5,11 @@ import { getRequestSiteId, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Accordion, Badge } from '@/components/ui';
+import CTASection from '@/components/sections/CTASection';
 
 interface PricingPageData {
   hero: {
+    variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'photo-background';
     title: string;
     subtitle: string;
     backgroundImage?: string;
@@ -17,6 +19,7 @@ interface PricingPageData {
     note?: string;
   };
   individualTreatments: {
+    variant?: 'grid-3' | 'grid-2' | 'list';
     title: string;
     subtitle?: string;
     items: Array<{
@@ -28,6 +31,7 @@ interface PricingPageData {
     }>;
   };
   packages: {
+    variant?: 'grid-3' | 'grid-2' | 'list';
     title: string;
     subtitle?: string;
     items: Array<{
@@ -44,6 +48,7 @@ interface PricingPageData {
     }>;
   };
   insurance: {
+    variant?: 'split' | 'stacked';
     title: string;
     acceptedInsurance: string[];
     insuranceInfo: {
@@ -62,6 +67,7 @@ interface PricingPageData {
     };
   };
   policies?: {
+    variant?: 'grid' | 'list';
     title: string;
     cancellation?: { title: string; policy: string };
     packages?: { title: string; policy: string };
@@ -69,11 +75,19 @@ interface PricingPageData {
     newPatients?: { title: string; policy: string };
   };
   faq: {
+    variant?: 'accordion' | 'simple';
     title: string;
     items: Array<{
       question: string;
       answer: string;
     }>;
+  };
+  cta?: {
+    variant?: 'centered' | 'split' | 'banner' | 'card-elevated';
+    title: string;
+    description: string;
+    primaryCta?: { text: string; link: string };
+    secondaryCta?: { text: string; link: string };
   };
 }
 
@@ -81,6 +95,10 @@ interface PricingPageProps {
   params: {
     locale: Locale;
   };
+}
+
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: PricingPageProps): Promise<Metadata> {
@@ -101,6 +119,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
   const { locale } = params;
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<PricingPageData>('pricing', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('pricing.layout', locale, siteId);
 
   if (!content) {
     notFound();
@@ -114,18 +133,46 @@ export default async function PricingPage({ params }: PricingPageProps) {
     insurance,
     policies,
     faq,
+    cta,
   } = content;
+  const layoutOrder = new Map<string, number>(
+    layout?.sections?.map((section, index) => [section.id, index]) || []
+  );
+  const useLayout = layoutOrder.size > 0;
+  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
+  const sectionStyle = (sectionId: string) =>
+    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
+  const heroVariant = hero.variant || 'split-photo-right';
+  const centeredHero = heroVariant === 'centered';
+  const imageLeftHero = heroVariant === 'split-photo-left';
+  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const treatmentsVariant = individualTreatments.variant || 'grid-3';
+  const packagesVariant = packages.variant || 'grid-3';
+  const insuranceVariant = insurance.variant || 'split';
+  const policiesVariant = policies?.variant || 'grid';
+  const faqVariant = faq.variant || 'accordion';
 
   return (
-    <main className="min-h-screen bg-[color-mix(in_srgb,var(--backdrop-primary)_30%,white)]">
-      <section className="relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] pt-28 md:pt-32 pb-16 md:pb-20 px-4 overflow-hidden">
+    <main className="min-h-screen bg-[color-mix(in_srgb,var(--backdrop-primary)_30%,white)] flex flex-col">
+      {isEnabled('hero') && (
+        <section
+          className={`relative pt-28 md:pt-32 pb-16 md:pb-20 px-4 overflow-hidden ${
+            backgroundHero
+              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
+              : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
+          }`}
+          style={{
+            ...(sectionStyle('hero') || {}),
+            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+          }}
+        >
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-64 h-64 bg-primary-100 rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary-50 rounded-full blur-3xl"></div>
         </div>
         <div className="container mx-auto max-w-6xl">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            <div>
+          <div className={`grid gap-10 lg:items-center ${centeredHero ? 'max-w-4xl mx-auto' : 'lg:grid-cols-2'}`}>
+            <div className={centeredHero ? 'text-center' : ''}>
               <h1 className="text-display font-bold text-gray-900">
                 {hero.title}
               </h1>
@@ -137,8 +184,8 @@ export default async function PricingPage({ params }: PricingPageProps) {
                 )}
               </div>
             </div>
-            {hero.backgroundImage && (
-              <div className="lg:pl-6">
+            {!centeredHero && hero.backgroundImage && (
+              <div className={`lg:pl-6 ${imageLeftHero ? 'lg:order-first lg:pl-0 lg:pr-6' : ''}`}>
                 <div className="rounded-3xl overflow-hidden shadow-lg">
                   <Image
                     src={hero.backgroundImage}
@@ -152,9 +199,11 @@ export default async function PricingPage({ params }: PricingPageProps) {
             )}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      <section className="pt-10 md:pt-14 pb-16 px-4">
+      {isEnabled('individualTreatments') && (
+        <section className="pt-10 md:pt-14 pb-16 px-4" style={sectionStyle('individualTreatments')}>
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-heading font-bold text-center mb-2">
             {individualTreatments.title}
@@ -164,7 +213,15 @@ export default async function PricingPage({ params }: PricingPageProps) {
               {individualTreatments.subtitle}
             </p>
           )}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div
+            className={
+              treatmentsVariant === 'list'
+                ? 'grid gap-4'
+                : treatmentsVariant === 'grid-2'
+                  ? 'grid gap-6 md:grid-cols-2'
+                  : 'grid gap-6 md:grid-cols-2 lg:grid-cols-3'
+            }
+          >
             {individualTreatments.items.map((item, index) => (
               <div
                 key={`${item.name}-${index}`}
@@ -183,9 +240,11 @@ export default async function PricingPage({ params }: PricingPageProps) {
             ))}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      <section className="pb-16 px-4">
+      {isEnabled('packages') && (
+        <section className="pb-16 px-4" style={sectionStyle('packages')}>
         <div className="container mx-auto max-w-5xl">
           <h2 className="text-heading font-bold text-center mb-2">
             {packages.title}
@@ -193,7 +252,15 @@ export default async function PricingPage({ params }: PricingPageProps) {
           {packages.subtitle && (
             <p className="text-center text-gray-600 mb-8">{packages.subtitle}</p>
           )}
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div
+            className={
+              packagesVariant === 'list'
+                ? 'grid gap-4'
+                : packagesVariant === 'grid-2'
+                  ? 'grid gap-6 md:grid-cols-2'
+                  : 'grid gap-6 md:grid-cols-2 lg:grid-cols-3'
+            }
+          >
             {packages.items.map((pkg, index) => (
               <div
                 key={`${pkg.name}-${index}`}
@@ -233,14 +300,16 @@ export default async function PricingPage({ params }: PricingPageProps) {
             ))}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      <section className="pb-16 px-4">
+      {isEnabled('insurance') && (
+        <section className="pb-16 px-4" style={sectionStyle('insurance')}>
         <div className="container mx-auto max-w-4xl">
           <h2 className="text-heading font-bold text-center mb-8">
             {insurance.title}
           </h2>
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className={insuranceVariant === 'stacked' ? 'grid gap-6' : 'grid gap-6 md:grid-cols-2'}>
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <h3 className="font-bold text-subheading mb-3">
                 {insurance.insuranceInfo.title}
@@ -298,15 +367,16 @@ export default async function PricingPage({ params }: PricingPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      {policies && (
-        <section className="pb-16 px-4">
+      {isEnabled('policies') && policies && (
+        <section className="pb-16 px-4" style={sectionStyle('policies')}>
           <div className="container mx-auto max-w-4xl">
             <h2 className="text-heading font-bold text-center mb-8">
               {policies.title}
             </h2>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={policiesVariant === 'list' ? 'grid gap-4' : 'grid gap-4 md:grid-cols-2'}>
               {policies.cancellation && (
                 <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                   <h3 className="font-bold text-subheading mb-2">
@@ -344,21 +414,46 @@ export default async function PricingPage({ params }: PricingPageProps) {
         </section>
       )}
 
-      <section className="pb-20 px-4">
+      {isEnabled('faq') && (
+        <section className="pb-20 px-4" style={sectionStyle('faq')}>
         <div className="container mx-auto max-w-4xl">
           <h2 className="text-heading font-bold text-center mb-8">
             {faq.title}
           </h2>
-          <Accordion
-            items={faq.items.map((item, index) => ({
-              id: `faq-${index}`,
-              title: item.question,
-              content: item.answer,
-            }))}
-            allowMultiple
+          {faqVariant === 'simple' ? (
+            <div className="space-y-4">
+              {faq.items.map((item, index) => (
+                <div key={index} className="bg-white border border-gray-200 rounded-xl p-4">
+                  <h3 className="font-semibold text-gray-900 mb-2">{item.question}</h3>
+                  <p className="text-sm text-gray-700">{item.answer}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Accordion
+              items={faq.items.map((item, index) => ({
+                id: `faq-${index}`,
+                title: item.question,
+                content: item.answer,
+              }))}
+              allowMultiple
+            />
+          )}
+        </div>
+        </section>
+      )}
+      {isEnabled('cta') && cta && (
+        <div style={sectionStyle('cta')}>
+          <CTASection
+            title={cta.title}
+            subtitle={cta.description}
+            primaryCta={cta.primaryCta}
+            secondaryCta={cta.secondaryCta}
+            variant={cta.variant || 'centered'}
+            className="py-16"
           />
         </div>
-      </section>
+      )}
     </main>
   );
 }

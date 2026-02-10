@@ -6,6 +6,7 @@ import { getRequestSiteId, loadAllItems, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { ServicesPage, Locale } from '@/lib/types';
 import { Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon, Accordion } from '@/components/ui';
+import CTASection from '@/components/sections/CTASection';
 import { Award, Users, Shield } from 'lucide-react';
 
 interface ServicesPageProps {
@@ -21,6 +22,10 @@ interface BlogListItem {
   image?: string;
   category?: string;
   publishDate?: string;
+}
+
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
 }
 
 export async function generateMetadata({ params }: ServicesPageProps): Promise<Metadata> {
@@ -43,6 +48,7 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
   // Load page content
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<ServicesPage>('services', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('services.layout', locale, siteId);
   const blogPosts = await loadAllItems<BlogListItem>(siteId, locale, 'blog');
   
   if (!content) {
@@ -81,11 +87,33 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
       description: locale === 'en' ? 'Peaceful healing space' : '安心疗愈空间',
     },
   ];
+  const layoutOrder = new Map<string, number>(
+    layout?.sections?.map((section, index) => [section.id, index]) || []
+  );
+  const useLayout = layoutOrder.size > 0;
+  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
+  const sectionStyle = (sectionId: string) =>
+    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
+  const heroVariant = hero.variant || 'split-photo-right';
+  const centeredHero = heroVariant === 'centered';
+  const imageLeftHero = heroVariant === 'split-photo-left';
+  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden">
+      {isEnabled('hero') && (
+        <section
+          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+            backgroundHero
+              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
+              : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
+          }`}
+          style={{
+            ...(sectionStyle('hero') || {}),
+            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+          }}
+        >
         {/* Decorative Background */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-64 h-64 bg-primary-100 rounded-full blur-3xl"></div>
@@ -93,9 +121,9 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
         </div>
 
         <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className={`grid gap-12 items-center ${centeredHero ? 'max-w-4xl mx-auto' : 'lg:grid-cols-2'}`}>
             {/* Left Column - Text Content */}
-            <div className="text-center lg:text-left">
+            <div className={`text-center ${centeredHero ? '' : 'lg:text-left'}`}>
               <h1 className="text-display font-bold text-gray-900 mb-6 leading-tight">
                 {hero.title}
               </h1>
@@ -104,7 +132,7 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
               </p>
 
               {/* Trust Bar */}
-              <div className="grid sm:grid-cols-3 gap-4 mt-8">
+              <div className={`grid sm:grid-cols-3 gap-4 mt-8 ${centeredHero ? 'max-w-3xl mx-auto' : ''}`}>
                 {trustItems.map((item) => {
                   const TrustIcon = item.icon;
                   return (
@@ -126,7 +154,8 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
             </div>
 
             {/* Right Column - Hero Image */}
-            <div className="hidden md:block w-full">
+            {!centeredHero && (
+            <div className={`hidden md:block w-full ${imageLeftHero ? 'lg:order-first' : ''}`}>
               <div className="rounded-3xl overflow-hidden shadow-2xl">
                 {hero.backgroundImage ? (
                   <Image
@@ -155,12 +184,15 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
                 )}
               </div>
             </div>
+            )}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Overview Section */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('overview') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('overview')}>
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <p className="text-lg text-gray-700 leading-relaxed mb-12">
@@ -182,10 +214,15 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Services Grid */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('services') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('services')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid gap-12 lg:gap-16">
@@ -270,10 +307,12 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* FAQ Section */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('faq') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('faq')}>
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
@@ -295,10 +334,14 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
             />
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      {relatedPosts.length > 0 && (
-        <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('relatedReading') && relatedPosts.length > 0 && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('relatedReading')}
+        >
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center justify-between gap-4 mb-10">
@@ -347,36 +390,18 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
       )}
 
       {/* CTA Section */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-primary to-primary-dark text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-heading font-bold mb-4 text-white">
-              {cta.title}
-            </h2>
-            {cta.subtitle && (
-              <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
-                {cta.subtitle}
-              </p>
-            )}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href={cta.primaryCta.link}
-                className="bg-white text-primary px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg hover:shadow-xl"
-              >
-                {cta.primaryCta.text}
-              </Link>
-              {cta.secondaryCta && (
-                <Link
-                  href={cta.secondaryCta.link}
-                  className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white/10 font-semibold text-subheading transition-all"
-                >
-                  {cta.secondaryCta.text}
-                </Link>
-              )}
-            </div>
-          </div>
+      {isEnabled('cta') && (
+        <div style={sectionStyle('cta')}>
+          <CTASection
+            title={cta.title}
+            subtitle={cta.subtitle}
+            primaryCta={cta.primaryCta}
+            secondaryCta={cta.secondaryCta}
+            variant={cta.variant || 'centered'}
+            className="py-16 lg:py-24"
+          />
         </div>
-      </section>
+      )}
     </main>
   );
 }

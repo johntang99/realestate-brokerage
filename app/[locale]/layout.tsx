@@ -115,6 +115,11 @@ export default async function LocaleLayout({
       --text-subheading: ${theme.typography.subheading};
       --text-body: ${theme.typography.body};
       --text-small: ${theme.typography.small};
+      --font-display: ${theme.typography.fonts?.display || 'var(--font-body-default)'};
+      --font-heading: ${theme.typography.fonts?.heading || 'var(--font-body-default)'};
+      --font-subheading: ${theme.typography.fonts?.subheading || 'var(--font-body-default)'};
+      --font-body: ${theme.typography.fonts?.body || 'var(--font-body-default)'};
+      --font-small: ${theme.typography.fonts?.small || 'var(--font-body-default)'};
       
       /* Primary Colors */
       --primary: ${theme.colors.primary.DEFAULT};

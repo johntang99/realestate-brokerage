@@ -6,16 +6,19 @@ import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale, SiteInfo } from '@/lib/types';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon } from '@/components/ui';
+import CTASection from '@/components/sections/CTASection';
 import { CheckCircle2, MapPin, Clock } from 'lucide-react';
 
 interface AboutPageData {
   hero: {
+    variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'photo-background';
     title: string;
     subtitle: string;
     description?: string;
     backgroundImage?: string;
   };
   profile: {
+    variant?: 'split' | 'stacked';
     name: string;
     title: string;
     image: string;
@@ -24,6 +27,7 @@ interface AboutPageData {
     signature?: string;
   };
   credentials: {
+    variant?: 'list' | 'grid';
     title: string;
     items: Array<{
       icon: string;
@@ -34,6 +38,7 @@ interface AboutPageData {
     }>;
   };
   specializations: {
+    variant?: 'grid-2' | 'grid-3' | 'list';
     title: string;
     description: string;
     areas: Array<{
@@ -43,6 +48,7 @@ interface AboutPageData {
     }>;
   };
   philosophy: {
+    variant?: 'cards' | 'timeline';
     title: string;
     introduction: string;
     principles: Array<{
@@ -51,10 +57,12 @@ interface AboutPageData {
     }>;
   };
   journey: {
+    variant?: 'prose' | 'card';
     title: string;
     story: string;
   };
   affiliations: {
+    variant?: 'compact' | 'detailed';
     title: string;
     organizations: Array<{
       name: string;
@@ -62,11 +70,13 @@ interface AboutPageData {
     }>;
   };
   continuingEducation: {
+    variant?: 'compact' | 'detailed';
     title: string;
     description: string;
     items: string[];
   };
   clinic: {
+    variant?: 'split' | 'cards';
     title: string;
     description: string | string[];
     features?: string[];
@@ -78,6 +88,7 @@ interface AboutPageData {
     environment: string;
   };
   cta: {
+    variant?: 'centered' | 'split' | 'banner' | 'card-elevated';
     title: string;
     description: string;
     primaryCta: {
@@ -112,6 +123,10 @@ interface ContactPageData {
   };
 }
 
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
+}
+
 export async function generateMetadata({ params }: AboutPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -134,6 +149,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
   // Load page content
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<AboutPageData>('about', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('about.layout', locale, siteId);
   const contactContent = await loadPageContent<ContactPageData>('contact', locale, siteId);
   const siteInfo = await loadSiteInfo(siteId, locale) as SiteInfo | null;
   
@@ -142,11 +158,41 @@ export default async function AboutPage({ params }: AboutPageProps) {
   }
 
   const { hero, profile, credentials, specializations, philosophy, journey, affiliations, continuingEducation, clinic, cta } = content;
+  const layoutOrder = new Map<string, number>(
+    layout?.sections?.map((section, index) => [section.id, index]) || []
+  );
+  const useLayout = layoutOrder.size > 0;
+  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
+  const sectionStyle = (sectionId: string) =>
+    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
+  const heroVariant = hero.variant || 'split-photo-right';
+  const centeredHero = heroVariant === 'centered';
+  const imageLeftHero = heroVariant === 'split-photo-left';
+  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const profileVariant = profile.variant || 'split';
+  const credentialsVariant = credentials.variant || 'list';
+  const specializationsVariant = specializations.variant || 'grid-2';
+  const philosophyVariant = philosophy.variant || 'cards';
+  const journeyVariant = journey.variant || 'prose';
+  const affiliationsVariant = affiliations.variant || 'compact';
+  const continuingEducationVariant = continuingEducation.variant || 'compact';
+  const clinicVariant = clinic.variant || 'split';
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden">
+      {isEnabled('hero') && (
+        <section
+          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+            backgroundHero
+              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
+              : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
+          }`}
+          style={{
+            ...(sectionStyle('hero') || {}),
+            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+          }}
+        >
         {/* Decorative Background */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-64 h-64 bg-primary-100 rounded-full blur-3xl"></div>
@@ -154,9 +200,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
         </div>
 
         <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className={`grid gap-12 items-center ${centeredHero ? 'max-w-4xl mx-auto' : 'lg:grid-cols-2'}`}>
             {/* Left Column - Text Content */}
-            <div className="text-center lg:text-left">
+            <div className={`text-center ${centeredHero ? '' : 'lg:text-left'}`}>
               <h1 className="text-display font-bold text-gray-900 mb-6 leading-tight">
                 {hero.title}
               </h1>
@@ -171,7 +217,8 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
 
             {/* Right Column - Hero Image */}
-            <div className="hidden md:block w-full">
+            {!centeredHero && (
+            <div className={`hidden md:block w-full ${imageLeftHero ? 'lg:order-first' : ''}`}>
               <div className="rounded-3xl overflow-hidden shadow-2xl">
                 {hero.backgroundImage ? (
                   <Image
@@ -200,17 +247,20 @@ export default async function AboutPage({ params }: AboutPageProps) {
                 )}
               </div>
             </div>
+            )}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Profile Section */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('profile') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('profile')}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-5 gap-12 items-start">
+            <div className={profileVariant === 'stacked' ? 'space-y-10' : 'grid lg:grid-cols-5 gap-12 items-start'}>
               {/* Photo */}
-              <div className="lg:col-span-2">
+              <div className={profileVariant === 'stacked' ? 'max-w-md mx-auto' : 'lg:col-span-2'}>
                 <div className="sticky top-8">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl mb-6 bg-gray-100">
                     {profile.image ? (
@@ -244,7 +294,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
               </div>
 
               {/* Bio Content */}
-              <div className="lg:col-span-3 space-y-8">
+              <div className={profileVariant === 'stacked' ? 'max-w-3xl mx-auto space-y-8 text-center' : 'lg:col-span-3 space-y-8'}>
                 <div>
                   <p className="text-lg text-gray-700 leading-relaxed mb-6">
                     {profile.bio}
@@ -264,10 +314,15 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Credentials */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('credentials') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('credentials')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -277,7 +332,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
               </h2>
             </div>
 
-            <div className="grid gap-4">
+            <div className={credentialsVariant === 'grid' ? 'grid md:grid-cols-2 gap-4' : 'grid gap-4'}>
               {credentials.items.map((item, index) => (
                 <div
                   key={index}
@@ -309,10 +364,12 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Specializations */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('specializations') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('specializations')}>
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -325,7 +382,15 @@ export default async function AboutPage({ params }: AboutPageProps) {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div
+              className={
+                specializationsVariant === 'grid-3'
+                  ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6'
+                  : specializationsVariant === 'list'
+                    ? 'grid gap-4'
+                    : 'grid md:grid-cols-2 gap-6'
+              }
+            >
               {specializations.areas.map((area, index) => (
                 <Card key={index} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
@@ -340,10 +405,15 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Philosophy */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-primary/5 to-backdrop-primary">
+      {isEnabled('philosophy') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-primary/5 to-backdrop-primary"
+          style={sectionStyle('philosophy')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -356,11 +426,13 @@ export default async function AboutPage({ params }: AboutPageProps) {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className={philosophyVariant === 'timeline' ? 'space-y-4' : 'grid md:grid-cols-2 gap-6'}>
               {philosophy.principles.map((principle, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-xl p-6 shadow-sm"
+                  className={`bg-white rounded-xl p-6 shadow-sm ${
+                    philosophyVariant === 'timeline' ? 'border-l-4 border-primary' : ''
+                  }`}
                 >
                   <div className="flex items-start gap-3 mb-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center flex-shrink-0 font-bold">
@@ -378,10 +450,12 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Journey Story */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('journey') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('journey')}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
@@ -391,7 +465,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
               </h2>
             </div>
 
-            <div className="prose prose-lg max-w-none">
+            <div className={journeyVariant === 'card' ? 'bg-white rounded-2xl p-8 shadow-sm border border-gray-100' : 'prose prose-lg max-w-none'}>
               {journey.story.split('\n\n').map((paragraph, index) => (
                 <p key={index} className="text-gray-700 leading-relaxed mb-6">
                   {paragraph}
@@ -400,13 +474,18 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Affiliations & Continuing Ed */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('affiliationsEducation') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('affiliationsEducation')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12">
+            <div className={affiliationsVariant === 'detailed' || continuingEducationVariant === 'detailed' ? 'grid md:grid-cols-2 gap-12' : 'grid md:grid-cols-2 gap-8'}>
               {/* Affiliations */}
               <div>
                 <h2 className="text-subheading font-bold text-gray-900 mb-6">
@@ -416,7 +495,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
                   {affiliations.organizations.map((org, index) => (
                     <div
                       key={index}
-                      className="bg-white rounded-lg p-4 border border-gray-100"
+                      className={`bg-white rounded-lg p-4 border border-gray-100 ${
+                        affiliationsVariant === 'detailed' ? 'shadow-sm' : ''
+                      }`}
                     >
                       <p className="font-semibold text-gray-900 mb-1">
                         {org.name}
@@ -435,7 +516,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
                 <p className="text-gray-600 mb-6">
                   {continuingEducation.description}
                 </p>
-                <ul className="space-y-3">
+                <ul className={continuingEducationVariant === 'detailed' ? 'space-y-4' : 'space-y-3'}>
                   {continuingEducation.items.map((item, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <Icon name="Check" className="text-primary mt-1 flex-shrink-0" size="sm" />
@@ -447,10 +528,12 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* About the Clinic */}
-      <section className="py-20 px-4 bg-gray-50">
+      {isEnabled('clinic') && (
+        <section className="py-20 px-4 bg-gray-50" style={sectionStyle('clinic')}>
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-heading font-bold text-gray-900 mb-8 text-center">{clinic.title}</h2>
 
@@ -466,7 +549,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
             ))}
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-8">
+          <div className={clinicVariant === 'cards' ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6' : 'grid lg:grid-cols-2 gap-8'}>
             {/* Features List */}
             <div className="bg-white border-2 border-gray-200 rounded-xl p-8">
               <h3 className="text-subheading font-bold text-gray-900 mb-6">
@@ -486,7 +569,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
 
             {/* Location & Hours */}
-            <div className="space-y-6">
+            <div className={`space-y-6 ${clinicVariant === 'cards' ? 'md:col-span-2 lg:col-span-2' : ''}`}>
               {/* Location Card */}
               <div className="bg-gradient-to-br from-[var(--backdrop-primary)] to-[var(--backdrop-secondary)] border-2 border-gray-200 rounded-xl p-8">
                 <div className="flex items-start gap-3 mb-4">
@@ -531,33 +614,22 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]">
-        <div className="container mx-auto max-w-4xl text-center text-white">
-          <h2 className="text-heading text-white mb-4">
-            {cta.title}
-          </h2>
-          <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
-            {cta.description}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href={cta.primaryCta.link}
-              className="bg-white text-[var(--primary)] px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg"
-            >
-              {cta.primaryCta.text}
-            </Link>
-            <Link
-              href={cta.secondaryCta.link}
-              className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white/10 font-semibold text-subheading transition-all"
-            >
-              {cta.secondaryCta.text}
-            </Link>
-          </div>
+      {isEnabled('cta') && (
+        <div style={sectionStyle('cta')}>
+          <CTASection
+            title={cta.title}
+            subtitle={cta.description}
+            primaryCta={cta.primaryCta}
+            secondaryCta={cta.secondaryCta}
+            variant={cta.variant || 'centered'}
+            className="py-16"
+          />
         </div>
-      </section>
+      )}
     </main>
   );
 }

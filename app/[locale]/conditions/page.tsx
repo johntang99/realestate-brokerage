@@ -6,10 +6,12 @@ import { getRequestSiteId, loadAllItems, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon, Tabs } from '@/components/ui';
+import CTASection from '@/components/sections/CTASection';
 import { Shield, Heart, Sparkles } from 'lucide-react';
 
 interface ConditionsPageData {
   hero: {
+    variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'photo-background';
     title: string;
     subtitle: string;
     backgroundImage?: string;
@@ -37,6 +39,7 @@ interface ConditionsPageData {
     featured?: boolean;
   }>;
   cta: {
+    variant?: 'centered' | 'split' | 'banner' | 'card-elevated';
     title: string;
     description: string;
     primaryCta: {
@@ -65,6 +68,10 @@ interface BlogListItem {
   publishDate?: string;
 }
 
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
+}
+
 export async function generateMetadata({ params }: ConditionsPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -85,6 +92,7 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
   // Load page content
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<ConditionsPageData>('conditions', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('conditions.layout', locale, siteId);
   const blogPosts = await loadAllItems<BlogListItem>(siteId, locale, 'blog');
   
   if (!content) {
@@ -126,11 +134,33 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
     ...category,
     conditions: conditions.filter(c => c.category === category.id)
   }));
+  const layoutOrder = new Map<string, number>(
+    layout?.sections?.map((section, index) => [section.id, index]) || []
+  );
+  const useLayout = layoutOrder.size > 0;
+  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
+  const sectionStyle = (sectionId: string) =>
+    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
+  const heroVariant = hero.variant || 'split-photo-right';
+  const centeredHero = heroVariant === 'centered';
+  const imageLeftHero = heroVariant === 'split-photo-left';
+  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden">
+      {isEnabled('hero') && (
+        <section
+          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+            backgroundHero
+              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
+              : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
+          }`}
+          style={{
+            ...(sectionStyle('hero') || {}),
+            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+          }}
+        >
         {/* Decorative Background */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-64 h-64 bg-primary-100 rounded-full blur-3xl"></div>
@@ -138,9 +168,9 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
         </div>
 
         <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className={`grid gap-12 items-center ${centeredHero ? 'max-w-4xl mx-auto' : 'lg:grid-cols-2'}`}>
             {/* Left Column - Text Content */}
-            <div className="text-center lg:text-left">
+            <div className={`text-center ${centeredHero ? '' : 'lg:text-left'}`}>
               <h1 className="text-display font-bold text-gray-900 mb-6 leading-tight">
                 {hero.title}
               </h1>
@@ -149,7 +179,7 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
               </p>
 
               {/* Reassurance Row */}
-              <div className="grid sm:grid-cols-3 gap-4 mt-8">
+              <div className={`grid sm:grid-cols-3 gap-4 mt-8 ${centeredHero ? 'max-w-3xl mx-auto' : ''}`}>
                 {reassuranceItems.map((item) => {
                   const IconComponent = item.icon;
                   return (
@@ -170,7 +200,8 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
             </div>
 
             {/* Right Column - Hero Image */}
-            <div className="hidden md:block w-full">
+            {!centeredHero && (
+            <div className={`hidden md:block w-full ${imageLeftHero ? 'lg:order-first' : ''}`}>
               <div className="rounded-3xl overflow-hidden shadow-2xl">
                 {hero.backgroundImage ? (
                   <Image
@@ -200,12 +231,15 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
                 )}
               </div>
             </div>
+            )}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Introduction */}
-      <section className="py-12 lg:py-16 bg-white">
+      {isEnabled('introduction') && (
+        <section className="py-12 lg:py-16 bg-white" style={sectionStyle('introduction')}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-gray-700 leading-relaxed mb-6">
@@ -219,10 +253,15 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Featured Conditions */}
-      <section className="py-12 lg:py-16 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('featured') && (
+        <section
+          className="py-12 lg:py-16 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('featured')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
@@ -282,10 +321,12 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* All Conditions by Category */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('categories') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('categories')}>
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
@@ -444,11 +485,15 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
             />
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
-      {/* CTA Section */}
-      {relatedPosts.length > 0 && (
-        <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {/* Related Reading */}
+      {isEnabled('relatedReading') && relatedPosts.length > 0 && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('relatedReading')}
+        >
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="flex items-center justify-between gap-4 mb-10">
@@ -496,30 +541,18 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
         </section>
       )}
 
-      <section className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]">
-        <div className="container mx-auto max-w-4xl text-center text-white">
-          <h2 className="text-heading text-white mb-4">
-            {cta.title}
-          </h2>
-          <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
-            {cta.description}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href={cta.primaryCta.link}
-              className="bg-white text-[var(--primary)] px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg"
-            >
-              {cta.primaryCta.text}
-            </Link>
-            <Link
-              href={cta.secondaryCta.link}
-              className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white/10 font-semibold text-subheading transition-all"
-            >
-              {cta.secondaryCta.text}
-            </Link>
-          </div>
+      {isEnabled('cta') && (
+        <div style={sectionStyle('cta')}>
+          <CTASection
+            title={cta.title}
+            subtitle={cta.description}
+            primaryCta={cta.primaryCta}
+            secondaryCta={cta.secondaryCta}
+            variant={cta.variant || 'centered'}
+            className="py-16"
+          />
         </div>
-      </section>
+      )}
     </main>
   );
 }

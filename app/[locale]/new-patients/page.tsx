@@ -6,9 +6,11 @@ import { getRequestSiteId, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon, Accordion } from '@/components/ui';
+import CTASection from '@/components/sections/CTASection';
 
 interface NewPatientsPageData {
   hero: {
+    variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'photo-background';
     title: string;
     subtitle: string;
     backgroundImage?: string;
@@ -82,6 +84,7 @@ interface NewPatientsPageData {
     }>;
   };
   cta: {
+    variant?: 'centered' | 'split' | 'banner' | 'card-elevated';
     title: string;
     description: string;
     primaryCta: {
@@ -102,10 +105,15 @@ interface NewPatientsPageProps {
   };
 }
 
+interface PageLayoutConfig {
+  sections: Array<{ id: string }>;
+}
+
 export async function generateMetadata({ params }: NewPatientsPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<NewPatientsPageData>('new-patients', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('new-patients.layout', locale, siteId);
 
   return buildPageMetadata({
     siteId,
@@ -122,25 +130,48 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
   // Load page content
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<NewPatientsPageData>('new-patients', locale, siteId);
+  const layout = await loadPageContent<PageLayoutConfig>('new-patients.layout', locale, siteId);
   
   if (!content) {
     notFound();
   }
 
   const { hero, introduction, whatToExpect, preparation, whatToBring, downloadForms, insurance, faq, cta } = content;
+  const layoutOrder = new Map<string, number>(
+    layout?.sections?.map((section, index) => [section.id, index]) || []
+  );
+  const useLayout = layoutOrder.size > 0;
+  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
+  const sectionStyle = (sectionId: string) =>
+    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
+  const heroVariant = hero.variant || 'split-photo-right';
+  const centeredHero = heroVariant === 'centered';
+  const imageLeftHero = heroVariant === 'split-photo-left';
+  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] pt-24 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden">
+      {isEnabled('hero') && (
+        <section
+          className={`relative pt-24 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+            backgroundHero
+              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
+              : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
+          }`}
+          style={{
+            ...(sectionStyle('hero') || {}),
+            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+          }}
+        >
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-64 h-64 bg-primary-100 rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary-50 rounded-full blur-3xl"></div>
         </div>
 
         <div className="container mx-auto max-w-7xl relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-left">
+          <div className={`grid gap-12 items-center ${centeredHero ? 'max-w-4xl mx-auto' : 'lg:grid-cols-2'}`}>
+            <div className={`text-center ${centeredHero ? '' : 'lg:text-left'}`}>
               <Badge variant="primary" className="mb-6">
                 {locale === 'en' ? 'New Visit' : '首次就诊'}
               </Badge>
@@ -152,7 +183,8 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
               </p>
             </div>
 
-            <div className="hidden md:block w-full">
+            {!centeredHero && (
+            <div className={`hidden md:block w-full ${imageLeftHero ? 'lg:order-first' : ''}`}>
               <div className="rounded-3xl overflow-hidden shadow-2xl">
                 {hero.backgroundImage ? (
                   <Image
@@ -175,12 +207,15 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
                 )}
               </div>
             </div>
+            )}
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Introduction */}
-      <section className="py-12 lg:py-16 bg-white">
+      {isEnabled('introduction') && (
+        <section className="py-12 lg:py-16 bg-white" style={sectionStyle('introduction')}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <p className="text-lg text-gray-700 leading-relaxed mb-6 text-center">
@@ -194,10 +229,15 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* What to Expect Timeline */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('whatToExpect') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('whatToExpect')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -258,10 +298,12 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* How to Prepare */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('preparation') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('preparation')}>
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-12">
@@ -300,10 +342,15 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* What to Bring */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-primary/5 to-backdrop-primary">
+      {isEnabled('whatToBring') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-primary/5 to-backdrop-primary"
+          style={sectionStyle('whatToBring')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-heading font-bold text-gray-900 mb-8 text-center">
@@ -328,10 +375,12 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Download Forms */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('forms') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('forms')}>
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
@@ -373,10 +422,15 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* Insurance & Payment */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white">
+      {isEnabled('insurance') && (
+        <section
+          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
+          style={sectionStyle('insurance')}
+        >
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <Card>
@@ -417,10 +471,12 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
             </Card>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* FAQ */}
-      <section className="py-16 lg:py-24 bg-white">
+      {isEnabled('faq') && (
+        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('faq')}>
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
@@ -439,35 +495,22 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
             />
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]">
-        <div className="container mx-auto max-w-4xl text-center text-white">
-          <h2 className="text-heading text-white mb-4">
-            {cta.title}
-          </h2>
-          <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
-            {cta.description}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href={cta.primaryCta.link}
-              className="bg-white text-[var(--primary)] px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg"
-            >
-              {cta.primaryCta.text}
-            </Link>
-            <a
-              href={cta.secondaryCta.link}
-              target={cta.secondaryCta.link.startsWith('http') ? '_blank' : undefined}
-              rel={cta.secondaryCta.link.startsWith('http') ? 'noopener noreferrer' : undefined}
-              className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white/10 font-semibold text-subheading transition-all"
-            >
-              {cta.secondaryCta.text}
-            </a>
-          </div>
+      {isEnabled('cta') && (
+        <div style={sectionStyle('cta')}>
+          <CTASection
+            title={cta.title}
+            subtitle={cta.description}
+            primaryCta={cta.primaryCta}
+            secondaryCta={cta.secondaryCta}
+            variant={cta.variant || 'centered'}
+            className="py-16"
+          />
         </div>
-      </section>
+      )}
     </main>
   );
 }

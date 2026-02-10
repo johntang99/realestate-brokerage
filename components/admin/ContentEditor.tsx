@@ -26,6 +26,51 @@ interface ContentEditorProps {
   basePath?: string;
 }
 
+const SECTION_VARIANT_OPTIONS: Record<string, string[]> = {
+  hero: [
+    'centered',
+    'split-photo-right',
+    'split-photo-left',
+    'photo-background',
+    'overlap',
+    'video-background',
+    'gallery-background',
+  ],
+  testimonials: ['carousel', 'grid', 'masonry', 'slider-vertical', 'featured-single'],
+  howItWorks: ['horizontal', 'vertical', 'cards', 'vertical-image-right'],
+  conditions: ['grid-cards', 'categories-tabs', 'list-detailed', 'icon-grid'],
+  services: ['grid-cards', 'featured-large', 'list-horizontal', 'accordion', 'tabs'],
+  blog: ['cards-grid', 'featured-side', 'list-detailed', 'carousel'],
+  gallery: ['grid-masonry', 'grid-uniform', 'carousel', 'lightbox-grid'],
+  cta: ['centered', 'split', 'banner', 'card-elevated'],
+  profile: ['split', 'stacked'],
+  credentials: ['list', 'grid'],
+  specializations: ['grid-2', 'grid-3', 'list'],
+  philosophy: ['cards', 'timeline'],
+  journey: ['prose', 'card'],
+  affiliations: ['compact', 'detailed'],
+  continuingEducation: ['compact', 'detailed'],
+  clinic: ['split', 'cards'],
+  introduction: ['centered', 'left'],
+  hours: ['grid', 'list'],
+  form: ['single-column', 'two-column', 'multi-step', 'modal', 'inline-minimal'],
+  map: ['shown', 'hidden'],
+  faq: ['accordion', 'simple', 'card'],
+  individualTreatments: ['grid-3', 'grid-2', 'list'],
+  packages: ['grid-3', 'grid-2', 'list'],
+  insurance: ['split', 'stacked'],
+  policies: ['grid', 'list'],
+  statistics: ['horizontal-row', 'grid-2x2', 'vertical-cards', 'inline-badges'],
+};
+
+const toTitleCase = (value: string) =>
+  value
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[-_]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/^./, (match) => match.toUpperCase());
+
 export function ContentEditor({
   sites,
   selectedSiteId,
@@ -49,6 +94,8 @@ export function ContentEditor({
   const [imageFieldPath, setImageFieldPath] = useState<string[] | null>(null);
   const [markdownPreview, setMarkdownPreview] = useState<Record<string, boolean>>({});
   const [seoPopulating, setSeoPopulating] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [blogServiceOptions, setBlogServiceOptions] = useState<
     Array<{ id: string; title: string }>
   >([]);
@@ -181,31 +228,48 @@ export function ContentEditor({
     setStatus('Saved');
   };
 
-  const handleImport = async () => {
+  const handleImport = async (mode: 'missing' | 'overwrite' = 'missing') => {
     setStatus(null);
     setLoading(true);
+    setImporting(true);
     try {
       const response = await fetch('/api/admin/content/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ siteId, locale }),
+        body: JSON.stringify({ siteId, locale, mode }),
       });
       const payload = await response.json();
       if (!response.ok) {
         throw new Error(payload.message || 'Import failed');
       }
-      setStatus(`Imported ${payload.imported || 0} items from JSON.`);
+      const skipped = payload.skipped || 0;
+      const imported = payload.imported || 0;
+      setStatus(
+        skipped
+          ? `Imported ${imported} items. Skipped ${skipped} existing DB entries.`
+          : `Imported ${imported} items from JSON.`
+      );
       await loadFiles(activeFile?.path);
     } catch (error: any) {
       setStatus(error?.message || 'Import failed');
     } finally {
       setLoading(false);
+      setImporting(false);
     }
+  };
+
+  const handleOverwriteImport = async () => {
+    const confirmed = window.confirm(
+      'Overwrite DB content with local JSON? This will replace existing DB entries.'
+    );
+    if (!confirmed) return;
+    await handleImport('overwrite');
   };
 
   const handleExport = async () => {
     setStatus(null);
     setLoading(true);
+    setExporting(true);
     try {
       const response = await fetch('/api/admin/content/export', {
         method: 'POST',
@@ -221,6 +285,7 @@ export function ContentEditor({
       setStatus(error?.message || 'Export failed');
     } finally {
       setLoading(false);
+      setExporting(false);
     }
   };
 
@@ -421,9 +486,45 @@ export function ContentEditor({
       .replace(/([^\n])\n-\s+/g, '$1\n\n- ')
       .replace(/([^\n])\n\*\s+/g, '$1\n\n- ');
 
+  const getPathValue = (path: string[]) =>
+    path.reduce<any>((acc, key) => acc?.[key], formData);
+
+  const renderColorField = (label: string, path: string[]) => {
+    const value = String(getPathValue(path) || '');
+    return (
+      <div className="grid gap-2 md:grid-cols-[1fr_auto] items-center">
+        <div>
+          <label className="block text-xs text-gray-500">{label}</label>
+          <input
+            className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+            value={value}
+            onChange={(event) => updateFormValue(path, event.target.value)}
+            placeholder="#000000"
+          />
+        </div>
+        <input
+          type="color"
+          className="mt-6 h-10 w-10 rounded-md border border-gray-200"
+          value={value || '#000000'}
+          onChange={(event) => updateFormValue(path, event.target.value)}
+          aria-label={`${label} color`}
+        />
+      </div>
+    );
+  };
+
   const isSeoFile = activeFile?.path === 'seo.json';
   const isBlogPostFile = activeFile?.path.startsWith('blog/');
   const isHeaderFile = activeFile?.path === 'header.json';
+  const isThemeFile = activeFile?.path === 'theme.json';
+  const variantSections = formData
+    ? Object.entries(SECTION_VARIANT_OPTIONS).filter(
+        ([key]) =>
+          formData[key] &&
+          typeof formData[key] === 'object' &&
+          !Array.isArray(formData[key])
+      )
+    : [];
   const galleryCategories = Array.isArray(formData?.categories)
     ? formData.categories
         .map((category: any) => ({
@@ -635,17 +736,27 @@ export function ContentEditor({
           <div className="flex items-end gap-2 pt-4 sm:pt-0">
             <button
               type="button"
-              onClick={handleImport}
-              className="px-3 py-2 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
+              onClick={() => handleImport('missing')}
+              disabled={importing || loading}
+              className="px-3 py-2 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-60"
             >
-              Import JSON
+              {importing ? 'Importing…' : 'Import JSON'}
+            </button>
+            <button
+              type="button"
+              onClick={handleOverwriteImport}
+              disabled={importing || loading}
+              className="px-3 py-2 rounded-md border border-amber-200 text-xs text-amber-700 hover:bg-amber-50 disabled:opacity-60"
+            >
+              {importing ? 'Importing…' : 'Overwrite Import'}
             </button>
             <button
               type="button"
               onClick={handleExport}
-              className="px-3 py-2 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
+              disabled={exporting || loading}
+              className="px-3 py-2 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-60"
             >
-              Export JSON
+              {exporting ? 'Exporting…' : 'Export JSON'}
             </button>
           </div>
         </div>
@@ -1278,6 +1389,135 @@ export function ContentEditor({
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {isThemeFile && formData && (
+                <div className="border border-gray-200 rounded-lg p-4 space-y-6">
+                  <div className="text-xs font-semibold text-gray-500 uppercase">
+                    Theme
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <div className="space-y-3">
+                      <div className="text-xs font-semibold text-gray-500 uppercase">
+                        Typography Sizes
+                      </div>
+                      {(['display', 'heading', 'subheading', 'body', 'small'] as const).map(
+                        (key) => (
+                          <div key={`type-${key}`}>
+                            <label className="block text-xs text-gray-500">
+                              {key}
+                            </label>
+                            <input
+                              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                              value={String(getPathValue(['typography', key]) || '')}
+                              onChange={(event) =>
+                                updateFormValue(['typography', key], event.target.value)
+                              }
+                              placeholder="e.g. 2rem"
+                            />
+                          </div>
+                        )
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="text-xs font-semibold text-gray-500 uppercase">
+                        Typography Fonts
+                      </div>
+                      {(['display', 'heading', 'subheading', 'body', 'small'] as const).map(
+                        (key) => (
+                          <div key={`font-${key}`}>
+                            <label className="block text-xs text-gray-500">
+                              {key}
+                            </label>
+                            <input
+                              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                              value={String(
+                                getPathValue(['typography', 'fonts', key]) || ''
+                              )}
+                              onChange={(event) =>
+                                updateFormValue(
+                                  ['typography', 'fonts', key],
+                                  event.target.value
+                                )
+                              }
+                              placeholder="e.g. Inter, sans-serif"
+                            />
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-6 md:grid-cols-3">
+                    <div className="space-y-3">
+                      <div className="text-xs font-semibold text-gray-500 uppercase">
+                        Primary Colors
+                      </div>
+                      {renderColorField('Primary', ['colors', 'primary', 'DEFAULT'])}
+                      {renderColorField('Primary Dark', ['colors', 'primary', 'dark'])}
+                      {renderColorField('Primary Light', ['colors', 'primary', 'light'])}
+                      {renderColorField('Primary 50', ['colors', 'primary', '50'])}
+                      {renderColorField('Primary 100', ['colors', 'primary', '100'])}
+                    </div>
+                    <div className="space-y-3">
+                      <div className="text-xs font-semibold text-gray-500 uppercase">
+                        Secondary Colors
+                      </div>
+                      {renderColorField('Secondary', ['colors', 'secondary', 'DEFAULT'])}
+                      {renderColorField('Secondary Dark', ['colors', 'secondary', 'dark'])}
+                      {renderColorField('Secondary Light', ['colors', 'secondary', 'light'])}
+                      {renderColorField('Secondary 50', ['colors', 'secondary', '50'])}
+                    </div>
+                    <div className="space-y-3">
+                      <div className="text-xs font-semibold text-gray-500 uppercase">
+                        Backdrop Colors
+                      </div>
+                      {renderColorField('Backdrop Primary', [
+                        'colors',
+                        'backdrop',
+                        'primary',
+                      ])}
+                      {renderColorField('Backdrop Secondary', [
+                        'colors',
+                        'backdrop',
+                        'secondary',
+                      ])}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {formData && variantSections.length > 0 && (
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <div className="text-xs font-semibold text-gray-500 uppercase mb-3">
+                    Section Variants
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {variantSections.map(([sectionKey, options]) => (
+                      <div key={`variant-${sectionKey}`}>
+                        <label className="block text-xs text-gray-500">
+                          {toTitleCase(sectionKey)} Variant
+                        </label>
+                        <select
+                          className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm bg-white"
+                          value={String(getPathValue([sectionKey, 'variant']) || '')}
+                          onChange={(event) =>
+                            updateFormValue([sectionKey, 'variant'], event.target.value)
+                          }
+                        >
+                          <option value="">Default</option>
+                          {options.map((option) => (
+                            <option key={`${sectionKey}-${option}`} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
