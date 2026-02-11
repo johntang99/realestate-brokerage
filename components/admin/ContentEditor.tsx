@@ -21,7 +21,7 @@ interface ContentEditorProps {
   selectedSiteId: string;
   selectedLocale: string;
   initialFilePath?: string;
-  fileFilter?: 'all' | 'blog';
+  fileFilter?: 'all' | 'blog' | 'siteSettings';
   titleOverride?: string;
   basePath?: string;
 }
@@ -71,6 +71,15 @@ const toTitleCase = (value: string) =>
     .trim()
     .replace(/^./, (match) => match.toUpperCase());
 
+const SITE_SETTINGS_PATHS = new Set([
+  'navigation.json',
+  'header.json',
+  'footer.json',
+  'seo.json',
+  'theme.json',
+  'site.json',
+]);
+
 export function ContentEditor({
   sites,
   selectedSiteId,
@@ -102,7 +111,12 @@ export function ContentEditor({
   const [blogConditionOptions, setBlogConditionOptions] = useState<
     Array<{ id: string; title: string }>
   >([]);
-  const filesTitle = fileFilter === 'blog' ? 'Blog Posts' : 'Files';
+  const filesTitle =
+    fileFilter === 'blog'
+      ? 'Blog Posts'
+      : fileFilter === 'siteSettings'
+        ? 'Site Settings'
+        : 'Files';
 
   const site = useMemo(
     () => sites.find((item) => item.id === siteId),
@@ -141,8 +155,12 @@ export function ContentEditor({
         nextFiles = [...nextFiles].sort((a, b) =>
           (b.publishDate || '').localeCompare(a.publishDate || '')
         );
+      } else if (fileFilter === 'siteSettings') {
+        nextFiles = nextFiles.filter((file) => SITE_SETTINGS_PATHS.has(file.path));
       } else {
-        nextFiles = nextFiles.filter((file) => !file.path.startsWith('blog/'));
+        nextFiles = nextFiles.filter(
+          (file) => !file.path.startsWith('blog/') && !SITE_SETTINGS_PATHS.has(file.path)
+        );
       }
       setFiles(nextFiles);
       if (preferredPath) {
@@ -517,6 +535,7 @@ export function ContentEditor({
   const isBlogPostFile = activeFile?.path.startsWith('blog/');
   const isHeaderFile = activeFile?.path === 'header.json';
   const isThemeFile = activeFile?.path === 'theme.json';
+  const allowCreateOrDuplicate = fileFilter !== 'siteSettings';
   const variantSections = formData
     ? Object.entries(SECTION_VARIANT_OPTIONS).filter(
         ([key]) =>
@@ -821,21 +840,25 @@ export function ContentEditor({
           >
             Preview
           </button>
-          <button
-            type="button"
-            onClick={handleCreate}
-            className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
-          >
-            {fileFilter === 'blog' ? 'New Post' : 'New Page'}
-          </button>
-          <button
-            type="button"
-            onClick={handleDuplicate}
-            disabled={!activeFile}
-            className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-          >
-            Duplicate
-          </button>
+          {allowCreateOrDuplicate && (
+            <button
+              type="button"
+              onClick={handleCreate}
+              className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
+            >
+              {fileFilter === 'blog' ? 'New Post' : 'New Page'}
+            </button>
+          )}
+          {allowCreateOrDuplicate && (
+            <button
+              type="button"
+              onClick={handleDuplicate}
+              disabled={!activeFile}
+              className="px-3 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            >
+              Duplicate
+            </button>
+          )}
           <button
             type="button"
             onClick={handleFormat}

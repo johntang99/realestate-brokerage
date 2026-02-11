@@ -16,6 +16,7 @@ import { isSuperAdmin } from '@/lib/admin/permissions';
 
 const navigation = [
   { name: 'Sites', href: '/admin/sites', icon: Building2 },
+  { name: 'Site Settings', href: '/admin/site-settings', icon: SlidersHorizontal },
   { name: 'Content', href: '/admin/content', icon: FileText },
   { name: 'Blog Posts', href: '/admin/blog-posts', icon: BookOpen },
   { name: 'Bookings', href: '/admin/bookings', icon: Calendar },
