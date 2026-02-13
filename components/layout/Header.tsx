@@ -72,18 +72,19 @@ export default function Header({
       : headerConfig?.menu?.items && headerConfig.menu.items.length > 0
       ? headerConfig.menu.items
       : [
-          { text: locale === 'en' ? 'Home' : 'Inicio', url: `/${locale}` },
-          { text: locale === 'en' ? 'Services' : 'Servicios', url: `/${locale}/services` },
-          { text: locale === 'en' ? 'Pricing' : 'Precios', url: `/${locale}/pricing` },
-          { text: locale === 'en' ? 'About' : 'Nosotros', url: `/${locale}/about` },
-          { text: locale === 'en' ? 'Commercial' : 'Comercial', url: `/${locale}/case-studies` },
-          { text: locale === 'en' ? 'Gallery' : 'Galeria', url: `/${locale}/gallery` },
-          { text: locale === 'en' ? 'Blog' : 'Blog', url: `/${locale}/blog` },
-          { text: locale === 'en' ? 'Contact' : 'Contacto', url: `/${locale}/contact` },
+          { text: locale === 'en' ? 'Home' : '首页', url: `/${locale}` },
+          { text: locale === 'en' ? 'Services' : '服务项目', url: `/${locale}/services` },
+          { text: locale === 'en' ? 'Conditions' : '治疗病症', url: `/${locale}/conditions` },
+          { text: locale === 'en' ? 'About' : '关于我们', url: `/${locale}/about` },
+          { text: locale === 'en' ? 'Case Studies' : '案例研究', url: `/${locale}/case-studies` },
+          { text: locale === 'en' ? 'Gallery' : '图库', url: `/${locale}/gallery` },
+          { text: locale === 'en' ? 'New Visit' : '首次就诊', url: `/${locale}/new-patients` },
+          { text: locale === 'en' ? 'Blog' : '博客', url: `/${locale}/blog` },
+          { text: locale === 'en' ? 'Contact' : '联系我们', url: `/${locale}/contact` },
         ];
 
   const cta = menu?.cta || {
-    text: headerConfig?.cta?.text || (locale === 'en' ? 'Schedule Pickup' : 'Programar recogida'),
+    text: headerConfig?.cta?.text || (locale === 'en' ? 'Book Online' : '在线预约'),
     link: headerConfig?.cta?.link || `/${locale}/contact`,
   };
 
@@ -100,7 +101,7 @@ export default function Header({
       );
     }
 
-    const text = logoConfig?.text || siteInfo?.clinicName || 'WeWash';
+    const text = logoConfig?.text || siteInfo?.clinicName || 'Dr. Huang Clinic';
     const emoji = logoConfig?.emoji;
     return (
       <div className="inline-flex items-center gap-2 text-primary">
@@ -116,14 +117,7 @@ export default function Header({
     topbarConfig?.address ||
     (siteInfo?.address ? `${siteInfo.address}, ${siteInfo.city}, ${siteInfo.state} ${siteInfo.zip}` : undefined);
   const topbarAddressHref = topbarConfig?.addressHref || siteInfo?.addressMapUrl || '#';
-  const topbarBadge =
-    topbarConfig?.badge ||
-    (locale === 'en' ? 'Same-day rush available' : 'Servicio urgente el mismo dia');
-
-  const legacyCta = {
-    text: locale === 'en' ? 'Schedule Pickup' : 'Programar recogida',
-    link: `/${locale}/contact`,
-  };
+  const topbarBadge = topbarConfig?.badge || (locale === 'en' ? 'Accepting New Patients' : '接受新患者');
   
   useEffect(() => {
     if (variant !== 'transparent') return;
@@ -236,7 +230,7 @@ export default function Header({
               <LanguageSwitcher currentLocale={locale} />
               
               <Link href={cta.link} className="btn-primary text-sm px-5 py-2.5 ml-4">
-                {cta.text || legacyCta.text}
+                {cta.text}
               </Link>
             </div>
             
@@ -280,7 +274,7 @@ export default function Header({
               <div className="hidden xl:flex items-center gap-4">
                 <LanguageSwitcher currentLocale={locale} />
                 <Link href={cta.link} className="btn-primary text-sm px-5 py-2.5 whitespace-nowrap">
-                  {cta.text || legacyCta.text}
+                  {cta.text}
                 </Link>
               </div>
             
@@ -323,7 +317,7 @@ export default function Header({
                   className="btn-primary text-center mt-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {cta.text || legacyCta.text}
+                  {cta.text}
                 </Link>
               </div>
             </div>

@@ -58,7 +58,6 @@ export async function listMedia(siteId: string): Promise<MediaItem[]> {
       a.path.localeCompare(b.path)
     );
 
-    // Ensure filesystem-discovered items are persisted for future queries.
     await Promise.all(
       normalizedFilesystemItems.map((item) =>
         upsertMediaDb({ siteId, path: item.path, url: item.url })
