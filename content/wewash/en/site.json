@@ -1,0 +1,17 @@
+{
+  "clinicName": "WeWash",
+  "tagline": "Laundry Service",
+  "description": "Laundry Service in New York",
+  "address": "87 North Street",
+  "city": "Middletown",
+  "state": "NY",
+  "zip": "10940",
+  "phone": "(845) 394-0158",
+
+  "addressMapUrl": "https://maps.google.com/?q=87+North+Street+Middletown+NY+10940",
+  "social": {
+    "facebook": "https://facebook.com/",
+    "instagram": "https://instagram.com/wewash99"
+  },
+  "headerVariant": "stacked"
+}
