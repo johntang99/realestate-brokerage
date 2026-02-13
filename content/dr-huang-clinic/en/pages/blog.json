@@ -1,0 +1,61 @@
+{
+  "hero": {
+    "variant": "centered",
+    "title": "TCM Blog & Resources",
+    "subtitle": "Educational articles and videos about Traditional Chinese Medicine, wellness, and natural health",
+    "backgroundImage": "/uploads/dr-huang-clinic/blog/hero-bg.jpg"
+  },
+  "introduction": {
+    "text": "Stay informed about Traditional Chinese Medicine with our blog. We share educational articles, treatment insights, wellness tips, and patient success stories to help you on your healing journey."
+  },
+  "categories": [
+    {
+      "id": "all",
+      "name": "All Posts",
+      "slug": "all"
+    },
+    {
+      "id": "acupuncture",
+      "name": "Acupuncture",
+      "slug": "acupuncture"
+    },
+    {
+      "id": "herbal-medicine",
+      "name": "Herbal Medicine",
+      "slug": "herbal-medicine"
+    },
+    {
+      "id": "wellness",
+      "name": "Wellness & Lifestyle",
+      "slug": "wellness"
+    },
+    {
+      "id": "conditions",
+      "name": "Treating Conditions",
+      "slug": "conditions"
+    },
+    {
+      "id": "patient-education",
+      "name": "Patient Education",
+      "slug": "patient-education"
+    },
+    {
+      "id": "seasonal",
+      "name": "Seasonal Health",
+      "slug": "seasonal"
+    }
+  ],
+  "cta": {
+    "variant": "centered",
+    "title": "Have Questions About TCM?",
+    "description": "Schedule a consultation to discuss how Traditional Chinese Medicine can help you achieve your health goals",
+    "primaryCta": {
+      "text": "Book Consultation",
+      "link": "/en/contact"
+    },
+    "secondaryCta": {
+      "text": "Learn About Our Services",
+      "link": "/en/services"
+    }
+  }
+}

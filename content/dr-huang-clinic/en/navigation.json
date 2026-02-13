@@ -1,0 +1,44 @@
+{
+  "main": [
+    {
+      "text": "Home",
+      "url": "/en"
+    },
+    {
+      "text": "Services",
+      "url": "/en/services"
+    },
+    {
+      "text": "Conditions",
+      "url": "/en/conditions"
+    },
+    {
+      "text": "About",
+      "url": "/en/about"
+    },
+    {
+      "text": "Case Studies",
+      "url": "/en/case-studies"
+    },
+    {
+      "text": "Gallery",
+      "url": "/en/gallery"
+    },
+    {
+      "text": "New Visit",
+      "url": "/en/new-patients"
+    },
+    {
+      "text": "Blog",
+      "url": "/en/blog"
+    },
+    {
+      "text": "Contact",
+      "url": "/en/contact"
+    }
+  ],
+  "cta": {
+    "text": "Book Appointment",
+    "link": "/en/contact"
+  }
+}

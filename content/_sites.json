@@ -1,17 +1,30 @@
 {
   "sites": [
     {
-      "id": "wewash",
-      "name": "wewash",
-      "domain": "wewash99.com",
+      "id": "dr-huang-clinic",
+      "name": "Dr Huang Clinic",
+      "domain": "drhuangclinic.com",
       "enabled": true,
       "defaultLocale": "en",
       "supportedLocales": [
         "en",
-        "es"
+        "zh"
       ],
       "createdAt": "2025-01-15T00:00:00Z",
       "updatedAt": "2026-02-04T06:45:02.741Z"
+    },
+    {
+      "id": "acupuncture-flushing",
+      "name": "Acupuncture Flushing",
+      "domain": "acupunctureflushing.com",
+      "enabled": true,
+      "defaultLocale": "en",
+      "supportedLocales": [
+        "en",
+        "zh"
+      ],
+      "createdAt": "2026-02-04T07:47:54.318Z",
+      "updatedAt": "2026-02-04T07:47:54.318Z"
     }
   ]
 }
