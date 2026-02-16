@@ -135,7 +135,7 @@ export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Media</h1>
           <p className="text-sm text-gray-600">
-            Upload, optimize, and organize images for each clinic.
+            Upload, optimize, and organize images for each site.
           </p>
         </div>
         <div>

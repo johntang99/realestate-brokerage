@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadAllItems, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadAllItems, loadContent, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon } from '@/components/ui';
@@ -58,6 +58,12 @@ interface BlogPageProps {
   };
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
 export async function generateMetadata({ params }: BlogPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -82,6 +88,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   const content = await loadPageContent<BlogPageData>('blog', locale);
   const siteId = await getRequestSiteId();
   const posts = await loadAllItems<BlogListItem>(siteId, locale, 'blog');
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
   
   if (!content) {
     notFound();
@@ -99,8 +106,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   const featuredPost = sortedPosts.find((post) => post.featured) || sortedPosts[0];
   const featuredImage =
     featuredPost?.image ||
-    sortedPosts.find((post) => post.image)?.image ||
-    `/uploads/${siteId}/blog/acupuncture-pain.jpg`;
+    sortedPosts.find((post) => post.image)?.image;
 
   // Filter posts by category
   const listPosts = featuredPost
@@ -116,11 +122,15 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
   const startIndex = (currentPage - 1) * postsPerPage;
   const endIndex = startIndex + postsPerPage;
   const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-16 md:pt-20';
 
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] py-16 md:py-20 px-4 overflow-hidden">
+      <section
+        className={`relative bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)] ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden`}
+      >
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-64 h-64 bg-primary-100 rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 left-10 w-64 h-64 bg-secondary-50 rounded-full blur-3xl"></div>
@@ -151,7 +161,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-green-600/10 to-amber-600/10">
                     <div className="text-8xl mb-6">📝</div>
                     <p className="text-gray-700 font-semibold text-subheading mb-2">
-                      {locale === 'en' ? 'TCM Blog' : '中医博客'}
+                      {locale === 'en' ? 'Insights Blog' : '精选博客'}
                     </p>
                     <p className="text-gray-600 text-small">
                       {locale === 'en' ? 'Educational articles and resources' : '教育文章与资源'}
@@ -192,12 +202,21 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
                   <div className="grid lg:grid-cols-2">
                     {/* Featured Image */}
                     <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
-                      <img
-                        src={featuredImage}
-                        alt={featuredPost.title}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
+                      {featuredImage ? (
+                        <img
+                          src={featuredImage}
+                          alt={featuredPost.title}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center">
+                          <Icon
+                            name={(featuredPost.type || 'article') === 'video' ? 'Video' : 'FileText'}
+                            className="text-primary/30"
+                          />
+                        </div>
+                      )}
                       
                       {/* Video Badge */}
                       {(featuredPost.type || 'article') === 'video' && (

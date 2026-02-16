@@ -159,10 +159,12 @@ export function ContentEditor({
         );
       } else if (fileFilter === 'siteSettings') {
         nextFiles = nextFiles.filter((file) => SITE_SETTINGS_PATHS.has(file.path));
+        nextFiles = [...nextFiles].sort((a, b) => a.label.localeCompare(b.label));
       } else {
         nextFiles = nextFiles.filter(
           (file) => !file.path.startsWith('blog/') && !SITE_SETTINGS_PATHS.has(file.path)
         );
+        nextFiles = [...nextFiles].sort((a, b) => a.label.localeCompare(b.label));
       }
       setFiles(nextFiles);
       if (preferredPath) {
@@ -249,7 +251,10 @@ export function ContentEditor({
     setStatus(payload.message || 'Saved');
   };
 
-  const handleImport = async (mode: 'missing' | 'overwrite' = 'missing') => {
+  const handleImport = async (
+    mode: 'missing' | 'overwrite' = 'missing',
+    options?: { dryRun?: boolean; force?: boolean }
+  ) => {
     setStatus(null);
     setLoading(true);
     setImporting(true);
@@ -257,22 +262,31 @@ export function ContentEditor({
       const response = await fetch('/api/admin/content/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ siteId, locale, mode }),
+        body: JSON.stringify({
+          siteId,
+          locale,
+          mode,
+          dryRun: Boolean(options?.dryRun),
+          force: Boolean(options?.force),
+        }),
       });
       const payload = await response.json();
       if (!response.ok) {
         throw new Error(payload.message || 'Import failed');
       }
+      if (options?.dryRun) {
+        return payload;
+      }
       const skipped = payload.skipped || 0;
       const imported = payload.imported || 0;
-      setStatus(
-        skipped
-          ? `Imported ${imported} items. Skipped ${skipped} existing DB entries.`
-          : `Imported ${imported} items from JSON.`
-      );
+      setStatus(payload.message || (skipped
+        ? `Imported ${imported} items. Skipped ${skipped} existing DB entries.`
+        : `Imported ${imported} items from JSON.`));
       await loadFiles(activeFile?.path);
+      return payload;
     } catch (error: any) {
       setStatus(error?.message || 'Import failed');
+      return null;
     } finally {
       setLoading(false);
       setImporting(false);
@@ -280,11 +294,71 @@ export function ContentEditor({
   };
 
   const handleOverwriteImport = async () => {
+    const dryRun = await handleImport('overwrite', { dryRun: true });
+    if (!dryRun) return;
+
+    const conflicts = Array.isArray(dryRun.conflicts) ? dryRun.conflicts : [];
+    if (conflicts.length > 0) {
+      const conflictPreview = conflicts
+        .slice(0, 5)
+        .map((item: any) => `${item.locale}:${item.path}`)
+        .join('\n');
+      const forceConfirmed = window.confirm(
+        `Safety check found ${conflicts.length} newer DB entries.\n\n` +
+          `${conflictPreview}${conflicts.length > 5 ? '\n...' : ''}\n\n` +
+          'Abort by default. Continue with FORCE overwrite anyway?'
+      );
+      if (!forceConfirmed) {
+        setStatus('Overwrite cancelled due to newer DB entries.');
+        return;
+      }
+      await handleImport('overwrite', { force: true });
+      return;
+    }
+
     const confirmed = window.confirm(
-      'Overwrite DB content with local JSON? This will replace existing DB entries.'
+      `Dry-run summary:\n` +
+        `Create: ${dryRun.toCreate || 0}\n` +
+        `Update: ${dryRun.toUpdate || 0}\n` +
+        `Unchanged: ${dryRun.unchanged || 0}\n\n` +
+        `${Array.isArray(dryRun.toUpdatePaths) && dryRun.toUpdatePaths.length > 0
+          ? `Update paths:\n${dryRun.toUpdatePaths.slice(0, 8).join('\n')}${dryRun.toUpdatePaths.length > 8 ? '\n...' : ''}\n\n`
+          : ''}` +
+        `${Array.isArray(dryRun.toCreatePaths) && dryRun.toCreatePaths.length > 0
+          ? `Create paths:\n${dryRun.toCreatePaths.slice(0, 8).join('\n')}${dryRun.toCreatePaths.length > 8 ? '\n...' : ''}\n\n`
+          : ''}` +
+        'Proceed with overwrite import?'
     );
     if (!confirmed) return;
     await handleImport('overwrite');
+  };
+
+  const handleCheckUpdateFromDb = async () => {
+    const dryRun = await handleImport('overwrite', { dryRun: true });
+    if (!dryRun) return;
+
+    const updatePaths = Array.isArray(dryRun.toUpdatePaths) ? dryRun.toUpdatePaths : [];
+    const createPaths = Array.isArray(dryRun.toCreatePaths) ? dryRun.toCreatePaths : [];
+    const conflicts = Array.isArray(dryRun.conflicts) ? dryRun.conflicts : [];
+    const conflictPaths = conflicts.map((item: any) => `${item.locale}:${item.path}`);
+
+    const allDifferentPaths = Array.from(new Set([...updatePaths, ...createPaths, ...conflictPaths]));
+    const preview = allDifferentPaths.slice(0, 20).join('\n');
+
+    window.alert(
+      `Check Update From DB\n\n` +
+        `Different files: ${allDifferentPaths.length}\n` +
+        `Create: ${createPaths.length}\n` +
+        `Update: ${updatePaths.length}\n` +
+        `DB newer conflicts: ${conflicts.length}\n\n` +
+        `${allDifferentPaths.length > 0 ? `Paths:\n${preview}${allDifferentPaths.length > 20 ? '\n...' : ''}` : 'No differences found.'}`
+    );
+
+    setStatus(
+      allDifferentPaths.length > 0
+        ? `Found ${allDifferentPaths.length} files different from DB (create ${createPaths.length}, update ${updatePaths.length}, conflicts ${conflicts.length}).`
+        : 'No differences between local JSON and DB.'
+    );
   };
 
   const handleExport = async () => {
@@ -576,6 +650,7 @@ export function ContentEditor({
       'name',
       'label',
       'condition',
+      'businessName',
       'clinicName',
       'tagline',
       'text',
@@ -851,6 +926,14 @@ export function ContentEditor({
               className="px-3 py-2 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-60"
             >
               {importing ? 'Importing…' : 'Import JSON'}
+            </button>
+            <button
+              type="button"
+              onClick={handleCheckUpdateFromDb}
+              disabled={importing || loading}
+              className="px-3 py-2 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50 disabled:opacity-60"
+            >
+              Check Update From DB
             </button>
             <button
               type="button"
@@ -1273,6 +1356,19 @@ export function ContentEditor({
                           <option value="centered">Centered</option>
                           <option value="transparent">Transparent</option>
                           <option value="stacked">Stacked</option>
+                        </select>
+                      </div>
+                      <div className="mb-3">
+                        <label className="block text-xs text-gray-500">Menu Font Weight</label>
+                        <select
+                          className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                          value={formData.menu?.fontWeight || 'semibold'}
+                          onChange={(event) =>
+                            updateFormValue(['menu', 'fontWeight'], event.target.value)
+                          }
+                        >
+                          <option value="regular">Regular</option>
+                          <option value="semibold">Semibold</option>
                         </select>
                       </div>
                       <div className="grid gap-3 md:grid-cols-3">
@@ -1720,14 +1816,17 @@ export function ContentEditor({
                       />
                     </div>
                   )}
-                  {'clinicName' in formData.hero && (
+                  {('businessName' in formData.hero || 'clinicName' in formData.hero) && (
                     <div className="mb-3">
-                      <label className="block text-xs text-gray-500">Clinic Name</label>
+                      <label className="block text-xs text-gray-500">Business Name</label>
                       <input
                         className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                        value={formData.hero.clinicName || ''}
+                        value={formData.hero.businessName || formData.hero.clinicName || ''}
                         onChange={(event) =>
-                          updateFormValue(['hero', 'clinicName'], event.target.value)
+                          updateFormValue(
+                            ['hero', 'businessName' in formData.hero ? 'businessName' : 'clinicName'],
+                            event.target.value
+                          )
                         }
                       />
                     </div>

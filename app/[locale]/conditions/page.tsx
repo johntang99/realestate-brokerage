@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadAllItems, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadAllItems, loadContent, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon, Tabs } from '@/components/ui';
@@ -72,6 +72,12 @@ interface PageLayoutConfig {
   sections: Array<{ id: string }>;
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
 export async function generateMetadata({ params }: ConditionsPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -94,6 +100,7 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
   const content = await loadPageContent<ConditionsPageData>('conditions', locale, siteId);
   const layout = await loadPageContent<PageLayoutConfig>('conditions.layout', locale, siteId);
   const blogPosts = await loadAllItems<BlogListItem>(siteId, locale, 'blog');
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
   
   if (!content) {
     notFound();
@@ -117,15 +124,15 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
   const reassuranceItems = [
     {
       icon: Shield,
-      text: locale === 'en' ? 'Safe, natural healing' : '安全、自然疗法',
+      text: locale === 'en' ? 'Safe, trusted care' : '安全、可信赖',
     },
     {
       icon: Heart,
-      text: locale === 'en' ? 'Holistic approach' : '整体疗法',
+      text: locale === 'en' ? 'Customer-first approach' : '以客户为先',
     },
     {
       icon: Sparkles,
-      text: locale === 'en' ? 'Personalized treatment' : '个性化治疗',
+      text: locale === 'en' ? 'Personalized plans' : '个性化方案',
     },
   ];
 
@@ -145,13 +152,15 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
   const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-20 md:pt-24';
 
   return (
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
       {isEnabled('hero') && (
         <section
-          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+          className={`relative ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
               : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
@@ -219,12 +228,12 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
                     <div className="absolute top-1/2 right-16 w-20 h-20 bg-primary-100/20 rounded-full"></div>
 
                     <div className="relative z-10 text-center">
-                      <div className="text-8xl mb-6">🩺</div>
+                      <div className="text-8xl mb-6">✨</div>
                       <p className="text-gray-700 font-semibold text-subheading mb-2">
-                        {locale === 'en' ? 'Comprehensive Care' : '全面护理'}
+                        {locale === 'en' ? 'Comprehensive Support' : '全面支持'}
                       </p>
                       <p className="text-gray-600 text-sm">
-                        {locale === 'en' ? 'Treating the root cause, naturally' : '从根源自然调理'}
+                        {locale === 'en' ? 'Structured plans focused on long-term results' : '以长期效果为目标的系统化方案'}
                       </p>
                     </div>
                   </div>
@@ -385,10 +394,10 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
                                 </div>
                               </div>
 
-                              {/* TCM Approach */}
+                              {/* Approach */}
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                                  {locale === 'en' ? 'Our TCM Approach' : '中医调理'}
+                                  {locale === 'en' ? 'Our Approach' : '我们的方案'}
                                 </h4>
                                 <p className="text-sm text-gray-600 mb-4">
                                   {condition.tcmApproach}
@@ -458,10 +467,10 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
                                   </div>
                                 </div>
 
-                                {/* TCM Approach */}
+                                {/* Approach */}
                                 <div>
                                   <h4 className="text-sm font-semibold text-gray-900 mb-3">
-                                    {locale === 'en' ? 'Our TCM Approach' : '中医调理'}
+                                    {locale === 'en' ? 'Our Approach' : '我们的方案'}
                                   </h4>
                                   <p className="text-sm text-gray-600 mb-4">
                                     {condition.tcmApproach}
@@ -503,8 +512,8 @@ export default async function ConditionsPage({ params }: ConditionsPageProps) {
                   </h2>
                   <p className="text-gray-600">
                     {locale === 'en'
-                      ? 'Learn more about conditions and how TCM can help.'
-                      : '了解常见病症及中医如何调理。'}
+                      ? 'Learn more about common needs and practical support options.'
+                      : '了解常见需求与可行的支持方案。'}
                   </p>
                 </div>
                 <Link

@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadContent, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Button, Badge, Icon, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
@@ -80,6 +80,12 @@ interface PageLayoutConfig {
   sections: Array<{ id: string }>;
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -102,6 +108,7 @@ export default async function ContactPage({ params }: ContactPageProps) {
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<ContactPageContent>('contact', locale, siteId);
   const layout = await loadPageContent<PageLayoutConfig>('contact.layout', locale, siteId);
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
   
   if (!content) {
     notFound();
@@ -122,13 +129,15 @@ export default async function ContactPage({ params }: ContactPageProps) {
   const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
   const sectionStyle = (sectionId: string) =>
     useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'py-20 lg:py-32';
 
   return (
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
       {isEnabled('hero') && (
         <section
-          className={`relative py-20 lg:py-32 ${
+          className={`relative ${heroTopPaddingClass} ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/80'
               : 'bg-gradient-to-br from-primary/10 via-backdrop-primary to-primary/5'
@@ -341,12 +350,12 @@ export default async function ContactPage({ params }: ContactPageProps) {
           <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
             {cta?.subtitle ||
               (locale === 'en'
-                ? 'Learn what to expect before your first appointment'
-                : '了解首次预约前需要准备的内容')}
+                ? 'Learn what to expect before getting started'
+                : '了解开始服务前需要准备的内容')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href={cta?.buttonLink || `/${locale}/new-patients`}
+              href={cta?.buttonLink || `/${locale}/book`}
               className="bg-white text-[var(--primary)] px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg"
             >
               {cta?.buttonText || (locale === 'en' ? 'Getting Started Guide' : '新手指南')}

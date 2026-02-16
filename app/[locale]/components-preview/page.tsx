@@ -34,18 +34,18 @@ export default function ComponentsPreview() {
   const accordionItems = [
     {
       id: '1',
-      title: 'What is Traditional Chinese Medicine?',
-      content: 'TCM is a holistic healing system that has been practiced for thousands of years...',
+      title: 'How do your services work?',
+      content: 'Our services follow a clear process from consultation to delivery...',
     },
     {
       id: '2',
-      title: 'How does acupuncture work?',
-      content: 'Acupuncture involves inserting fine needles at specific points to restore energy flow...',
+      title: 'How long does onboarding take?',
+      content: 'Most customers can get started quickly with a streamlined setup process...',
     },
     {
       id: '3',
       title: 'Is it covered by insurance?',
-      content: 'Many insurance plans now cover acupuncture. Check with your provider...',
+      content: 'Coverage varies by provider and plan. Check with your provider for details...',
     },
   ];
   
@@ -72,7 +72,7 @@ export default function ComponentsPreview() {
   
   const breadcrumbItems = [
     { label: 'Services', href: '/en/services' },
-    { label: 'Acupuncture', href: '/en/services/acupuncture' },
+    { label: 'Featured Service', href: '/en/services' },
     { label: 'Details' },
   ];
   

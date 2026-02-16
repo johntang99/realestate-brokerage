@@ -14,6 +14,7 @@ import GalleryPreviewSection from '@/components/sections/GalleryPreviewSection';
 import FirstVisitSection from '@/components/sections/FirstVisitSection';
 import WhyChooseUsSection from '@/components/sections/WhyChooseUsSection';
 import CTASection from '@/components/sections/CTASection';
+import { getSiteDisplayName } from '@/lib/siteInfo';
 
 interface PageProps {
   params: {
@@ -30,7 +31,8 @@ interface HomePageContent {
   };
   hero: {
     variant: 'centered' | 'split-photo-right' | 'split-photo-left' | 'overlap' | 'photo-background' | 'video-background';
-    clinicName: string;
+    businessName?: string;
+    clinicName?: string;
     tagline: string;
     description: string;
     primaryCta?: { text: string; link: string };
@@ -71,12 +73,12 @@ export async function generateMetadata({ params }: PageProps) {
     loadSiteInfo(siteId, locale as Locale) as Promise<SiteInfo | null>,
   ]);
 
-  const clinicName = siteInfo?.businessName || siteInfo?.clinicName || 'Business';
+  const businessName = getSiteDisplayName(siteInfo, 'Business');
   const location = siteInfo?.city && siteInfo?.state
     ? `${siteInfo.city}, ${siteInfo.state}`
     : '';
   const heroTagline = content?.hero?.tagline || '';
-  const title = [heroTagline, location, clinicName]
+  const title = [heroTagline, location, businessName]
     .filter(Boolean)
     .join(' | ')
     .trim();
@@ -84,13 +86,13 @@ export async function generateMetadata({ params }: PageProps) {
   const description =
     content?.hero?.description ||
     siteInfo?.description ||
-    'Traditional Chinese Medicine clinic for acupuncture, herbal medicine, and wellness care.';
+    'Professional services tailored to your needs and goals.';
 
   return buildPageMetadata({
     siteId,
     locale,
     slug: 'home',
-    title: title || clinicName,
+    title: title || businessName,
     description,
   });
 }
@@ -108,6 +110,7 @@ export default async function HomePage({ params }: PageProps) {
   }
   
   const { hero } = content;
+  const heroBusinessName = hero.businessName || hero.clinicName || 'Business';
   const defaultSections = [
     'hero',
     'credentials',
@@ -130,7 +133,7 @@ export default async function HomePage({ params }: PageProps) {
         return (
           <HeroSection
             variant={hero.variant}
-            clinicName={hero.clinicName}
+            businessName={heroBusinessName}
             tagline={hero.tagline}
             description={hero.description}
             badgeText={content.topBar?.badge?.visible ? content.topBar.badge.text : undefined}

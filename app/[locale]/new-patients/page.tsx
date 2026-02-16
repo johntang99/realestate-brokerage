@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadContent, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon, Accordion } from '@/components/ui';
@@ -109,6 +109,12 @@ interface PageLayoutConfig {
   sections: Array<{ id: string }>;
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
 export async function generateMetadata({ params }: NewPatientsPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -131,6 +137,7 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<NewPatientsPageData>('new-patients', locale, siteId);
   const layout = await loadPageContent<PageLayoutConfig>('new-patients.layout', locale, siteId);
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
   
   if (!content) {
     notFound();
@@ -148,13 +155,15 @@ export default async function NewPatientsPage({ params }: NewPatientsPageProps) 
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
   const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-24 md:pt-24';
 
   return (
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
       {isEnabled('hero') && (
         <section
-          className={`relative pt-24 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+          className={`relative ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
               : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'

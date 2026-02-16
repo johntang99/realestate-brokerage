@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
  import Image from 'next/image';
  import Link from 'next/link';
  import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
+import { getRequestSiteId, loadContent, loadPageContent, loadSiteInfo } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale, SiteInfo } from '@/lib/types';
 import CTASection from '@/components/sections/CTASection';
@@ -62,6 +62,12 @@ interface PageLayoutConfig {
   sections: Array<{ id: string }>;
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
  export async function generateMetadata({ params }: GalleryPageProps): Promise<Metadata> {
    const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -83,6 +89,7 @@ interface PageLayoutConfig {
   const content = await loadPageContent<GalleryPageData>('gallery', locale, siteId);
   const layout = await loadPageContent<PageLayoutConfig>('gallery.layout', locale, siteId);
   const contactContent = await loadPageContent<ContactPageData>('contact', locale, siteId);
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
   const siteInfo = await loadSiteInfo(siteId, locale) as SiteInfo | null;
  
    if (!content) {
@@ -110,13 +117,15 @@ interface PageLayoutConfig {
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
   const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-20 md:pt-24';
  
    return (
     <main className="flex flex-col">
        {/* Hero Section */}
       {isEnabled('hero') && (
         <section
-          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+          className={`relative ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
               : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
@@ -181,10 +190,10 @@ interface PageLayoutConfig {
                   <div className="w-full aspect-square flex flex-col items-center justify-center bg-gradient-to-br from-green-600/10 to-amber-600/10">
                     <div className="text-8xl mb-6">🏛️</div>
                     <p className="text-gray-700 font-semibold text-subheading mb-2">
-                      {locale === 'en' ? 'Our Healing Space' : '我们的治疗空间'}
+                      {locale === 'en' ? 'Our Workspace' : '我们的空间'}
                     </p>
                     <p className="text-gray-600 text-small">
-                      {locale === 'en' ? 'Designed for your comfort and wellness' : '为您的舒适与健康而设计'}
+                      {locale === 'en' ? 'Designed for comfort and quality service' : '为舒适体验与高品质服务而设计'}
                     </p>
                   </div>
                 )}
@@ -207,7 +216,7 @@ interface PageLayoutConfig {
              <p className="text-small text-gray-600">
                {locale === 'en' ? 'Showing' : '当前显示'}{' '}
               <span className="font-semibold text-gray-900">{displayImages.length}</span>{' '}
-               {locale === 'en' ? 'photos of our clinic and facilities' : '张诊所与设施照片'}
+               {locale === 'en' ? 'photos from our team and space' : '张团队与空间照片'}
              </p>
            </div>
           <GalleryGrid images={displayImages} categories={displayCategories} />
@@ -242,7 +251,7 @@ interface PageLayoutConfig {
                 <p className="text-gray-700 mb-4 text-subheading">
                   {siteInfo?.city && siteInfo?.state
                     ? `${siteInfo.city}, ${siteInfo.state} ${siteInfo.zip ?? ''}`
-                    : (locale === 'en' ? 'Middletown, NY 10940' : '纽约州米德尔敦 10940')}
+                    : (locale === 'en' ? 'Location details coming soon' : '地址信息即将更新')}
                 </p>
                 <div className="space-y-2">
                   {siteInfo?.phone && (
@@ -283,7 +292,7 @@ interface PageLayoutConfig {
                      >
                        <span className="font-medium">{hour.day}</span>
                        <span className="text-[var(--brand)] font-semibold">
-                        {hour.isOpen ? hour.time : (locale === 'en' ? 'Closed' : 'Cerrado')}
+                        {hour.isOpen ? hour.time : (locale === 'en' ? 'Closed' : '休息')}
                        </span>
                      </div>
                    ))}
@@ -293,13 +302,13 @@ interface PageLayoutConfig {
  
              <div className="pt-8 border-t border-gray-200">
                <h3 className="text-subheading font-bold text-gray-900 mb-4">
-                {locale === 'en' ? 'Accessibility Features' : 'Accesibilidad'}
+                {locale === 'en' ? 'Accessibility Features' : '无障碍设施'}
                </h3>
                <div className="grid sm:grid-cols-3 gap-4">
                  {[
-                  locale === 'en' ? 'Wheelchair accessible entrance' : 'Entrada accesible para silla de ruedas',
-                  locale === 'en' ? 'Convenient parking available' : 'Estacionamiento conveniente disponible',
-                  locale === 'en' ? 'Multilingual services (English, Chinese)' : '多语言服务（中文、英文）',
+                  locale === 'en' ? 'Wheelchair accessible entrance' : '轮椅可通行入口',
+                  locale === 'en' ? 'Convenient parking available' : '提供便捷停车',
+                  locale === 'en' ? 'Multilingual support available' : '提供多语言支持',
                  ].map((feature) => (
                    <div key={feature} className="flex items-center gap-3 p-3 bg-[var(--primary-50)] rounded-lg">
                      <div className="w-6 h-6 rounded-full bg-[var(--brand)] flex items-center justify-center shrink-0">

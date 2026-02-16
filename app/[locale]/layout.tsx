@@ -14,6 +14,7 @@ import type { FooterSection, SeoConfig, SiteInfo } from '@/lib/types';
 import Header, { type HeaderConfig } from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { getBaseUrlFromHost } from '@/lib/seo';
+import { getSiteDisplayName } from '@/lib/siteInfo';
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -42,7 +43,7 @@ export async function generateMetadata({
     loadSiteInfo(site.id, locale) as Promise<SiteInfo | null>,
     loadSeo(site.id, locale) as Promise<SeoConfig | null>,
   ]);
-  const titleBase = siteInfo?.businessName || siteInfo?.clinicName || site.name;
+  const titleBase = getSiteDisplayName(siteInfo, site.name);
   const description =
     seo?.description ||
     siteInfo?.description ||
@@ -162,7 +163,7 @@ export default async function LocaleLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'LocalBusiness',
-              name: siteInfo.businessName || siteInfo.clinicName,
+              name: getSiteDisplayName(siteInfo, site.name),
               url: new URL(`/${locale}`, baseUrl).toString(),
               description: siteInfo.description,
               telephone: siteInfo.phone,

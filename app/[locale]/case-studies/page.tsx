@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadContent, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Badge, Card, Icon, Tabs } from '@/components/ui';
@@ -69,6 +69,12 @@ interface PageLayoutConfig {
   sections: Array<{ id: string }>;
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
 export async function generateMetadata({ params }: CaseStudiesPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -89,6 +95,7 @@ export default async function CaseStudiesPage({ params }: CaseStudiesPageProps) 
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<CaseStudiesPageData>('case-studies', locale, siteId);
   const layout = await loadPageContent<PageLayoutConfig>('case-studies.layout', locale, siteId);
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
 
   if (!content) {
     return (
@@ -121,6 +128,8 @@ export default async function CaseStudiesPage({ params }: CaseStudiesPageProps) 
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
   const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-20 md:pt-24';
   const statsVariant = statistics.variant || 'grid-2x2';
 
   const caseStudiesByCategory = (categoryId: string) => {
@@ -141,7 +150,7 @@ export default async function CaseStudiesPage({ params }: CaseStudiesPageProps) 
       {/* Hero Section */}
       {isEnabled('hero') && (
         <section
-          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+          className={`relative ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
               : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'

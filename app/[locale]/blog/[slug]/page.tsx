@@ -365,11 +365,11 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
                 <div>
                   <h4 className="font-bold text-gray-900 mb-2">About {post.author}</h4>
                   <p className="text-gray-600 text-sm mb-4">
-                    Licensed acupuncturist and TCM practitioner with over 15 years of experience helping patients achieve optimal health through natural, holistic methods.
+                    Experienced professional sharing practical insights and best practices to help customers make informed decisions.
                   </p>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/${locale}/about`}>
-                      Learn More About Dr. Huang
+                      Learn More About Our Team
                     </Link>
                   </Button>
                 </div>
@@ -472,17 +472,17 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
       <section className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]">
         <div className="container mx-auto max-w-4xl text-center text-white">
           <h2 className="text-heading text-white mb-4">
-            Ready to Experience TCM?
+            Ready to Get Started?
           </h2>
           <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
-            Schedule a consultation to discuss how Traditional Chinese Medicine can help you
+            Connect with our team to discuss the best service plan for your goals
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href={`/${locale}/contact`}
               className="bg-white text-[var(--primary)] px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg"
             >
-              Book Consultation
+              Contact Our Team
             </Link>
             <Link
               href={`/${locale}/services`}

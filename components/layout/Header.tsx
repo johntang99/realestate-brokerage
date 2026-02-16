@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Menu, X, Phone, Mail, MapPin, Facebook, Instagram, Youtube, MessageCircle } from 'lucide-react';
 import { Locale } from '@/lib/i18n';
 import { SiteInfo } from '@/lib/types';
+import { getSiteDisplayName } from '@/lib/siteInfo';
 import LanguageSwitcher from '../i18n/LanguageSwitcher';
 
 export interface HeaderConfig {
@@ -19,6 +20,7 @@ export interface HeaderConfig {
   };
   menu?: {
     variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+    fontWeight?: 'regular' | 'semibold';
     logo?: {
       emoji?: string;
       text?: string;
@@ -44,6 +46,7 @@ interface HeaderProps {
   headerConfig?: HeaderConfig;
   menu?: {
     variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+    fontWeight?: 'regular' | 'semibold';
     items: Array<{ text: string; url: string }>;
     cta?: {
       text: string;
@@ -79,7 +82,7 @@ export default function Header({
           { text: locale === 'en' ? 'About' : '关于我们', url: `/${locale}/about` },
           { text: locale === 'en' ? 'Case Studies' : '案例研究', url: `/${locale}/case-studies` },
           { text: locale === 'en' ? 'Gallery' : '图库', url: `/${locale}/gallery` },
-          { text: locale === 'en' ? 'New Visit' : '首次就诊', url: `/${locale}/new-patients` },
+          { text: locale === 'en' ? 'Getting Started' : '新用户指南', url: `/${locale}/new-patients` },
           { text: locale === 'en' ? 'Pricing' : '收费', url: `/${locale}/pricing` },
           { text: locale === 'en' ? 'Blog' : '博客', url: `/${locale}/blog` },
           { text: locale === 'en' ? 'Contact' : '联系我们', url: `/${locale}/contact` },
@@ -89,13 +92,18 @@ export default function Header({
     text: headerConfig?.cta?.text || (locale === 'en' ? 'Book Online' : '在线预约'),
     link: headerConfig?.cta?.link || `/${locale}/contact`,
   };
+  const menuFontWeightClass =
+    (menu?.fontWeight || headerConfig?.menu?.fontWeight || 'semibold') === 'regular'
+      ? 'font-normal'
+      : 'font-semibold';
 
   const renderLogo = (sizeClass: string, width: number, height: number) => {
+    const siteDisplayName = getSiteDisplayName(siteInfo, 'Site');
     if (logoImage?.src && logoImage.src.trim()) {
       return (
         <Image
           src={logoImage.src}
-          alt={logoImage.alt || logoConfig?.text || siteInfo?.businessName || siteInfo?.clinicName || 'Logo'}
+          alt={logoImage.alt || logoConfig?.text || siteDisplayName || 'Logo'}
           width={width}
           height={height}
           className={`${sizeClass} hover:opacity-90 transition-opacity`}
@@ -103,7 +111,7 @@ export default function Header({
       );
     }
 
-    const text = logoConfig?.text || siteInfo?.businessName || siteInfo?.clinicName || 'Site';
+    const text = logoConfig?.text || siteDisplayName;
     const emoji = logoConfig?.emoji;
     return (
       <div className="inline-flex items-center gap-2 text-primary">
@@ -119,7 +127,7 @@ export default function Header({
     topbarConfig?.address ||
     (siteInfo?.address ? `${siteInfo.address}, ${siteInfo.city}, ${siteInfo.state} ${siteInfo.zip}` : undefined);
   const topbarAddressHref = topbarConfig?.addressHref || siteInfo?.addressMapUrl || '#';
-  const topbarBadge = topbarConfig?.badge || (locale === 'en' ? 'Accepting New Patients' : '接受新患者');
+  const topbarBadge = topbarConfig?.badge || (locale === 'en' ? 'Now accepting new customers' : '欢迎新客户');
   
   useEffect(() => {
     if (variant !== 'transparent') return;
@@ -223,7 +231,7 @@ export default function Header({
                 <Link
                   key={item.url}
                   href={item.url}
-                  className="text-gray-700 hover:text-primary font-medium transition-colors text-sm"
+                  className={`text-gray-700 hover:text-primary ${menuFontWeightClass} transition-colors text-sm`}
                 >
                   {item.text}
                 </Link>
@@ -267,7 +275,7 @@ export default function Header({
                   <Link
                     key={item.url}
                     href={item.url}
-                    className="text-gray-700 hover:text-primary font-medium transition-colors text-sm whitespace-nowrap"
+                    className={`text-gray-700 hover:text-primary ${menuFontWeightClass} transition-colors text-sm whitespace-nowrap`}
                   >
                     {item.text}
                   </Link>
@@ -308,7 +316,7 @@ export default function Header({
                   <Link
                     key={item.url}
                     href={item.url}
-                    className="text-gray-700 hover:text-primary font-medium py-1"
+                    className={`text-gray-700 hover:text-primary ${menuFontWeightClass} py-1`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.text}

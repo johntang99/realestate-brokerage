@@ -18,11 +18,11 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
     siteId,
     locale: params.locale,
     slug: 'book',
-    title: params.locale === 'en' ? 'Book Consultation' : '预约咨询',
+    title: params.locale === 'en' ? 'Book Online' : '在线预约',
     description:
       params.locale === 'en'
-        ? 'Schedule your appointment in a few steps.'
-        : '几步完成在线预约。',
+        ? 'Schedule your booking in a few simple steps.'
+        : '几步完成在线预约流程。',
   });
 }
 
@@ -38,12 +38,12 @@ export default function BookingPage({ params }: BookingPageProps) {
               <CalendarCheck className="w-6 h-6" />
             </div>
             <h1 className="text-display font-bold text-gray-900">
-              {locale === 'en' ? 'Book Consultation' : '预约咨询'}
+              {locale === 'en' ? 'Book Online' : '在线预约'}
             </h1>
             <p className="text-subheading text-gray-600 mt-3">
               {locale === 'en'
-                ? 'Choose treatment type, select a time slot, and confirm your appointment.'
-                : '选择疗法、预约时段并确认就诊。'}
+                ? 'Choose a service, pick a time slot, and confirm your booking.'
+                : '选择服务、预约时段并确认预订。'}
             </p>
           </div>
           <BookingWidget locale={locale} />

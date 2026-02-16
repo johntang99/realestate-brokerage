@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadContent, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale } from '@/lib/types';
 import { Accordion, Badge } from '@/components/ui';
@@ -101,6 +101,12 @@ interface PageLayoutConfig {
   sections: Array<{ id: string }>;
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
 export async function generateMetadata({ params }: PricingPageProps): Promise<Metadata> {
   const { locale } = params;
   const siteId = await getRequestSiteId();
@@ -120,6 +126,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
   const siteId = await getRequestSiteId();
   const content = await loadPageContent<PricingPageData>('pricing', locale, siteId);
   const layout = await loadPageContent<PageLayoutConfig>('pricing.layout', locale, siteId);
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
 
   if (!content) {
     notFound();
@@ -146,6 +153,8 @@ export default async function PricingPage({ params }: PricingPageProps) {
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
   const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-28 md:pt-32';
   const treatmentsVariant = individualTreatments.variant || 'grid-3';
   const packagesVariant = packages.variant || 'grid-3';
   const insuranceVariant = insurance.variant || 'split';
@@ -156,7 +165,7 @@ export default async function PricingPage({ params }: PricingPageProps) {
     <main className="min-h-screen bg-[color-mix(in_srgb,var(--backdrop-primary)_30%,white)] flex flex-col">
       {isEnabled('hero') && (
         <section
-          className={`relative pt-28 md:pt-32 pb-16 md:pb-20 px-4 overflow-hidden ${
+          className={`relative ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
               : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'

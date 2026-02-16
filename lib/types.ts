@@ -1,5 +1,5 @@
 // ============================================
-// TYPE DEFINITIONS FOR TCM SYSTEM
+// TYPE DEFINITIONS FOR MULTI-SITE CONTENT SYSTEM
 // ============================================
 
 export type Locale = 'en' | 'zh';
@@ -70,7 +70,8 @@ export interface NavigationLink {
 
 export interface SiteInfo {
   businessName?: string;
-  clinicName: string;
+  // Legacy alias kept for backward compatibility with existing content.
+  clinicName?: string;
   tagline: string;
   description: string;
   address: string;
@@ -117,7 +118,9 @@ export interface Stat {
 
 export interface HeroSection {
   variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'overlap' | 'photo-background' | 'video-background' | 'gallery-background';
-  clinicName: string;
+  businessName?: string;
+  // Legacy alias kept for backward compatibility with existing content.
+  clinicName?: string;
   tagline: string;
   description: string;
   primaryCta: {
@@ -468,6 +471,7 @@ export interface HomePage {
   };
   menu?: {
     variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+    fontWeight?: 'regular' | 'semibold';
     items: NavigationLink[];
     cta?: {
       text: string;

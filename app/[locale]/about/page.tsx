@@ -4,9 +4,10 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import fs from 'fs/promises';
 import path from 'path';
-import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
+import { getRequestSiteId, loadContent, loadPageContent, loadSiteInfo } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale, SiteInfo } from '@/lib/types';
+import { getSiteDisplayName } from '@/lib/siteInfo';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon } from '@/components/ui';
 import CTASection from '@/components/sections/CTASection';
 import { CheckCircle2, MapPin, Clock } from 'lucide-react';
@@ -129,6 +130,12 @@ interface PageLayoutConfig {
   sections: Array<{ id: string }>;
 }
 
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
+}
+
 function isSparseAboutContent(content: AboutPageData | null): boolean {
   if (!content) return true;
 
@@ -143,7 +150,7 @@ function isSparseAboutContent(content: AboutPageData | null): boolean {
     Array.isArray(content.affiliations?.organizations) && content.affiliations.organizations.length > 0;
   const hasContinuingEducation =
     Array.isArray(content.continuingEducation?.items) && content.continuingEducation.items.length > 0;
-  const hasClinicValues = Array.isArray(content.clinic?.values) && content.clinic.values.length > 0;
+  const hasBusinessValues = Array.isArray(content.clinic?.values) && content.clinic.values.length > 0;
 
   return !(
     hasProfileBio &&
@@ -153,7 +160,7 @@ function isSparseAboutContent(content: AboutPageData | null): boolean {
     hasJourney &&
     hasAffiliations &&
     hasContinuingEducation &&
-    hasClinicValues
+    hasBusinessValues
   );
 }
 
@@ -200,6 +207,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
   }
   const layout = await loadPageContent<PageLayoutConfig>('about.layout', locale, siteId);
   const contactContent = await loadPageContent<ContactPageData>('contact', locale, siteId);
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
   const siteInfo = await loadSiteInfo(siteId, locale) as SiteInfo | null;
   
   if (!content) {
@@ -215,7 +223,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
   };
   const profile = content.profile || {
     variant: 'split',
-    name: siteInfo?.businessName || siteInfo?.clinicName || 'Our Team',
+    name: getSiteDisplayName(siteInfo, 'Our Team'),
     title: siteInfo?.tagline || '',
     image: '',
     bio: '',
@@ -255,9 +263,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
     description: '',
     items: [],
   };
-  const clinic = content.clinic || {
+  const businessSection = content.clinic || {
     variant: 'split',
-    title: locale === 'en' ? 'About Our Clinic' : '关于诊所',
+    title: locale === 'en' ? 'About Our Business' : '关于我们',
     description: '',
     features: [],
     values: [],
@@ -268,11 +276,11 @@ export default async function AboutPage({ params }: AboutPageProps) {
     title: content.cta?.title || (locale === 'en' ? 'Ready to get started?' : '准备好开始了吗？'),
     description: content.cta?.description || '',
     primaryCta: {
-      text: content.cta?.primaryCta?.text || (locale === 'en' ? 'Book Appointment' : '预约'),
+      text: content.cta?.primaryCta?.text || (locale === 'en' ? 'Get Started' : '立即开始'),
       link: content.cta?.primaryCta?.link || `/${locale}/book`,
     },
     secondaryCta: {
-      text: content.cta?.secondaryCta?.text || (locale === 'en' ? 'Call Now' : '立即致电'),
+      text: content.cta?.secondaryCta?.text || (locale === 'en' ? 'Contact Us' : '联系我们'),
       link: content.cta?.secondaryCta?.link || 'tel:+18453811106',
     },
   };
@@ -287,6 +295,8 @@ export default async function AboutPage({ params }: AboutPageProps) {
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
   const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-20 md:pt-24';
   const profileVariant = profile.variant || 'split';
   const credentialsVariant = credentials.variant || 'list';
   const specializationsVariant = specializations.variant || 'grid-2';
@@ -294,14 +304,14 @@ export default async function AboutPage({ params }: AboutPageProps) {
   const journeyVariant = journey.variant || 'prose';
   const affiliationsVariant = affiliations.variant || 'compact';
   const continuingEducationVariant = continuingEducation.variant || 'compact';
-  const clinicVariant = clinic.variant || 'split';
+  const businessSectionVariant = businessSection.variant || 'split';
 
   return (
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
       {isEnabled('hero') && (
         <section
-          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+          className={`relative ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
               : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'
@@ -353,9 +363,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
                     <div className="absolute bottom-10 right-10 w-32 h-32 bg-secondary-50/20 rounded-full"></div>
 
                     <div className="relative z-10 text-center">
-                      <div className="text-8xl mb-6">🏥</div>
+                      <div className="text-8xl mb-6">🏢</div>
                       <p className="text-gray-700 font-semibold text-subheading mb-2">
-                        {siteInfo?.businessName || siteInfo?.clinicName || 'Our Team'}
+                        {getSiteDisplayName(siteInfo, 'Our Team')}
                       </p>
                       <p className="text-gray-600 text-sm">
                         {siteInfo?.tagline || 'Professional Services'}
@@ -401,10 +411,10 @@ export default async function AboutPage({ params }: AboutPageProps) {
                     <p className="text-gray-600 mb-6">{profile.title}</p>
                     <div className="flex gap-4 justify-center">
                       <Button asChild size="sm">
-                        <Link href={cta.primaryCta.link}>Book Appointment</Link>
+                        <Link href={cta.primaryCta.link}>Get Started</Link>
                       </Button>
                       <Button asChild size="sm" variant="outline">
-                        <Link href={cta.secondaryCta.link}>Call Now</Link>
+                        <Link href={cta.secondaryCta.link}>Contact Us</Link>
                       </Button>
                     </div>
                   </div>
@@ -653,13 +663,13 @@ export default async function AboutPage({ params }: AboutPageProps) {
       {isEnabled('clinic') && (
         <section className="py-20 px-4 bg-gray-50" style={sectionStyle('clinic')}>
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-heading font-bold text-gray-900 mb-8 text-center">{clinic.title}</h2>
+          <h2 className="text-heading font-bold text-gray-900 mb-8 text-center">{businessSection.title}</h2>
 
           {/* Description */}
           <div className="max-w-3xl mx-auto mb-12">
-            {(Array.isArray(clinic.description)
-              ? clinic.description
-              : clinic.description.split('\n\n')
+            {(Array.isArray(businessSection.description)
+              ? businessSection.description
+              : businessSection.description.split('\n\n')
             ).map((paragraph, idx) => (
               <p key={idx} className="text-subheading text-gray-700 leading-relaxed mb-4">
                 {paragraph}
@@ -667,16 +677,16 @@ export default async function AboutPage({ params }: AboutPageProps) {
             ))}
           </div>
 
-          <div className={clinicVariant === 'cards' ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6' : 'grid lg:grid-cols-2 gap-8'}>
+          <div className={businessSectionVariant === 'cards' ? 'grid md:grid-cols-2 lg:grid-cols-3 gap-6' : 'grid lg:grid-cols-2 gap-8'}>
             {/* Features List */}
             <div className="bg-white border-2 border-gray-200 rounded-xl p-8">
               <h3 className="text-subheading font-bold text-gray-900 mb-6">
-                {locale === 'en' ? 'Business Features' : 'Caracteristicas del negocio'}
+                {locale === 'en' ? 'Business Features' : '业务特色'}
               </h3>
               <ul className="space-y-3">
-                {(clinic.features && clinic.features.length > 0
-                  ? clinic.features
-                  : clinic.values.map(value => value.title)
+                {(businessSection.features && businessSection.features.length > 0
+                  ? businessSection.features
+                  : businessSection.values.map(value => value.title)
                 ).map((feature, idx) => (
                   <li key={idx} className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
@@ -687,7 +697,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
             </div>
 
             {/* Location & Hours */}
-            <div className={`space-y-6 ${clinicVariant === 'cards' ? 'md:col-span-2 lg:col-span-2' : ''}`}>
+            <div className={`space-y-6 ${businessSectionVariant === 'cards' ? 'md:col-span-2 lg:col-span-2' : ''}`}>
               {/* Location Card */}
               <div className="bg-gradient-to-br from-[var(--backdrop-primary)] to-[var(--backdrop-secondary)] border-2 border-gray-200 rounded-xl p-8">
                 <div className="flex items-start gap-3 mb-4">

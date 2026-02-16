@@ -15,7 +15,7 @@ export default async function AdminSitesPage() {
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Sites</h1>
           <p className="text-sm text-gray-600">
-            Manage all clinic sites and their locales
+            Manage all sites and their locales
           </p>
         </div>
         <div className="flex items-center gap-3">

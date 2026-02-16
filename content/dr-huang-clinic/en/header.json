@@ -55,7 +55,8 @@
         "text": "Contact"
       }
     ],
-    "variant": "transparent"
+    "variant": "transparent",
+    "fontWeight": "semibold"
   },
   "topbar": {
     "badge": "Accepting New Patients",

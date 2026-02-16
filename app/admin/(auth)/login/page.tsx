@@ -6,7 +6,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-gray-600">Sign in to manage your clinics</p>
+          <p className="text-gray-600">Sign in to manage your sites</p>
         </div>
 
         <div className="bg-white rounded-xl shadow-lg p-8">

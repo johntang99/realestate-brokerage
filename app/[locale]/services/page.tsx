@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadAllItems, loadPageContent } from '@/lib/content';
+import { getRequestSiteId, loadAllItems, loadContent, loadPageContent } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
 import { ServicesPage, Locale } from '@/lib/types';
 import { Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon, Accordion } from '@/components/ui';
@@ -27,6 +27,12 @@ interface BlogListItem {
 
 interface PageLayoutConfig {
   sections: Array<{ id: string }>;
+}
+
+interface HeaderMenuConfig {
+  menu?: {
+    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
+  };
 }
 
 const trustIconMap = {
@@ -57,6 +63,7 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
   const content = await loadPageContent<ServicesPage>('services', locale, siteId);
   const layout = await loadPageContent<PageLayoutConfig>('services.layout', locale, siteId);
   const blogPosts = await loadAllItems<BlogListItem>(siteId, locale, 'blog');
+  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
   
   if (!content) {
     notFound();
@@ -65,11 +72,7 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
   const { hero, overview, servicesList, services: servicesLegacy, faq, cta } = content;
   const services = servicesList?.items || servicesLegacy || [];
   const blogBySlug = new Map(blogPosts.map((post) => [post.slug, post]));
-  const preferredSlugs = content.relatedReading?.preferredSlugs || [
-    'acupuncture-pain-relief-science',
-    'chinese-herbal-formulas',
-    'first-visit-acupuncture-guide',
-  ];
+  const preferredSlugs = content.relatedReading?.preferredSlugs || [];
   const preferredPosts = preferredSlugs
     .map((slug) => blogBySlug.get(slug))
     .filter((post): post is BlogListItem => Boolean(post));
@@ -81,18 +84,18 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
   const trustItemsDefault = [
     {
       icon: 'Award',
-      title: locale === 'en' ? 'Licensed Expertise' : '持牌专业团队',
-      description: locale === 'en' ? 'Evidence-informed TCM care' : '循证结合传统中医',
+      title: locale === 'en' ? 'Proven Expertise' : '专业团队',
+      description: locale === 'en' ? 'Proven, standards-based service quality' : '基于标准与经验的高质量服务',
     },
     {
       icon: 'Users',
-      title: locale === 'en' ? 'Personalized Plans' : '个性化调理方案',
-      description: locale === 'en' ? 'Tailored by your constitution' : '按体质与症状定制',
+      title: locale === 'en' ? 'Personalized Plans' : '个性化方案',
+      description: locale === 'en' ? 'Tailored to your goals and preferences' : '根据您的目标与偏好定制',
     },
     {
       icon: 'Shield',
-      title: locale === 'en' ? 'Safe & Trusted' : '安全规范治疗',
-      description: locale === 'en' ? 'Clean, professional treatment standards' : '严格卫生与流程标准',
+      title: locale === 'en' ? 'Reliable & Trusted' : '可靠可信',
+      description: locale === 'en' ? 'Professional quality and clear process' : '高质量服务与清晰流程',
     },
   ];
   const trustItems = (content.trustBar?.items && content.trustBar.items.length > 0
@@ -128,13 +131,15 @@ export default async function ServicesPageComponent({ params }: ServicesPageProp
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
   const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
+  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-20 md:pt-24';
 
   return (
     <main className="min-h-screen flex flex-col">
       {/* Hero Section */}
       {isEnabled('hero') && (
         <section
-          className={`relative pt-20 md:pt-24 pb-16 md:pb-20 px-4 overflow-hidden ${
+          className={`relative ${heroTopPaddingClass} pb-16 md:pb-20 px-4 overflow-hidden ${
             backgroundHero
               ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/75'
               : 'bg-gradient-to-br from-[var(--backdrop-primary)] via-[var(--backdrop-secondary)] to-[var(--backdrop-primary)]'

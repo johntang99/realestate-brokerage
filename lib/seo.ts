@@ -9,6 +9,7 @@ import {
 } from '@/lib/i18n';
 import { loadSeo, loadSiteInfo } from '@/lib/content';
 import type { SeoConfig, SiteInfo } from '@/lib/types';
+import { getSiteDisplayName } from '@/lib/siteInfo';
 
 export function getBaseUrlFromHost(host?: string | null): URL {
   const trimmed = (host || '').trim();
@@ -63,7 +64,7 @@ export async function buildPageMetadata({
   ]);
 
   const pageSeo = getPageSeo(seo, slug);
-  const fallbackTitle = siteInfo?.businessName || siteInfo?.clinicName || 'Business';
+  const fallbackTitle = getSiteDisplayName(siteInfo, 'Business');
   const resolvedTitle = title || pageSeo?.title || seo?.title || fallbackTitle;
   const resolvedDescription =
     description ||

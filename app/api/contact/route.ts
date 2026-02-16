@@ -3,6 +3,7 @@ import { Resend } from 'resend';
 import { loadSiteInfo } from '@/lib/content';
 import { getDefaultSite, getSiteByHost } from '@/lib/sites';
 import type { Locale, SiteInfo } from '@/lib/types';
+import { getSiteDisplayName } from '@/lib/siteInfo';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -17,7 +18,7 @@ interface ContactFormData {
 
 interface ContactEmailContext {
   locale: Locale;
-  clinicName: string;
+  businessName: string;
   phone: string;
   addressLine: string;
 }
@@ -44,7 +45,7 @@ function getAddressLine(siteInfo: SiteInfo | null): string {
 
 function createEmailHTML(data: ContactFormData, context: ContactEmailContext): string {
   const { name, email, phone, reason, message } = data;
-  const { clinicName, locale } = context;
+  const { businessName, locale } = context;
   const reasonLabel = getReasonLabel(reason);
   const timestamp = new Date().toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US', { 
     timeZone: 'America/New_York',
@@ -69,7 +70,7 @@ function createEmailHTML(data: ContactFormData, context: ContactEmailContext): s
                 <tr>
                   <td style="padding: 32px 32px 24px; background: linear-gradient(135deg, #059669 0%, #047857 100%); border-radius: 8px 8px 0 0;">
                     <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">📧 New Contact Form Submission</h1>
-                    <p style="margin: 8px 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${clinicName} Website</p>
+                    <p style="margin: 8px 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${businessName} Website</p>
                   </td>
                 </tr>
                 
@@ -134,8 +135,8 @@ function createEmailHTML(data: ContactFormData, context: ContactEmailContext): s
                 <tr>
                   <td style="padding: 24px 32px; background-color: #f9fafb; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
                     <p style="margin: 0; color: #6b7280; font-size: 12px; text-align: center;">
-                      This email was sent from the ${clinicName} contact form.<br>
-                      <strong>Remember:</strong> Respond quickly for best patient experience.
+                      This email was sent from the ${businessName} contact form.<br>
+                      <strong>Remember:</strong> Respond quickly for the best customer experience.
                     </p>
                   </td>
                 </tr>
@@ -149,14 +150,14 @@ function createEmailHTML(data: ContactFormData, context: ContactEmailContext): s
 }
 
 function createAutoReplyHTML(name: string, context: ContactEmailContext): string {
-  const { clinicName, phone, addressLine } = context;
+  const { businessName, phone, addressLine } = context;
   return `
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thank You for Contacting ${clinicName}</title>
+        <title>Thank You for Contacting ${businessName}</title>
       </head>
       <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb; color: #111827;">
         <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -176,7 +177,7 @@ function createAutoReplyHTML(name: string, context: ContactEmailContext): string
                     <p style="margin: 0 0 16px; color: #111827; font-size: 16px; line-height: 1.6;">Dear ${name},</p>
                     
                     <p style="margin: 0 0 16px; color: #111827; font-size: 16px; line-height: 1.6;">
-                      Thank you for contacting <strong>${clinicName}</strong>. We've received your message and will respond shortly.
+                      Thank you for contacting <strong>${businessName}</strong>. We've received your message and will respond shortly.
                     </p>
 
                     <div style="margin: 24px 0; padding: 20px; background-color: #f0fdf4; border-left: 4px solid #059669; border-radius: 4px;">
@@ -188,12 +189,12 @@ function createAutoReplyHTML(name: string, context: ContactEmailContext): string
                     </div>
 
                     <p style="margin: 24px 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
-                      We look forward to supporting your health and wellness journey.
+                      We look forward to supporting your goals.
                     </p>
 
                     <p style="margin: 16px 0 0; color: #111827; font-size: 16px;">
-                      <strong>${clinicName} Support Team</strong><br>
-                      <span style="color: #6b7280; font-size: 14px;">Traditional Chinese Medicine & Patient Care</span>
+                      <strong>${businessName} Support Team</strong><br>
+                      <span style="color: #6b7280; font-size: 14px;">Customer Support</span>
                     </p>
                   </td>
                 </tr>
@@ -204,8 +205,8 @@ function createAutoReplyHTML(name: string, context: ContactEmailContext): string
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="text-align: center; padding-bottom: 16px;">
-                          <p style="margin: 0; color: #111827; font-size: 14px; font-weight: 600;">${clinicName}</p>
-                          <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Traditional Chinese Medicine & Acupuncture</p>
+                          <p style="margin: 0; color: #111827; font-size: 14px; font-weight: 600;">${businessName}</p>
+                          <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Professional Services</p>
                         </td>
                       </tr>
                       <tr>
@@ -231,13 +232,13 @@ export async function POST(request: NextRequest) {
     const { name, email, phone, reason, message, locale: rawLocale } = body as ContactFormData;
     const locale = toLocale(rawLocale);
     const siteInfo = await resolveRequestSiteInfo(request, locale);
-    const clinicName = siteInfo?.businessName || siteInfo?.clinicName || 'Business';
-    const clinicPhone = siteInfo?.phone || process.env.CONTACT_PHONE_FALLBACK || '(845) 381-1106';
-    const clinicEmail = siteInfo?.email || process.env.CONTACT_FALLBACK_TO || 'support@baamplatform.com';
+    const businessName = getSiteDisplayName(siteInfo, 'Business');
+    const businessPhone = siteInfo?.phone || process.env.CONTACT_PHONE_FALLBACK || '(845) 381-1106';
+    const businessEmail = siteInfo?.email || process.env.CONTACT_FALLBACK_TO || 'support@baamplatform.com';
     const context: ContactEmailContext = {
       locale,
-      clinicName,
-      phone: clinicPhone,
+      businessName,
+      phone: businessPhone,
       addressLine: getAddressLine(siteInfo),
     };
 
@@ -271,21 +272,21 @@ export async function POST(request: NextRequest) {
     const emailHTML = createEmailHTML({ name, email, phone, reason, message, locale }, context);
     const autoReplyHTML = createAutoReplyHTML(name, context);
 
-    // Send notification email to clinic
+    // Send notification email to business inbox
     const notificationEmail = await resend.emails.send({
       from: process.env.RESEND_FROM || 'No-Reply<no-reply@baamplatform.com>',
-      to: process.env.CONTACT_FALLBACK_TO || clinicEmail,
+      to: process.env.CONTACT_FALLBACK_TO || businessEmail,
       cc: process.env.ALERT_TO ? [process.env.ALERT_TO] : undefined,
       reply_to: email,
-      subject: `🌿 New Contact: ${reasonLabel} - ${name}`,
+      subject: `New Contact: ${reasonLabel} - ${name}`,
       html: emailHTML,
     });
 
-    // Send auto-reply to patient
+    // Send auto-reply to customer
     const autoReplyEmail = await resend.emails.send({
       from: process.env.RESEND_FROM || 'No-Reply<no-reply@baamplatform.com>',
       to: email,
-      subject: locale === 'zh' ? `感谢联系${clinicName}` : `Thank you for contacting ${clinicName}`,
+      subject: locale === 'zh' ? `感谢联系${businessName}` : `Thank you for contacting ${businessName}`,
       html: autoReplyHTML,
     });
 

@@ -6,7 +6,8 @@ import { cn } from '@/lib/utils';
 
 export interface HeroSectionProps {
   variant?: HeroVariant;
-  clinicName: string;
+  businessName?: string;
+  clinicName?: string;
   tagline: string;
   description: string;
   badgeText?: string;
@@ -37,7 +38,8 @@ export interface HeroSectionProps {
 
 export default function HeroSection({
   variant = 'centered',
-  clinicName,
+  businessName,
+  clinicName: legacyName,
   tagline,
   description,
   badgeText,
@@ -54,6 +56,7 @@ export default function HeroSection({
 }: HeroSectionProps) {
   const config = heroVariantConfig[variant];
   const sectionClasses = getSectionClasses(config);
+  const displayName = businessName || legacyName || '';
   
   // Render based on variant
   switch (variant) {
@@ -66,7 +69,7 @@ export default function HeroSection({
                 {/* Text Content - Left */}
                 <div className="space-y-6 max-w-xl">
                   <HeroContent
-                    clinicName={clinicName}
+                    businessName={displayName}
                     tagline={tagline}
                     description={description}
                     badgeText={badgeText}
@@ -84,7 +87,7 @@ export default function HeroSection({
                     <div className="rounded-2xl bg-white/80 shadow-2xl overflow-hidden">
                       <Image
                         src={image}
-                        alt={clinicName}
+                        alt={displayName}
                         width={1200}
                         height={1200}
                         className="w-full h-auto object-contain"
@@ -109,7 +112,7 @@ export default function HeroSection({
               <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl order-2 md:order-1">
                 <Image
                   src={image}
-                  alt={clinicName}
+                  alt={displayName}
                   fill
                   className="object-cover"
                 />
@@ -119,7 +122,7 @@ export default function HeroSection({
             {/* Text Content - Right */}
             <div className="space-y-6 order-1 md:order-2">
               <HeroContent
-                clinicName={clinicName}
+                businessName={displayName}
                 tagline={tagline}
                 description={description}
                 primaryCta={primaryCta}
@@ -143,7 +146,7 @@ export default function HeroSection({
             <div className="absolute inset-0 z-0">
               <Image
                 src={image}
-                alt={clinicName}
+                alt={displayName}
                 fill
                 className="object-cover"
               />
@@ -156,7 +159,7 @@ export default function HeroSection({
             <div className="max-w-2xl">
               <div className="bg-white/95 backdrop-blur-sm p-8 md:p-12 rounded-2xl shadow-2xl">
                 <HeroContent
-                  clinicName={clinicName}
+                  businessName={displayName}
                   tagline={tagline}
                   description={description}
                   primaryCta={primaryCta}
@@ -187,7 +190,7 @@ export default function HeroSection({
                 <div className="absolute inset-0 z-0">
                   <Image
                     src={image}
-                    alt={clinicName}
+                    alt={displayName}
                     fill
                     className="object-cover"
                   />
@@ -200,7 +203,7 @@ export default function HeroSection({
             <div className="relative z-10 container-custom py-20 md:py-32 flex items-center min-h-[600px]">
               <div className="max-w-3xl mx-auto text-white">
                 <HeroContent
-                  clinicName={clinicName}
+                  businessName={displayName}
                   tagline={tagline}
                   description={description}
                   primaryCta={primaryCta}
@@ -248,7 +251,7 @@ export default function HeroSection({
           <div className="relative z-10 container-custom py-20 md:py-32 flex items-center min-h-[600px]">
             <div className="max-w-3xl mx-auto text-white">
               <HeroContent
-                clinicName={clinicName}
+                businessName={displayName}
                 tagline={tagline}
                 description={description}
                 primaryCta={primaryCta}
@@ -275,7 +278,7 @@ export default function HeroSection({
         <section className={cn('gradient-backdrop', sectionClasses, className)}>
           <div className="max-w-4xl mx-auto">
             <HeroContent
-              clinicName={clinicName}
+              businessName={displayName}
               tagline={tagline}
               description={description}
               primaryCta={primaryCta}
@@ -297,7 +300,7 @@ export default function HeroSection({
 // ============================================
 
 interface HeroContentProps {
-  clinicName: string;
+  businessName: string;
   tagline: string;
   description: string;
   badgeText?: string;
@@ -310,7 +313,7 @@ interface HeroContentProps {
 }
 
 function HeroContent({
-  clinicName,
+  businessName,
   tagline,
   description,
   badgeText,
@@ -340,9 +343,9 @@ function HeroContent({
           </span>
         </div>
       )}
-      {/* Clinic Name */}
+      {/* Business Name */}
       <h1 className={cn('text-display font-bold mb-4 animate-fade-in', textColor)}>
-        {clinicName}
+        {businessName}
       </h1>
       
       {/* Tagline */}
