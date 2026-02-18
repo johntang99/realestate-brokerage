@@ -5,6 +5,7 @@ import { getSessionFromRequest } from '@/lib/admin/auth';
 import { fetchContentEntry, upsertContentEntry } from '@/lib/contentDb';
 import { canWriteContent, requireSiteAccess } from '@/lib/admin/permissions';
 import { locales } from '@/lib/i18n';
+import { writeAuditLog } from '@/lib/admin/audit';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 
@@ -116,6 +117,7 @@ async function collectImportCandidates(siteId: string, locale: string): Promise<
 }
 
 export async function POST(request: NextRequest) {
+  const startedAt = Date.now();
   const session = await getSessionFromRequest(request);
   if (!session) {
     return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
@@ -162,10 +164,21 @@ export async function POST(request: NextRequest) {
   const toUpdatePaths: string[] = [];
 
   const existingByKey = new Map<string, Awaited<ReturnType<typeof fetchContentEntry>>>();
+  const analysisBatchSize = 30;
+  for (let i = 0; i < candidates.length; i += analysisBatchSize) {
+    const batch = candidates.slice(i, i + analysisBatchSize);
+    const batchExisting = await Promise.all(
+      batch.map((candidate) => fetchContentEntry(siteId, candidate.locale, candidate.path))
+    );
+    batch.forEach((candidate, index) => {
+      const key = `${candidate.locale}::${candidate.path}`;
+      existingByKey.set(key, batchExisting[index]);
+    });
+  }
+
   for (const candidate of candidates) {
     const key = `${candidate.locale}::${candidate.path}`;
-    const existing = await fetchContentEntry(siteId, candidate.locale, candidate.path);
-    existingByKey.set(key, existing);
+    const existing = existingByKey.get(key);
 
     if (!existing?.data) {
       toCreate += 1;
@@ -225,6 +238,15 @@ export async function POST(request: NextRequest) {
   }
 
   if (mode === 'overwrite' && conflicts.length > 0 && !force) {
+    await writeAuditLog({
+      actor: session.user,
+      action: 'content_import_overwrite_blocked',
+      siteId,
+      metadata: {
+        locale,
+        conflicts: conflicts.length,
+      },
+    });
     return NextResponse.json(
       {
         message:
@@ -237,6 +259,7 @@ export async function POST(request: NextRequest) {
   }
 
   let imported = 0;
+  const importQueue: typeof candidates = [];
   for (const candidate of candidates) {
     const key = `${candidate.locale}::${candidate.path}`;
     const existing = existingByKey.get(key);
@@ -264,16 +287,39 @@ export async function POST(request: NextRequest) {
     ) {
       continue;
     }
-
-    await upsertContentEntry({
-      siteId,
-      locale: candidate.locale,
-      path: candidate.path,
-      data: candidate.data,
-      updatedBy: session.user.email,
-    });
-    imported += 1;
+    importQueue.push(candidate);
   }
+
+  const writeBatchSize = 30;
+  for (let i = 0; i < importQueue.length; i += writeBatchSize) {
+    const batch = importQueue.slice(i, i + writeBatchSize);
+    await Promise.all(
+      batch.map((candidate) =>
+        upsertContentEntry({
+          siteId,
+          locale: candidate.locale,
+          path: candidate.path,
+          data: candidate.data,
+          updatedBy: session.user.email,
+        })
+      )
+    );
+    imported += batch.length;
+  }
+
+  await writeAuditLog({
+    actor: session.user,
+    action: 'content_import_completed',
+    siteId,
+    metadata: {
+      locale,
+      mode,
+      imported,
+      skipped,
+      conflicts: mode === 'overwrite' ? conflicts.length : 0,
+      durationMs: Date.now() - startedAt,
+    },
+  });
 
   return NextResponse.json({
     success: true,

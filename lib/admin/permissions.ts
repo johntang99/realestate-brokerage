@@ -1,17 +1,25 @@
 import type { SiteConfig, User } from '@/lib/types';
 
+function normalizeSiteId(siteId: string) {
+  return siteId.trim().toLowerCase();
+}
+
 export function isSuperAdmin(user: User) {
   return user.role === 'super_admin';
 }
 
 export function canAccessSite(user: User, siteId: string) {
+  const normalizedSiteId = normalizeSiteId(siteId);
+  if (!normalizedSiteId) return false;
   if (isSuperAdmin(user)) return true;
-  return user.sites.includes(siteId);
+  const uniqueSites = new Set(user.sites.map((entry) => normalizeSiteId(entry)));
+  return uniqueSites.has(normalizedSiteId);
 }
 
 export function filterSitesForUser(sites: SiteConfig[], user: User) {
   if (isSuperAdmin(user)) return sites;
-  return sites.filter((site) => user.sites.includes(site.id));
+  const allowed = new Set(user.sites.map((entry) => normalizeSiteId(entry)));
+  return sites.filter((site) => allowed.has(normalizeSiteId(site.id)));
 }
 
 export function requireRole(user: User, roles: User['role'][]) {

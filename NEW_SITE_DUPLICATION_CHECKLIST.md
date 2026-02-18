@@ -1,220 +1,162 @@
 # New Site Duplication Checklist
 
-Use this checklist to duplicate the full platform (frontend, admin, and DB) safely.
+Use this checklist for the current multi-site medical platform where many sites share one codebase and one production deployment.
 
-Reference SOP:
-- `DRHUANG_CLINIC_REPRODUCTION_GUIDE.md` -> section `14) New Site Duplication SOP`
+This is the default path for launching a new clinic site (for example, `acupuncture-flushing`) without breaking existing sites.
 
----
-
-## A) Pre-flight
-
-- [ ] Confirm source project is `chinese-medicine`.
-- [ ] Confirm target folder name (example: `chinese-medicine-newsite`).
-- [ ] Confirm new `siteId` (example: `new-site-id`).
-- [ ] Confirm new production domain.
-- [ ] Confirm this migration will use a new Supabase project.
+Reference:
+- `DRHUANG_CLINIC_REPRODUCTION_GUIDE.md` -> multi-site sections
+- `STAGING_PROMOTION_RUNBOOK.md`
 
 ---
 
-## B) Code clone
+## A) Pre-flight (shared platform)
 
-- [ ] Duplicate project folder:
-
-```bash
-cd /Users/johntang/Desktop/clients/medical-clinic
-cp -R chinese-medicine chinese-medicine-newsite
-cd chinese-medicine-newsite
-rm -rf node_modules .next
-npm install
-```
-
-- [ ] Keep original `chinese-medicine` unchanged.
-- [ ] Initialize separate git remote/repo for new client.
+- [ ] Confirm app is deployed with latest schema-compatible code.
+- [ ] Confirm required DB schema has been applied:
+  - [ ] `supabase/admin-schema.sql`
+  - [ ] `supabase/rls.sql`
+- [ ] Confirm source site ID (for cloning), e.g. `dr-huang-clinic`.
+- [ ] Confirm new site ID (kebab-case), e.g. `new-site-id`.
+- [ ] Confirm production domain, e.g. `newsite.com`.
+- [ ] Confirm local dev domain, e.g. `newsite.local`.
+- [ ] Confirm existing sites/domains backup/export is available.
 
 ---
 
-## C) New Supabase project
+## B) Create new site from Admin (no SQL clone needed)
 
-- [ ] Create a new Supabase project.
-- [ ] Save credentials:
-  - [ ] `NEXT_PUBLIC_SUPABASE_URL`
-  - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - [ ] `SUPABASE_SERVICE_ROLE_KEY`
-- [ ] Run SQL: `supabase/admin-schema.sql`.
-- [ ] Ensure content tables exist:
-  - [ ] `content_entries`
-  - [ ] `content_revisions`
-- [ ] Run SQL: `supabase/rls.sql`.
-
-If content tables are missing, run:
-
-```sql
-create extension if not exists pgcrypto;
-
-create table if not exists public.content_entries (
-  id uuid primary key default gen_random_uuid(),
-  site_id text not null,
-  locale text not null,
-  path text not null,
-  data jsonb not null,
-  updated_at timestamptz not null default now(),
-  updated_by text,
-  unique (site_id, locale, path)
-);
-
-create table if not exists public.content_revisions (
-  id uuid primary key default gen_random_uuid(),
-  entry_id uuid not null references public.content_entries(id) on delete cascade,
-  data jsonb not null,
-  created_at timestamptz not null default now(),
-  created_by text,
-  note text
-);
-```
-
----
-
-## D) Prepare new site content (including booking)
-
-- [ ] Copy base content:
-
-```bash
-cd /Users/johntang/Desktop/clients/medical-clinic/chinese-medicine-newsite
-cp -R content/dr-huang-clinic content/new-site-id
-```
-
-- [ ] Update `content/new-site-id/theme.json`.
-- [ ] Update `content/new-site-id/en/site.json`.
-- [ ] Update `content/new-site-id/zh/site.json`.
-- [ ] Update both locales:
-  - [ ] `navigation.json`
-  - [ ] `header.json`
-  - [ ] `footer.json`
-  - [ ] `seo.json`
-- [ ] Review page files:
-  - [ ] `pages/*.json`
-  - [ ] `pages/*.layout.json`
-- [ ] Review booking files:
-  - [ ] `booking/services.json`
-  - [ ] `booking/settings.json`
-  - [ ] `booking/bookings/*.json` (if historical bookings are migrated)
-
-- [ ] Register site in `content/_sites.json` with:
-  - [ ] `id`
-  - [ ] `name`
-  - [ ] `domain`
-  - [ ] `defaultLocale`
-  - [ ] `supportedLocales`
-
----
-
-## E) Environment setup
-
-- [ ] Create/update `.env.local` in new clone.
+- [ ] Open `/admin/sites/new`.
 - [ ] Set:
-  - [ ] `NEXT_PUBLIC_SUPABASE_URL`
-  - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-  - [ ] `SUPABASE_SERVICE_ROLE_KEY`
-  - [ ] `JWT_SECRET` (new secret)
-  - [ ] `RESEND_API_KEY`
-  - [ ] `RESEND_FROM`
-  - [ ] `CONTACT_FALLBACK_TO`
-  - [ ] `ALERT_TO` (optional)
-- [ ] Confirm no env values point to old production project.
+  - [ ] `Site ID` = `new-site-id`
+  - [ ] `Clone from` = source site
+  - [ ] `Site Name`
+  - [ ] legacy `Domain` (prod domain for backward compatibility)
+  - [ ] `Default Locale`
+  - [ ] `Supported Locales`
+- [ ] Save.
+
+Expected clone behavior:
+- [ ] Clones content entries (DB mode).
+- [ ] Clones booking settings/services.
+- [ ] Clones fallback content/uploads folders when present.
+- [ ] Clones media DB rows for new `site_id` (latest behavior).
 
 ---
 
-## E.1) Resend/Booking setup checks
+## C) Configure domain aliases in Admin Site Settings
 
-- [ ] Verify Resend env vars from section `E` are present in local and deployment env.
-- [ ] Confirm contact email route is active: `app/api/contact/route.ts`.
-- [ ] Confirm booking email sender is configured: `lib/booking/email.ts`.
-- [ ] Verify booking settings include notification recipients:
-  - [ ] `notificationEmails`
-  - [ ] `notificationPhones` (if SMS enabled)
-- [ ] Optional SMS/Twilio setup:
-  - [ ] `TWILIO_ACCOUNT_SID`
-  - [ ] `TWILIO_AUTH_TOKEN`
-  - [ ] `TWILIO_FROM`
-- [ ] Confirm booking tables exist in DB:
-  - [ ] `booking_services`
-  - [ ] `booking_settings`
-  - [ ] `bookings`
-- [ ] Confirm content tables exist in DB:
-  - [ ] `content_entries`
-  - [ ] `content_revisions`
+- [ ] Open `/admin/sites/<new-site-id>`.
+- [ ] In `Domain Aliases`, add:
+  - [ ] `newsite.com` with environment `prod`, enabled
+  - [ ] `newsite.local` with environment `dev`, enabled
+- [ ] Save.
+- [ ] Verify aliases appear in DB table `site_domains`.
+
+Notes:
+- `Domain` field is legacy fallback.
+- `Domain Aliases` is the preferred multi-domain mapping.
 
 ---
 
-## F) Run app + import sequence
+## D) Local routing setup (`.local`)
 
-- [ ] Start app:
+alias is shi.local, local routing setup is simple.
 
-```bash
+1) Add hosts entry on your Mac
+
+sudo nano /etc/hosts
+
+Add this line (and keep your other local aliases too if needed):
+
+127.0.0.1 shi.local
+
+Save and exit:
+Ctrl + O, Enter
+Ctrl + X
+
+2) Flush DNS cache
+
+sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+
+3) Start local app
+
+From project root:
 npm run dev
-```
 
-- [ ] Import sites (`/api/admin/sites/import`).
-- [ ] Import users if required (`/api/admin/users/import`).
-- [ ] For each locale (`en`, `zh`), import content using `missing` mode first.
-- [ ] Import booking data for site (`/api/admin/booking/import`).
-- [ ] Import media only if existing assets are being migrated (`/api/admin/media/import`).
-- [ ] Use overwrite import only intentionally.
+4) Test in browser
 
----
+Open:
+http://shi.local:3003/en
+http://shi.local:3003/zh
 
-## G) Domain routing
-
-- [ ] Verify new site `domain` in site data is correct.
-- [ ] Verify no port in stored domain.
-- [ ] Verify host resolves to correct site in app.
+If alias mapping is correct in DB (site_domains has shi.local enabled for shi-acupuncture), it should load that site.
 
 ---
 
-## H) Build and deploy
+## E) Production domain setup
 
-- [ ] Run production build:
-
-```bash
-npm run build
-```
-
-- [ ] Create separate deployment project (for example, new Vercel project).
-- [ ] Add new env vars in deployment target.
-- [ ] Configure DNS for new domain.
-- [ ] Deploy.
+- [ ] Add `newsite.com` (and optional `www`) in Vercel Domains.
+- [ ] Configure DNS records per Vercel instructions.
+- [ ] Confirm Vercel env has:
+  - [ ] `APP_ENV=prod`
+  - [ ] `NEXT_PUBLIC_APP_ENV=prod`
+  - [ ] Supabase + auth + email keys
+- [ ] Redeploy latest build if needed.
 
 ---
 
-## I) Post-deploy verification
+## F) Update site settings content (NAP first)
 
-- [ ] `/en` and `/zh` load.
+- [ ] Update `site.json` values (business name, address, phone, email) for `en` and `zh`.
+- [ ] Update NAP-related values in:
+  - [ ] `header.json` (`menu.logo.text`, `topbar.phone/address/hrefs`)
+  - [ ] `footer.json` (`brand.name`, `contact` block, copyright if needed)
+  - [ ] `seo.json` titles/descriptions with new location/name
+- [ ] Keep menu items untouched if content team will update later.
+
+---
+
+## G) Import updated JSON to DB (site-scoped, safe)
+
+- [ ] In admin import, set `siteId = new-site-id` only.
+- [ ] Run dry-run first.
+- [ ] Import locale `en` (use overwrite only when intended).
+- [ ] Import locale `zh`.
+- [ ] Confirm no imports were run against `dr-huang-clinic`.
+
+Safety:
+- [ ] Export backup before overwrite import.
+- [ ] Default mode should be `missing` unless deliberately syncing updates.
+
+---
+
+## H) Verification (do not break existing sites)
+
+- [ ] New prod domain routes to new site.
+- [ ] Existing `drhuangclinic.com` unchanged.
+- [ ] `/en` and `/zh` work on both sites.
 - [ ] Admin login works.
-- [ ] Edit in `Site Settings` saves and persists.
-- [ ] Contact form sends:
-  - [ ] clinic notification email
-  - [ ] user auto-reply email
-- [ ] Booking flow works end-to-end:
-  - [ ] create booking
-  - [ ] cancel booking
-  - [ ] reschedule booking
-- [ ] Booking notifications send correctly (email and optional SMS).
-- [ ] Booking data is persisted in DB tables:
-  - [ ] `booking_services`
-  - [ ] `booking_settings`
-  - [ ] `bookings`
-- [ ] Theme changes reflect on frontend.
-- [ ] Layout and variant changes reflect on frontend.
-- [ ] Import/export works.
-- [ ] RBAC/site access boundaries work.
+- [ ] `Site Settings` save persists.
+- [ ] Contact + booking flows work for new site.
+- [ ] `/api/health` returns OK after latest deployment.
+- [ ] `admin_audit_logs` captures site update/import actions.
 
 ---
 
-## J) Safety guardrails
+## I) Known issues and guardrails
 
-- [ ] Do not reuse old Supabase project.
-- [ ] Do not deploy without `SUPABASE_SERVICE_ROLE_KEY`.
-- [ ] Do not reuse old `JWT_SECRET`.
-- [ ] Do not run overwrite import unless approved.
-- [ ] Do not point new domain to old deployment.
+- [ ] If login intermittently fails, check app logs for Supabase network timeout (`ETIMEDOUT`), not just credentials.
+- [ ] If `/api/health` is 404 in prod, redeploy latest code (route not in old deployment).
+- [ ] Do not map real production domains to `127.0.0.1` unless temporary.
+- [ ] Prefer `.local` hosts for local testing.
+- [ ] Do not run overwrite import on the wrong `siteId`.
+
+---
+
+## J) Optional: Fully isolated clone path (separate codebase/DB)
+
+If a client requires full isolation:
+- follow `SITE_REPRODUCTION_TEMPLATE.md`
+- create separate repository/deployment/Supabase project
+- do not share runtime env or data with existing tenants

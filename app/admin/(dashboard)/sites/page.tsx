@@ -65,6 +65,12 @@ export default async function AdminSitesPage() {
                   {site.domain}
                 </div>
               )}
+              {Array.isArray(site.domainAliases) && site.domainAliases.length > 0 && (
+                <div className="text-sm text-gray-600 mt-1">
+                  <span className="font-medium text-gray-700">Domain aliases:</span>{' '}
+                  {site.domainAliases.length}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-3">
               <Link

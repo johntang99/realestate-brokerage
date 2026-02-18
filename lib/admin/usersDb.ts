@@ -50,16 +50,37 @@ export async function findAdminUserByEmailDb(
   const supabase = getSupabaseServerClient();
   if (!supabase) return null;
 
-  const { data, error } = await supabase
-    .from('admin_users')
-    .select('*')
-    .eq('email', email)
-    .maybeSingle();
-  if (error) {
-    console.error('Supabase findAdminUserByEmailDb error:', error);
-    return null;
+  const attempts = 3;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+    if (!error) {
+      return (data as AdminUserRow) || null;
+    }
+
+    const isNetworkIssue =
+      /fetch failed|ETIMEDOUT|ECONNRESET|ENOTFOUND/i.test(
+        `${error.message} ${error.details || ''}`
+      );
+    if (!isNetworkIssue) {
+      console.error('Supabase findAdminUserByEmailDb error:', error);
+      return null;
+    }
+
+    if (attempt < attempts) {
+      await new Promise((resolve) => setTimeout(resolve, attempt * 250));
+      continue;
+    }
+
+    const dbError = new Error('Admin DB unavailable');
+    (dbError as Error & { code?: string }).code = 'ADMIN_DB_UNAVAILABLE';
+    throw dbError;
   }
-  return (data as AdminUserRow) || null;
+
+  return null;
 }
 
 export async function findAdminUserByIdDb(

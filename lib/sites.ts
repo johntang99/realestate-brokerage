@@ -12,9 +12,18 @@ import {
   listSitesDb,
   updateSiteDb,
 } from './sitesDb';
+import { getSiteDomainMatchDb, normalizeDomain } from './siteDomainsDb';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 const SITES_CONFIG_PATH = path.join(CONTENT_DIR, '_sites.json');
+const SITE_DOMAINS_CONFIG_PATH = path.join(CONTENT_DIR, '_site-domains.json');
+
+interface SiteDomainFileRecord {
+  siteId: string;
+  domain: string;
+  environment?: 'dev' | 'staging' | 'prod';
+  enabled?: boolean;
+}
 
 async function getSitesFromFile(): Promise<SiteConfig[]> {
   try {
@@ -77,11 +86,35 @@ export async function getDefaultSite(): Promise<SiteConfig | null> {
  * Get site by domain (for multi-domain setup)
  */
 export async function getSiteByDomain(domain: string): Promise<SiteConfig | null> {
-  const sites = await getSites();
   const normalized = normalizeHost(domain);
-  return (
-    sites.find((site) => normalizeHost(site.domain || '') === normalized) || null
-  );
+  if (!normalized) return null;
+
+  if (canUseSitesDb()) {
+    const aliasMatch = await getSiteDomainMatchDb(normalized);
+    if (aliasMatch?.siteId) {
+      const site = await getSiteById(aliasMatch.siteId);
+      if (site?.enabled) return site;
+    }
+  } else {
+    try {
+      const raw = await fs.promises.readFile(SITE_DOMAINS_CONFIG_PATH, 'utf-8');
+      const parsed = JSON.parse(raw) as { domains?: SiteDomainFileRecord[] };
+      const aliases = Array.isArray(parsed.domains) ? parsed.domains : [];
+      const alias = aliases.find((entry) => {
+        if (entry.enabled === false) return false;
+        return normalizeDomain(entry.domain || '') === normalized;
+      });
+      if (alias?.siteId) {
+        const site = await getSiteById(alias.siteId);
+        if (site?.enabled) return site;
+      }
+    } catch {
+      // ignore if alias file is missing
+    }
+  }
+
+  const sites = await getSites();
+  return sites.find((site) => normalizeHost(site.domain || '') === normalized) || null;
 }
 
 /**

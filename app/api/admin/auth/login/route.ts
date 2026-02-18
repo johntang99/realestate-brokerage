@@ -35,6 +35,13 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Login error:', error);
+    const errorWithCode = error as Error & { code?: string };
+    if (errorWithCode?.code === 'ADMIN_DB_UNAVAILABLE') {
+      return NextResponse.json(
+        { message: 'Authentication service is temporarily unavailable. Please try again.' },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }

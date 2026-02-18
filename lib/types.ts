@@ -3,11 +3,24 @@
 // ============================================
 
 export type Locale = 'en' | 'zh';
+export type RuntimeEnvironment = 'dev' | 'staging' | 'prod';
+
+export interface SiteDomainAlias {
+  id: string;
+  siteId: string;
+  domain: string;
+  environment: RuntimeEnvironment;
+  isPrimary: boolean;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface SiteConfig {
   id: string;
   name: string;
   domain?: string;
+  domainAliases?: SiteDomainAlias[];
   enabled: boolean;
   defaultLocale: Locale;
   supportedLocales: Locale[];

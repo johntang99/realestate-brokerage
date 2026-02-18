@@ -6,11 +6,23 @@ import { canUseSitesDb, upsertSiteDb } from '@/lib/sitesDb';
 import type { SiteConfig } from '@/lib/types';
 import { getAdminUserCountDb } from '@/lib/admin/usersDb';
 import { isSuperAdmin } from '@/lib/admin/permissions';
+import { writeAuditLog } from '@/lib/admin/audit';
+import { upsertSiteDomainDb } from '@/lib/siteDomainsDb';
 
 const SITES_FILE = path.join(process.cwd(), 'content', '_sites.json');
+const SITE_DOMAINS_FILE = path.join(process.cwd(), 'content', '_site-domains.json');
 
 interface SitesPayload {
   sites?: SiteConfig[];
+}
+
+interface SiteDomainsPayload {
+  domains?: Array<{
+    siteId?: string;
+    domain?: string;
+    environment?: 'dev' | 'staging' | 'prod';
+    enabled?: boolean;
+  }>;
 }
 
 export async function POST(request: NextRequest) {
@@ -38,6 +50,7 @@ export async function POST(request: NextRequest) {
 
     let imported = 0;
     let skipped = 0;
+    let domainAliasesImported = 0;
 
     for (const site of sites) {
       if (!site?.id || !site?.name) {
@@ -52,7 +65,34 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, imported, skipped });
+    try {
+      const rawDomainAliases = await fs.readFile(SITE_DOMAINS_FILE, 'utf-8');
+      const domainPayload = JSON.parse(rawDomainAliases) as SiteDomainsPayload;
+      const aliases = Array.isArray(domainPayload.domains) ? domainPayload.domains : [];
+      for (const alias of aliases) {
+        if (!alias.siteId || !alias.domain) continue;
+        const saved = await upsertSiteDomainDb({
+          siteId: alias.siteId,
+          domain: alias.domain,
+          environment: alias.environment || 'prod',
+          isPrimary: false,
+          enabled: alias.enabled ?? true,
+        });
+        if (saved) domainAliasesImported += 1;
+      }
+    } catch {
+      // optional file
+    }
+
+    if (session?.user) {
+      await writeAuditLog({
+        actor: session.user,
+        action: 'sites_imported',
+        metadata: { imported, skipped, domainAliasesImported },
+      });
+    }
+
+    return NextResponse.json({ success: true, imported, skipped, domainAliasesImported });
   } catch (error: any) {
     return NextResponse.json(
       { message: error?.message || 'Failed to import sites' },

@@ -1,0 +1,16 @@
+{
+  "domains": [
+    {
+      "siteId": "dr-huang-clinic",
+      "domain": "drhuangclinic.com",
+      "environment": "prod",
+      "enabled": true
+    },
+    {
+      "siteId": "acupuncture-flushing",
+      "domain": "acupunctureflushing.com",
+      "environment": "prod",
+      "enabled": true
+    }
+  ]
+}

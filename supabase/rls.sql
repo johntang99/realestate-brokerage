@@ -7,10 +7,24 @@ create policy "deny_public" on public.sites for all
   to anon, authenticated
   using (false) with check (false);
 
+-- Site domains
+alter table public.site_domains enable row level security;
+drop policy if exists "deny_public" on public.site_domains;
+create policy "deny_public" on public.site_domains for all
+  to anon, authenticated
+  using (false) with check (false);
+
 -- Admin users
 alter table public.admin_users enable row level security;
 drop policy if exists "deny_public" on public.admin_users;
 create policy "deny_public" on public.admin_users for all
+  to anon, authenticated
+  using (false) with check (false);
+
+-- Admin audit logs
+alter table public.admin_audit_logs enable row level security;
+drop policy if exists "deny_public" on public.admin_audit_logs;
+create policy "deny_public" on public.admin_audit_logs for all
   to anon, authenticated
   using (false) with check (false);
 

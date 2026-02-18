@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { SiteConfig } from '@/lib/types';
+import type { RuntimeEnvironment, SiteConfig } from '@/lib/types';
 import { Button, Input } from '@/components/ui';
  
 const siteSchemaBase = z.object({
@@ -33,10 +33,29 @@ interface SiteFormProps {
   sites?: SiteConfig[];
 }
 
+interface EditableDomainAlias {
+  id?: string;
+  domain: string;
+  environment: RuntimeEnvironment;
+  isPrimary: boolean;
+  enabled: boolean;
+}
+
 export function SiteForm({ site, mode = 'edit', sites = [] }: SiteFormProps) {
    const router = useRouter();
    const [status, setStatus] = useState<string | null>(null);
   const isCreate = mode === 'create';
+  const [domainAliases, setDomainAliases] = useState<EditableDomainAlias[]>(
+    Array.isArray(site.domainAliases) && site.domainAliases.length > 0
+      ? site.domainAliases.map((alias) => ({
+          id: alias.id,
+          domain: alias.domain,
+          environment: alias.environment,
+          isPrimary: alias.isPrimary,
+          enabled: alias.enabled,
+        }))
+      : []
+  );
  
   const form = useForm<SiteFormData | SiteCreateFormData>({
     resolver: zodResolver(isCreate ? createSchema : siteSchemaBase),
@@ -68,6 +87,7 @@ export function SiteForm({ site, mode = 'edit', sites = [] }: SiteFormProps) {
           body: JSON.stringify({
             ...data,
             domain: data.domain ? data.domain : undefined,
+            domainAliases,
           }),
         });
 
@@ -152,6 +172,110 @@ export function SiteForm({ site, mode = 'edit', sites = [] }: SiteFormProps) {
            Optional. Used for multi-domain routing.
          </p>
        </div>
+
+      {!isCreate && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="block text-sm font-medium text-gray-700">Domain Aliases</label>
+            <button
+              type="button"
+              className="px-3 py-1.5 text-xs rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50"
+              onClick={() =>
+                setDomainAliases((current) => [
+                  ...current,
+                  {
+                    domain: '',
+                    environment: 'prod',
+                    isPrimary: true,
+                    enabled: true,
+                  },
+                ])
+              }
+            >
+              Add Alias
+            </button>
+          </div>
+          <p className="text-xs text-gray-500">
+            Manage production and local/dev hostnames for this site without SQL.
+          </p>
+          {domainAliases.length === 0 ? (
+            <div className="rounded-md border border-dashed border-gray-300 p-3 text-xs text-gray-500">
+              No aliases configured yet.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {domainAliases.map((alias, index) => (
+                <div
+                  key={`${alias.id || 'new'}-${index}`}
+                  className="grid gap-2 md:grid-cols-[1fr_180px_100px_80px]"
+                >
+                  <Input
+                    placeholder="example.com"
+                    value={alias.domain}
+                    onChange={(event) =>
+                      setDomainAliases((current) =>
+                        current.map((entry, entryIndex) =>
+                          entryIndex === index
+                            ? { ...entry, domain: event.target.value }
+                            : entry
+                        )
+                      )
+                    }
+                  />
+                  <select
+                    className="rounded-md border border-gray-300 px-3 py-2 text-sm"
+                    value={alias.environment}
+                    onChange={(event) =>
+                      setDomainAliases((current) =>
+                        current.map((entry, entryIndex) =>
+                          entryIndex === index
+                            ? {
+                                ...entry,
+                                environment: event.target.value as RuntimeEnvironment,
+                              }
+                            : entry
+                        )
+                      )
+                    }
+                  >
+                    <option value="prod">Production</option>
+                    <option value="dev">Local/Dev</option>
+                    <option value="staging">Staging</option>
+                  </select>
+                  <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300"
+                      checked={alias.enabled}
+                      onChange={(event) =>
+                        setDomainAliases((current) =>
+                          current.map((entry, entryIndex) =>
+                            entryIndex === index
+                              ? { ...entry, enabled: event.target.checked }
+                              : entry
+                          )
+                        )
+                      }
+                    />
+                    Enabled
+                  </label>
+                  <button
+                    type="button"
+                    className="px-3 py-2 rounded-md border border-gray-300 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() =>
+                      setDomainAliases((current) =>
+                        current.filter((_, entryIndex) => entryIndex !== index)
+                      )
+                    }
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
  
        <div className="flex items-center gap-3">
          <input

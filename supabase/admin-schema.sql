@@ -11,6 +11,20 @@ create table if not exists public.sites (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.site_domains (
+  id uuid primary key default gen_random_uuid(),
+  site_id text not null references public.sites(id) on delete cascade,
+  domain text not null,
+  environment text not null default 'prod',
+  is_primary boolean not null default false,
+  enabled boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (site_id, domain, environment)
+);
+
+create index if not exists site_domains_domain_idx on public.site_domains (domain);
+
 create table if not exists public.admin_users (
   id text primary key,
   email text not null unique,
@@ -64,6 +78,16 @@ create table if not exists public.bookings (
 );
 
 create index if not exists bookings_site_date_idx on public.bookings (site_id, date);
+
+create table if not exists public.admin_audit_logs (
+  id uuid primary key default gen_random_uuid(),
+  actor_id text,
+  actor_email text,
+  action text not null,
+  site_id text,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
 
 -- Safe incremental migration for existing projects
 alter table public.bookings

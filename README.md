@@ -32,6 +32,12 @@ Build:
 npm run build
 ```
 
+Health check:
+
+```bash
+curl http://localhost:3003/api/health
+```
+
 ## Default admin (file fallback seed)
 
 - `admin@example.com`
@@ -49,6 +55,7 @@ npm run build
 - `NEW_SITE_DUPLICATION_CHECKLIST.md`
 - `TEMPLATE_QA_MATRIX.md`
 - `TEMPLATE_RUNBOOK.md`
+- `STAGING_PROMOTION_RUNBOOK.md`
 
 ## Starter seed packs
 

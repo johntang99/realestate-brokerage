@@ -1,5 +1,6 @@
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import type { SiteConfig } from '@/lib/types';
+import { listSiteDomainsDb, upsertSiteDomainDb } from './siteDomainsDb';
 
 interface SiteRow {
   id: string;
@@ -38,7 +39,18 @@ export async function listSitesDb(): Promise<SiteConfig[]> {
     console.error('Supabase listSitesDb error:', error);
     return [];
   }
-  return (data || []).map((row) => mapSiteRow(row as SiteRow));
+  const sites = (data || []).map((row) => mapSiteRow(row as SiteRow));
+  const aliases = await listSiteDomainsDb();
+  const aliasesBySite = new Map<string, typeof aliases>();
+  for (const alias of aliases) {
+    const current = aliasesBySite.get(alias.siteId) || [];
+    current.push(alias);
+    aliasesBySite.set(alias.siteId, current);
+  }
+  return sites.map((site) => ({
+    ...site,
+    domainAliases: aliasesBySite.get(site.id) || [],
+  }));
 }
 
 export async function getSiteByIdDb(siteId: string): Promise<SiteConfig | null> {
@@ -54,7 +66,12 @@ export async function getSiteByIdDb(siteId: string): Promise<SiteConfig | null> 
     console.error('Supabase getSiteByIdDb error:', error);
     return null;
   }
-  return data ? mapSiteRow(data as SiteRow) : null;
+  if (!data) return null;
+  const site = mapSiteRow(data as SiteRow);
+  return {
+    ...site,
+    domainAliases: await listSiteDomainsDb(site.id),
+  };
 }
 
 export async function createSiteDb(
@@ -79,7 +96,21 @@ export async function createSiteDb(
     console.error('Supabase createSiteDb error:', error);
     return null;
   }
-  return data ? mapSiteRow(data as SiteRow) : null;
+  const created = data ? mapSiteRow(data as SiteRow) : null;
+  if (!created) return null;
+  if (input.domain) {
+    await upsertSiteDomainDb({
+      siteId: created.id,
+      domain: input.domain,
+      environment: 'prod',
+      isPrimary: true,
+      enabled: true,
+    });
+  }
+  return {
+    ...created,
+    domainAliases: await listSiteDomainsDb(created.id),
+  };
 }
 
 export async function updateSiteDb(
@@ -108,7 +139,21 @@ export async function updateSiteDb(
     console.error('Supabase updateSiteDb error:', error);
     return null;
   }
-  return data ? mapSiteRow(data as SiteRow) : null;
+  const updated = data ? mapSiteRow(data as SiteRow) : null;
+  if (!updated) return null;
+  if (updates.domain) {
+    await upsertSiteDomainDb({
+      siteId,
+      domain: updates.domain,
+      environment: 'prod',
+      isPrimary: true,
+      enabled: true,
+    });
+  }
+  return {
+    ...updated,
+    domainAliases: await listSiteDomainsDb(siteId),
+  };
 }
 
 export async function upsertSiteDb(params: SiteConfig): Promise<SiteConfig | null> {
@@ -136,5 +181,19 @@ export async function upsertSiteDb(params: SiteConfig): Promise<SiteConfig | nul
     console.error('Supabase upsertSiteDb error:', error);
     return null;
   }
-  return data ? mapSiteRow(data as SiteRow) : null;
+  const saved = data ? mapSiteRow(data as SiteRow) : null;
+  if (!saved) return null;
+  if (params.domain) {
+    await upsertSiteDomainDb({
+      siteId: saved.id,
+      domain: params.domain,
+      environment: 'prod',
+      isPrimary: true,
+      enabled: true,
+    });
+  }
+  return {
+    ...saved,
+    domainAliases: await listSiteDomainsDb(saved.id),
+  };
 }

@@ -4,6 +4,7 @@ import path from 'path';
 import { getSessionFromRequest } from '@/lib/admin/auth';
 import { listContentEntries, upsertContentEntry } from '@/lib/contentDb';
 import { canWriteContent, requireSiteAccess } from '@/lib/admin/permissions';
+import { writeAuditLog } from '@/lib/admin/audit';
 
 async function collectJsonPathsRecursive(
   rootDir: string,
@@ -35,6 +36,7 @@ async function collectJsonPathsRecursive(
 }
 
 export async function POST(request: NextRequest) {
+  const startedAt = Date.now();
   const session = await getSessionFromRequest(request);
   if (!session) {
     return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
@@ -71,30 +73,38 @@ export async function POST(request: NextRequest) {
   let backfillErrors = 0;
   const backfilledPaths: string[] = [];
   const backfillErrorPaths: string[] = [];
-  for (const relativePath of localJsonPaths) {
-    if (localeEntryMap.has(relativePath)) continue;
-    const absolutePath = path.join(contentRoot, relativePath);
-    try {
-      const raw = await fs.readFile(absolutePath, 'utf-8');
-      const data = JSON.parse(raw);
-      const upserted = await upsertContentEntry({
-        siteId,
-        locale,
-        path: relativePath,
-        data,
-        updatedBy: session.user.email,
-      });
-      if (upserted) {
-        localeEntryMap.set(relativePath, upserted);
+  const missingLocalPaths = localJsonPaths.filter((relativePath) => !localeEntryMap.has(relativePath));
+  const backfillBatchSize = 20;
+  for (let i = 0; i < missingLocalPaths.length; i += backfillBatchSize) {
+    const batch = missingLocalPaths.slice(i, i + backfillBatchSize);
+    const results = await Promise.all(
+      batch.map(async (relativePath) => {
+        const absolutePath = path.join(contentRoot, relativePath);
+        try {
+          const raw = await fs.readFile(absolutePath, 'utf-8');
+          const data = JSON.parse(raw);
+          const upserted = await upsertContentEntry({
+            siteId,
+            locale,
+            path: relativePath,
+            data,
+            updatedBy: session.user.email,
+          });
+          return { relativePath, upserted };
+        } catch {
+          return { relativePath, upserted: null };
+        }
+      })
+    );
+    for (const result of results) {
+      if (result.upserted) {
+        localeEntryMap.set(result.relativePath, result.upserted);
         backfilled += 1;
-        backfilledPaths.push(relativePath);
+        backfilledPaths.push(result.relativePath);
       } else {
         backfillErrors += 1;
-        backfillErrorPaths.push(relativePath);
+        backfillErrorPaths.push(result.relativePath);
       }
-    } catch {
-      backfillErrors += 1;
-      backfillErrorPaths.push(relativePath);
     }
   }
 
@@ -139,6 +149,19 @@ export async function POST(request: NextRequest) {
     const themePath = path.join(process.cwd(), 'content', siteId, 'theme.json');
     await fs.writeFile(themePath, JSON.stringify(themeEntry.data, null, 2));
   }
+
+  await writeAuditLog({
+    actor: session.user,
+    action: 'content_export_completed',
+    siteId,
+    metadata: {
+      locale,
+      exported: localeEntries.length + (themeEntry ? 1 : 0),
+      backfilled,
+      backfillErrors,
+      durationMs: Date.now() - startedAt,
+    },
+  });
 
   return NextResponse.json({
     success: true,
