@@ -10,7 +10,8 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "ci:check": "npm run type-check && npm run lint && npm run build"
+    "ci:check": "npm run type-check && npm run lint && npm run build",
+    "media:migrate": "node scripts/migrate-media-to-supabase.mjs"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.20",
