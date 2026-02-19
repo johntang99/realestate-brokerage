@@ -8,6 +8,7 @@ import { getRequestSiteId, loadContent, loadPageContent, loadSiteInfo } from '@/
 import { buildPageMetadata } from '@/lib/seo';
 import { Locale, SiteInfo } from '@/lib/types';
 import { getSiteDisplayName } from '@/lib/siteInfo';
+import { resolveMediaUrl } from '@/lib/media-url';
 import { Button, Badge, Card, CardHeader, CardTitle, CardDescription, CardContent, Icon } from '@/components/ui';
 import CTASection from '@/components/sections/CTASection';
 import { CheckCircle2, MapPin, Clock } from 'lucide-react';
@@ -294,7 +295,10 @@ export default async function AboutPage({ params }: AboutPageProps) {
   const heroVariant = hero.variant || 'split-photo-right';
   const centeredHero = heroVariant === 'centered';
   const imageLeftHero = heroVariant === 'split-photo-left';
-  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
+  const resolvedHeroBackgroundImage = resolveMediaUrl(hero.backgroundImage);
+  const resolvedProfileImage = resolveMediaUrl(profile.image);
+  const backgroundHero =
+    heroVariant === 'photo-background' && Boolean(resolvedHeroBackgroundImage);
   const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
   const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'pt-20 md:pt-24';
   const profileVariant = profile.variant || 'split';
@@ -318,7 +322,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
           }`}
           style={{
             ...(sectionStyle('hero') || {}),
-            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
+            ...(backgroundHero
+              ? { backgroundImage: `url(${resolvedHeroBackgroundImage})` }
+              : {}),
           }}
         >
         {/* Decorative Background */}
@@ -348,9 +354,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
             {!centeredHero && (
             <div className={`hidden md:block w-full ${imageLeftHero ? 'lg:order-first' : ''}`}>
               <div className="rounded-3xl overflow-hidden shadow-2xl">
-                {hero.backgroundImage ? (
+                {resolvedHeroBackgroundImage ? (
                   <Image
-                    src={hero.backgroundImage}
+                    src={resolvedHeroBackgroundImage}
                     alt={hero.title}
                     width={1200}
                     height={1200}
@@ -391,9 +397,9 @@ export default async function AboutPage({ params }: AboutPageProps) {
               <div className={profileVariant === 'stacked' ? 'max-w-md mx-auto' : 'lg:col-span-2'}>
                 <div className="sticky top-8">
                   <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl mb-6 bg-gray-100">
-                    {profile.image ? (
+                    {resolvedProfileImage ? (
                       <Image
-                        src={profile.image}
+                        src={resolvedProfileImage}
                         alt={profile.name}
                         fill
                         className="object-cover"

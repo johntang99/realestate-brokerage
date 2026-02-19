@@ -8,8 +8,8 @@
       "text": "Natural Life Acupuncture",
       "emoji": "",
       "image": {
-        "alt": "Dr Huang Clinic",
-        "src": "/uploads/dr-huang-clinic/home/drhuang-2.svg"
+        "alt": "Dr Jiang Acupuncture",
+        "src": "/uploads/acupuncture-flushing/general/logo-Acu-flushing-1.webp"
       },
       "subtext": "Traditional Chinese Medicine & Acupuncture"
     },
@@ -35,14 +35,6 @@
         "text": "Case Studies"
       },
       {
-        "url": "/en/gallery",
-        "text": "Gallery"
-      },
-      {
-        "url": "/en/new-patients",
-        "text": "New Visit"
-      },
-      {
         "url": "/en/pricing",
         "text": "Pricing"
       },
@@ -55,7 +47,7 @@
         "text": "Contact"
       }
     ],
-    "variant": "transparent",
+    "variant": "centered",
     "fontWeight": "semibold"
   },
   "topbar": {

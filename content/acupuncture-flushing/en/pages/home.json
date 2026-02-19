@@ -7,9 +7,9 @@
       "link": "/en/contact",
       "text": "Book Your Consultation"
     },
-    "contactInfo": "Call us at (845) 381-1106 or book online",
+    "contactInfo": "Call us at (718) 888-9512 or book online",
     "secondaryCta": {
-      "link": "tel:+18453811106",
+      "link": "tel:+17188889512",
       "text": "Call Us Now"
     }
   },
@@ -63,7 +63,7 @@
       {
         "icon": "Heart",
         "label": "Patients Helped",
-        "number": "20,000+"
+        "number": "1,000+"
       },
       {
         "icon": "Star",
@@ -78,7 +78,7 @@
     ],
     "tagline": "Holistic Acupuncture & Traditional Chinese Medicine (TCM) Care",
     "variant": "split-photo-right",
-    "clinicName": "Acupuncture & Traditional Chinese Medicine in Middletown, NY",
+    "clinicName": "Acupuncture & Traditional Chinese Medicine in Flushing, NY",
     "primaryCta": {
       "link": "/en/contact",
       "text": "Book Appointment"
@@ -101,7 +101,7 @@
         "text": "Evidence-Based Practice"
       }
     ],
-    "description": "Experience the healing power of Traditional Chinese Medicine in Middletown, NY. Our holistic approach combines acupuncture, herbal medicine, and time-tested therapies to restore balance, relieve pain, and support natural healing",
+    "description": "Experience the healing power of Traditional Chinese Medicine in Flushing, NY. Our holistic approach combines acupuncture, herbal medicine, and time-tested therapies to restore balance, relieve pain, and support natural healing",
     "trustBadges": [
       "Licensed Acupuncturist",
       "Board Certified",
@@ -173,10 +173,10 @@
       "text": "Accepting New Patients",
       "visible": true
     },
-    "email": "sancai.acu@gmail.com",
-    "phone": "(845) 381-1106",
-    "address": "71 East Main Street, Middletown, NY 10940",
-    "addressMapUrl": "https://maps.google.com/?q=71+East+Main+Street+Middletown+NY+10940"
+    "email": "acupuncture41ave@gmail.com",
+    "phone": "(718) 888-9512",
+    "address": "143-26 41st Ave, Flushing, NY 11355",
+    "addressMapUrl": "https://www.google.com/maps/search/?api=1&query=143-26%2041st%20Ave%2C%20Flushing%2C%20NY%2011355"
   },
   "gallery": {
     "badge": "VISIT OUR CLINIC",

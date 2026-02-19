@@ -6,18 +6,18 @@
       "link": "/en/contact",
       "text": "Book Your Consultation"
     },
-    "description": "Schedule your initial consultation to discuss your health goals and discover how TCM can help you feel your best.",
+    "description": "Schedule your initial consultation to discuss your health goals and discover how acupuncture can help you feel your best.",
     "secondaryCta": {
-      "link": "tel:+18453811106",
+      "link": "tel:+17188889512",
       "text": "Call Us Today"
     }
   },
   "hero": {
-    "title": "Meet Dr. Huang",
+    "title": "Meet Dr. Jiang",
     "variant": "split-photo-right",
     "subtitle": "Dedicated to Your Health & Wellness Through Traditional Chinese Medicine (TCM)",
     "description": "Committed to healing through time-tested wisdom and personalized care.",
-    "backgroundImage": "/uploads/dr-huang-clinic/about/dr-huang-lecture-20.png"
+    "backgroundImage": "https://oakahkxpbmmodpcpocio.supabase.co/storage/v1/object/public/chinesemedicine-media/acupuncture-flushing/general/1771535005452-bio-brz9ihyy.jpg"
   },
   "clinic": {
     "title": "About Our Clinic",
@@ -53,21 +53,21 @@
       "Peaceful, calming atmosphere"
     ],
     "description": [
-      "Dr. Huang Clinic was founded in 2010 with a simple mission: to provide accessible, high-quality Traditional Chinese Medicine care to the Middletown community.",
+      "Dr. Jiang Clinic was founded in Flushing with a simple mission: to provide accessible, high-quality Traditional Chinese Medicine care to the Middletown community.",
       "What started as a small practice has grown into a trusted wellness center, helping over 1,000 patients achieve better health naturally."
     ],
     "environment": "Our clinic provides a peaceful, welcoming environment designed to promote relaxation and healing. From the moment you enter, you'll feel the difference - calming colors, comfortable treatment rooms, and a warm, friendly atmosphere that puts patients at ease."
   },
   "journey": {
-    "story": "My path to Traditional Chinese Medicine began with a personal health challenge. As a biology student at Cornell, I suffered from chronic migraines that conventional medicine couldn't fully resolve. A friend suggested I try acupuncture, and after just a few treatments, my migraines improved dramatically. I was amazed - not just by the relief, but by the holistic approach that considered my stress levels, sleep patterns, and diet alongside the physical symptoms.\n\nThis experience sparked a deep curiosity about TCM. I began studying the theories, philosophy, and diagnostic methods during my remaining undergraduate years. After graduation, instead of pursuing medical school as originally planned, I enrolled in a Master's program in Traditional Chinese Medicine.\n\nThose years of intensive study were transformative. I learned pulse diagnosis, tongue diagnosis, acupuncture techniques, herbal pharmacology, and the intricate theories that have guided Chinese medicine for thousands of years. But more importantly, I learned to see patients as whole human beings, not just collections of symptoms.\n\nAfter earning my master's degree and passing national board certifications, I began my clinical practice. Each patient has taught me something new, and after 15 years, I remain passionate about this medicine's ability to help people heal naturally. Opening Dr. Huang Clinic in Middletown has allowed me to serve this wonderful community and share the benefits of TCM with my neighbors.",
+    "story": "My path to Traditional Chinese Medicine began with a personal health challenge. As a biology student at University of Illinois, I suffered from chronic migraines that conventional medicine couldn't fully resolve. A friend suggested I try acupuncture, and after just a few treatments, my migraines improved dramatically. I was amazed - not just by the relief, but by the holistic approach that considered my stress levels, sleep patterns, and diet alongside the physical symptoms.\n\nThis experience sparked a deep curiosity about TCM. I began studying the theories, philosophy, and diagnostic methods during my remaining undergraduate years. After graduation, instead of pursuing medical school as originally planned, I enrolled in a Master's program in Traditional Chinese Medicine.\n\nThose years of intensive study were transformative. I learned pulse diagnosis, tongue diagnosis, acupuncture techniques, herbal pharmacology, and the intricate theories that have guided Chinese medicine for thousands of years. But more importantly, I learned to see patients as whole human beings, not just collections of symptoms.\n\nAfter earning my master's degree and passing national board certifications, I began my clinical practice. Each patient has taught me something new, and after 15 years, I remain passionate about this medicine's ability to help people heal naturally. Opening Dr. Jiang Clinic in Flushing, New York has allowed me to serve this wonderful community and share the benefits of TCM with my neighbors.",
     "title": "My Journey to Chinese Medicine",
     "variant": "prose"
   },
   "profile": {
-    "bio": "Dr. Michael Huang has dedicated over 15 years to the practice of Traditional Chinese Medicine, helping thousands of patients achieve better health through natural, holistic healing methods. His passion for TCM began during his undergraduate studies in biology, where he became fascinated by the body's innate healing abilities and the elegant wisdom of Chinese medicine.",
-    "name": "Dr. Michael Huang, L.Ac., MSTCM",
+    "bio": "Acupuncturist Jiang is a New York State licensed acupuncturist with many years of experience. She received her degree in traditional Chinese medicine from Beijing University of Chinese Medicine and a Masters in Molecular Biology and Biostatistics from the University of Illinois.\n\nHer lifelong interest in health, nutrition, and treatment began at a young age. Through acupuncture and Chinese medicine, she delivers the natural healing and health augmentation her patients need, specializing in pain relief and long-term wellness.",
+    "name": "Acupuncturist Jiang, L.Ac., M.S.",
     "image": "/uploads/dr-huang-clinic/about/dr-huang-11.png",
-    "quote": "True healing comes from addressing the root cause, not just suppressing symptoms. Every patient is unique, and treatment must reflect that individuality.",
+    "quote": "I believe in treating the root cause of imbalance rather than just symptoms, helping patients achieve sustainable health improvements.",
     "title": "Licensed Acupuncturist & TCM Practitioner",
     "variant": "split",
     "signature": "/uploads/dr-huang-clinic/about/signature.png"
@@ -101,16 +101,16 @@
         "description": "The best medicine prevents illness before it occurs. Treatment includes guidance on diet, lifestyle, and self-care practices to maintain long-term health."
       }
     ],
-    "introduction": "Dr. Huang's approach to healing is rooted in the fundamental principles of Traditional Chinese Medicine while incorporating modern clinical understanding."
+    "introduction": "Dr. Jiang's approach to healing is rooted in the fundamental principles of Traditional Chinese Medicine while incorporating modern clinical understanding."
   },
   "credentials": {
     "items": [
       {
         "icon": "GraduationCap",
         "year": "2008",
-        "location": "San Diego, CA",
-        "credential": "Master of Science in Traditional Chinese Medicine",
-        "institution": "Pacific College of Health and Science"
+        "location": "Beijing, CHina",
+        "credential": "Doctor Degree in Traditional Chinese Medicine",
+        "institution": "Beijing University of Chinese Medicine"
       },
       {
         "icon": "Award",
@@ -135,10 +135,10 @@
       },
       {
         "icon": "BookOpen",
-        "year": "2004",
-        "location": "Ithaca, NY",
-        "credential": "Bachelor of Science in Biology",
-        "institution": "Cornell University"
+        "year": "2015",
+        "location": "Champaign, Il",
+        "credential": "Master Degree of Science in Biology",
+        "institution": "University of Illinois"
       }
     ],
     "title": "Education & Credentials",
@@ -191,7 +191,7 @@
     ],
     "title": "Areas of Specialization",
     "variant": "grid-2",
-    "description": "Through years of clinical practice and continuing education, Dr. Huang has developed particular expertise in several key areas:"
+    "description": "Through years of clinical practice and continuing education, Dr. Jiang has developed particular expertise in several key areas:"
   },
   "continuingEducation": {
     "items": [
@@ -204,6 +204,6 @@
     ],
     "title": "Continuing Education & Training",
     "variant": "compact",
-    "description": "Dr. Huang maintains active involvement in the TCM community and regularly pursues advanced training:"
+    "description": "Dr. Jiang maintains active involvement in the TCM community and regularly pursues advanced training:"
   }
 }
