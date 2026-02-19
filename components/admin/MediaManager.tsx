@@ -15,6 +15,17 @@ interface MediaManagerProps {
   selectedSiteId: string;
 }
 
+async function parseApiError(response: Response, fallback: string) {
+  const text = await response.text();
+  if (!text) return fallback;
+  try {
+    const parsed = JSON.parse(text) as { message?: string };
+    return parsed.message || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
   const [siteId, setSiteId] = useState(selectedSiteId);
   const [items, setItems] = useState<MediaItem[]>([]);
@@ -32,8 +43,8 @@ export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
     try {
       const response = await fetch(`/api/admin/media/list?siteId=${siteId}`);
       if (!response.ok) {
-        const payload = await response.json();
-        throw new Error(payload.message || 'Failed to load media');
+        const message = await parseApiError(response, 'Failed to load media');
+        throw new Error(message);
       }
       const payload = await response.json();
       setItems(payload.items || []);
@@ -70,8 +81,8 @@ export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
         body: formData,
       });
       if (!response.ok) {
-        const payload = await response.json();
-        throw new Error(payload.message || 'Upload failed');
+        const message = await parseApiError(response, 'Upload failed');
+        throw new Error(message);
       }
       await loadMedia();
       setStatus('Uploaded');
@@ -90,8 +101,8 @@ export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
       { method: 'DELETE' }
     );
     if (!response.ok) {
-      const payload = await response.json();
-      setStatus(payload.message || 'Delete failed');
+      const message = await parseApiError(response, 'Delete failed');
+      setStatus(message);
       return;
     }
     await loadMedia();
@@ -116,7 +127,15 @@ export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ siteId }),
       });
-      const payload = await response.json();
+      const text = await response.text();
+      let payload: { imported?: number; message?: string } = {};
+      if (text) {
+        try {
+          payload = JSON.parse(text);
+        } catch {
+          payload = {};
+        }
+      }
       if (!response.ok) {
         throw new Error(payload.message || 'Import failed');
       }
