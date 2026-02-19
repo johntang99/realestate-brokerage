@@ -116,7 +116,7 @@ export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
   const handleImport = async () => {
     if (!siteId) return;
     const confirmed = window.confirm(
-      'Sync media metadata from /public/uploads into the database?'
+      'Sync media metadata from storage/uploads into the database?'
     );
     if (!confirmed) return;
     setImporting(true);
@@ -219,7 +219,7 @@ export function MediaManager({ sites, selectedSiteId }: MediaManagerProps) {
           Refresh
         </Button>
         <Button variant="outline" onClick={handleImport} disabled={importing}>
-          {importing ? 'Syncing…' : 'Sync from uploads'}
+          {importing ? 'Syncing…' : 'Sync media'}
         </Button>
       </div>
 
