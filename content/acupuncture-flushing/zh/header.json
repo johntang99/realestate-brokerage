@@ -9,7 +9,7 @@
       "emoji": "",
       "image": {
         "alt": "黄医生诊所",
-        "src": "/uploads/dr-huang-clinic/home/drhuang-2.svg"
+        "src": "https://oakahkxpbmmodpcpocio.supabase.co/storage/v1/object/public/chinesemedicine-media/acupuncture-flushing/general/logo-Acu-flushing-1.webp"
       },
       "subtext": "传统中医与针灸"
     },
@@ -33,14 +33,6 @@
       {
         "url": "/zh/case-studies",
         "text": "案例分享"
-      },
-      {
-        "url": "/zh/gallery",
-        "text": "诊所环境"
-      },
-      {
-        "url": "/zh/new-patients",
-        "text": "首次就诊"
       },
       {
         "url": "/zh/pricing",
