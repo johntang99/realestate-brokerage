@@ -1,323 +1,109 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { loadSiteInfo } from '@/lib/content';
-import { getDefaultSite, getSiteByHost } from '@/lib/sites';
-import type { Locale, SiteInfo } from '@/lib/types';
-import { getSiteDisplayName } from '@/lib/siteInfo';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-interface ContactFormData {
-  name: string;
-  email: string;
-  phone: string;
-  reason: string;
-  message: string;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const FALLBACK_EMAIL = process.env.CONTACT_FALLBACK_TO || 'support@baamplatform.com';
+
+interface ConsultationPayload {
+  name?: string;
+  email?: string;
+  phone?: string;
+  projectType?: string;
+  scope?: string;
+  budget?: string;
+  location?: string;
+  referral?: string;
+  preferredLanguage?: string;
+  message?: string;
+  siteId?: string;
   locale?: string;
+  type?: string;
+  // legacy fields
+  reason?: string;
 }
 
-interface ContactEmailContext {
-  locale: Locale;
-  businessName: string;
-  phone: string;
-  addressLine: string;
-}
-
-function toLocale(rawLocale: unknown): Locale {
-  return rawLocale === 'zh' ? 'zh' : 'en';
-}
-
-async function resolveRequestSiteInfo(request: NextRequest, locale: Locale): Promise<SiteInfo | null> {
-  const host = request.headers.get('host');
-  const site = (await getSiteByHost(host)) || (await getDefaultSite());
-  if (!site) return null;
-  return loadSiteInfo(site.id, locale) as Promise<SiteInfo | null>;
-}
-
-function getReasonLabel(reason: string): string {
-  return reason?.trim() || 'General inquiry';
-}
-
-function getAddressLine(siteInfo: SiteInfo | null): string {
-  if (!siteInfo) return '';
-  return [siteInfo.address, siteInfo.city, siteInfo.state, siteInfo.zip].filter(Boolean).join(', ');
-}
-
-function createEmailHTML(data: ContactFormData, context: ContactEmailContext): string {
-  const { name, email, phone, reason, message } = data;
-  const { businessName, locale } = context;
-  const reasonLabel = getReasonLabel(reason);
-  const timestamp = new Date().toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US', { 
-    timeZone: 'America/New_York',
-    dateStyle: 'full',
-    timeStyle: 'short'
+async function saveToSupabase(payload: ConsultationPayload) {
+  if (!SUPABASE_URL || !SERVICE_KEY) return;
+  await fetch(`${SUPABASE_URL}/rest/v1/consultation_requests`, {
+    method: 'POST',
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify({
+      site_id: payload.siteId || 'julia-studio',
+      name: payload.name || '',
+      email: payload.email || '',
+      phone: payload.phone || '',
+      project_type: payload.projectType || payload.reason || '',
+      scope: payload.scope || '',
+      budget: payload.budget || '',
+      location: payload.location || '',
+      referral: payload.referral || '',
+      preferred_language: payload.preferredLanguage || payload.locale || 'en',
+      message: payload.message || '',
+      status: 'new',
+    }),
   });
-
-  return `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Contact Form Submission</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb; color: #111827;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 40px 20px;">
-              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <!-- Header -->
-                <tr>
-                  <td style="padding: 32px 32px 24px; background: linear-gradient(135deg, #059669 0%, #047857 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 700;">📧 New Contact Form Submission</h1>
-                    <p style="margin: 8px 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">${businessName} Website</p>
-                  </td>
-                </tr>
-                
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 32px;">
-                    <div style="background-color: #f0fdf4; border-left: 4px solid #059669; padding: 16px; margin-bottom: 24px; border-radius: 4px;">
-                      <p style="margin: 0; color: #065f46; font-weight: 600; font-size: 14px;">⚡ Action Required: New customer inquiry</p>
-                    </div>
-
-                    <table role="presentation" style="width: 100%; border-collapse: collapse;">
-                      <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
-                          <strong style="color: #6b7280; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Reason for Contact</strong>
-                          <p style="margin: 4px 0 0; color: #111827; font-size: 16px; font-weight: 600;">${reasonLabel}</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
-                          <strong style="color: #6b7280; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Name</strong>
-                          <p style="margin: 4px 0 0; color: #111827; font-size: 16px;">${name}</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
-                          <strong style="color: #6b7280; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Email</strong>
-                          <p style="margin: 4px 0 0;">
-                            <a href="mailto:${email}" style="color: #059669; text-decoration: none; font-size: 16px;">${email}</a>
-                          </p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
-                          <strong style="color: #6b7280; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Phone</strong>
-                          <p style="margin: 4px 0 0;">
-                            <a href="tel:${phone.replace(/\D/g, '')}" style="color: #059669; text-decoration: none; font-size: 16px;">${phone}</a>
-                          </p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="padding: 12px 0;">
-                          <strong style="color: #6b7280; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">Message</strong>
-                          <div style="margin: 8px 0 0; padding: 16px; background-color: #f9fafb; border-radius: 6px; color: #111827; font-size: 15px; line-height: 1.6; white-space: pre-wrap;">${message}</div>
-                        </td>
-                      </tr>
-                    </table>
-
-                    <div style="margin-top: 24px; padding: 16px; background-color: #f9fafb; border-radius: 6px;">
-                      <p style="margin: 0; color: #6b7280; font-size: 13px;">
-                        <strong>Submitted:</strong> ${timestamp} (EST)
-                      </p>
-                    </div>
-
-                    <!-- Action Button -->
-                    <div style="margin-top: 32px; text-align: center;">
-                      <a href="mailto:${email}?subject=Re: ${reasonLabel}" style="display: inline-block; padding: 12px 24px; background-color: #059669; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px;">Reply to Customer</a>
-                    </div>
-                  </td>
-                </tr>
-
-                <!-- Footer -->
-                <tr>
-                  <td style="padding: 24px 32px; background-color: #f9fafb; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
-                    <p style="margin: 0; color: #6b7280; font-size: 12px; text-align: center;">
-                      This email was sent from the ${businessName} contact form.<br>
-                      <strong>Remember:</strong> Respond quickly for the best customer experience.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `;
 }
 
-function createAutoReplyHTML(name: string, context: ContactEmailContext): string {
-  const { businessName, phone, addressLine } = context;
-  return `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Thank You for Contacting ${businessName}</title>
-      </head>
-      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb; color: #111827;">
-        <table role="presentation" style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 40px 20px;">
-              <table role="presentation" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                <!-- Header -->
-                <tr>
-                  <td style="padding: 32px; text-align: center; background: linear-gradient(135deg, #059669 0%, #047857 100%); border-radius: 8px 8px 0 0;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Thank You!</h1>
-                  </td>
-                </tr>
-                
-                <!-- Content -->
-                <tr>
-                  <td style="padding: 40px 32px;">
-                    <p style="margin: 0 0 16px; color: #111827; font-size: 16px; line-height: 1.6;">Dear ${name},</p>
-                    
-                    <p style="margin: 0 0 16px; color: #111827; font-size: 16px; line-height: 1.6;">
-                      Thank you for contacting <strong>${businessName}</strong>. We've received your message and will respond shortly.
-                    </p>
+function buildEmailHtml(payload: ConsultationPayload): string {
+  const isCn = payload.locale === 'zh';
+  const rows = [
+    ['Name', payload.name],
+    ['Email', payload.email],
+    ['Phone', payload.phone],
+    ['Project Type', payload.projectType],
+    ['Scope', payload.scope],
+    ['Budget', payload.budget],
+    ['Location', payload.location],
+    ['Preferred Language', payload.preferredLanguage],
+    ['How they found us', payload.referral],
+    ['Message', payload.message],
+  ].filter(([, v]) => v).map(([k, v]) => `<tr><td style="padding:6px 12px;background:#f9f6f2;color:#6B6B6B;font-size:12px;width:140px">${k}</td><td style="padding:6px 12px;color:#2C2C2C;font-size:14px">${v}</td></tr>`).join('');
 
-                    <div style="margin: 24px 0; padding: 20px; background-color: #f0fdf4; border-left: 4px solid #059669; border-radius: 4px;">
-                      <p style="margin: 0; color: #065f46; font-size: 14px; line-height: 1.6;">
-                        <strong>🕐 Need immediate assistance?</strong><br>
-                        Call us at <a href="tel:${phone.replace(/\D/g, '')}" style="color: #059669; text-decoration: none; font-weight: 600;">${phone}</a><br>
-                        <span style="color: #6b7280; font-size: 13px;">Mon-Fri: 8am-8pm | Sat-Sun: 9am-6pm</span>
-                      </p>
-                    </div>
-
-                    <p style="margin: 24px 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
-                      We look forward to supporting your goals.
-                    </p>
-
-                    <p style="margin: 16px 0 0; color: #111827; font-size: 16px;">
-                      <strong>${businessName} Support Team</strong><br>
-                      <span style="color: #6b7280; font-size: 14px;">Customer Support</span>
-                    </p>
-                  </td>
-                </tr>
-
-                <!-- Footer -->
-                <tr>
-                  <td style="padding: 24px 32px; background-color: #f9fafb; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
-                    <table role="presentation" style="width: 100%;">
-                      <tr>
-                        <td style="text-align: center; padding-bottom: 16px;">
-                          <p style="margin: 0; color: #111827; font-size: 14px; font-weight: 600;">${businessName}</p>
-                          <p style="margin: 4px 0 0; color: #6b7280; font-size: 13px;">Professional Services</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="text-align: center; color: #6b7280; font-size: 12px; line-height: 1.5;">
-                          ${addressLine ? `📍 ${addressLine}<br>` : ''}📞 ${phone}
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `;
+  return `<!DOCTYPE html><html><body style="font-family:'Georgia',serif;background:#FAF8F5;margin:0;padding:20px">
+  <div style="max-width:580px;margin:0 auto;background:#fff;border:1px solid #E5E2DD">
+    <div style="background:#2C2C2C;padding:24px 32px">
+      <p style="color:#C4A265;font-size:11px;letter-spacing:3px;margin:0">JULIA STUDIO</p>
+      <p style="color:#fff;font-size:22px;margin:8px 0 0;font-family:'Georgia',serif">New Consultation Request</p>
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin:0">${rows}</table>
+    <div style="padding:16px 32px;border-top:1px solid #E5E2DD">
+      <p style="color:#6B6B6B;font-size:12px;margin:0">Julia Studio Admin — Reply directly to ${payload.email}</p>
+    </div>
+  </div></body></html>`;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { name, email, phone, reason, message, locale: rawLocale } = body as ContactFormData;
-    const locale = toLocale(rawLocale);
-    const siteInfo = await resolveRequestSiteInfo(request, locale);
-    const businessName = getSiteDisplayName(siteInfo, 'Business');
-    const businessPhone = siteInfo?.phone || process.env.CONTACT_PHONE_FALLBACK || '(845) 381-1106';
-    const businessEmail = siteInfo?.email || process.env.CONTACT_FALLBACK_TO || 'support@baamplatform.com';
-    const context: ContactEmailContext = {
-      locale,
-      businessName,
-      phone: businessPhone,
-      addressLine: getAddressLine(siteInfo),
-    };
+    const payload = await request.json() as ConsultationPayload;
 
-    // Validate required fields
-    if (!name || !email || !phone || !reason || !message) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
+    if (!payload.name || !payload.email) {
+      return NextResponse.json({ message: 'Name and email are required' }, { status: 400 });
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email address' },
-        { status: 400 }
-      );
-    }
+    // Save to Supabase (non-blocking on failure)
+    await saveToSupabase(payload).catch(console.error);
 
-    // Validate phone (basic)
-    if (phone.replace(/\D/g, '').length < 10) {
-      return NextResponse.json(
-        { error: 'Invalid phone number' },
-        { status: 400 }
-      );
-    }
-
-    // Prepare email data
-    const reasonLabel = getReasonLabel(reason);
-    const emailHTML = createEmailHTML({ name, email, phone, reason, message, locale }, context);
-    const autoReplyHTML = createAutoReplyHTML(name, context);
-
-    // Send notification email to business inbox
-    const notificationEmail = await resend.emails.send({
-      from: process.env.RESEND_FROM || 'No-Reply<no-reply@baamplatform.com>',
-      to: process.env.CONTACT_FALLBACK_TO || businessEmail,
-      cc: process.env.ALERT_TO ? [process.env.ALERT_TO] : undefined,
-      reply_to: email,
-      subject: `New Contact: ${reasonLabel} - ${name}`,
-      html: emailHTML,
+    // Send email notification
+    const from = process.env.RESEND_FROM || 'no-reply@baamplatform.com';
+    await resend.emails.send({
+      from,
+      to: [FALLBACK_EMAIL],
+      reply_to: payload.email,
+      subject: `New Consultation Request — ${payload.name}`,
+      html: buildEmailHtml(payload),
     });
 
-    // Send auto-reply to customer
-    const autoReplyEmail = await resend.emails.send({
-      from: process.env.RESEND_FROM || 'No-Reply<no-reply@baamplatform.com>',
-      to: email,
-      subject: locale === 'zh' ? `感谢联系${businessName}` : `Thank you for contacting ${businessName}`,
-      html: autoReplyHTML,
-    });
-
-    console.log('Emails sent successfully:', {
-      notification: notificationEmail.data?.id,
-      autoReply: autoReplyEmail.data?.id,
-      timestamp: new Date().toISOString(),
-    });
-
-    return NextResponse.json(
-      { 
-        success: true, 
-        message: locale === 'zh'
-          ? '您的消息已发送成功。我们的团队将尽快与您联系，并请留意邮箱确认邮件。'
-          : 'Your message has been sent successfully. Our team will contact you soon. Please check your email for confirmation.',
-      },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Contact form error:', error);
-    
-    // Return user-friendly error
-    return NextResponse.json(
-      { 
-        error: 'An error occurred while sending your message. Please try calling us directly.',
-        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    console.error('Contact route error:', error);
+    return NextResponse.json({ message: 'Internal error' }, { status: 500 });
   }
 }
-
-// Optional: Add rate limiting in production
-// You could use packages like 'rate-limiter-flexible' or Upstash Redis

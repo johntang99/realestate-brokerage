@@ -1,0 +1,109 @@
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { ArrowLeft } from 'lucide-react';
+import { type Locale } from '@/lib/i18n';
+import { getRequestSiteId, loadItemBySlug, loadAllItems } from '@/lib/content';
+
+interface PageProps { params: { locale: Locale; slug: string } }
+interface CollectionData { slug: string; title?: string; titleCn?: string; description?: string; descriptionCn?: string; coverImage?: string; moodImages?: string[]; portfolioProjects?: string[]; shopProducts?: string[] }
+interface PortfolioItem { slug: string; title?: string; titleCn?: string; coverImage?: string }
+interface ShopProduct { slug: string; title?: string; titleCn?: string; images?: Array<{ src?: string }>; price?: number }
+
+function tx(en?: string, cn?: string, locale?: Locale) { return (locale === 'zh' && cn) ? cn : (en || ''); }
+export async function generateStaticParams() { return []; }
+
+export default async function CollectionDetailPage({ params }: PageProps) {
+  const { locale, slug } = params;
+  const siteId = await getRequestSiteId();
+  const [col, allProjects, allProducts] = await Promise.all([
+    loadItemBySlug<CollectionData>(siteId, locale, 'collections', slug),
+    loadAllItems<PortfolioItem>(siteId, locale, 'portfolio'),
+    loadAllItems<ShopProduct>(siteId, locale, 'shop-products'),
+  ]);
+  if (!col) notFound();
+  const projects = (col.portfolioProjects || []).map(s => allProjects.find(p => p.slug === s)).filter(Boolean) as PortfolioItem[];
+  const products = (col.shopProducts || []).map(s => allProducts.find(p => p.slug === s)).filter(Boolean) as ShopProduct[];
+  const isCn = locale === 'zh';
+
+  return (
+    <>
+      <div className="pt-20 border-b border-[var(--border)] bg-white">
+        <div className="container-custom py-3">
+          <Link href={`/${locale}/collections`} className="inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] hover:text-[var(--primary)] transition-colors">
+            <ArrowLeft className="w-4 h-4" /> {isCn ? '所有系列' : 'All Collections'}
+          </Link>
+        </div>
+      </div>
+
+      {/* Hero */}
+      <section className="relative h-[50vh] min-h-[350px] overflow-hidden" style={{ background: 'var(--primary-50)' }}>
+        {col.coverImage && <><Image src={col.coverImage} alt={tx(col.title, col.titleCn, locale)} fill className="object-cover" priority sizes="100vw" /><div className="absolute inset-0 bg-black/30" /></>}
+        <div className="relative z-10 flex items-end h-full container-custom pb-10">
+          <div>
+            <h1 className="font-serif text-3xl md:text-5xl font-semibold text-white">{tx(col.title, col.titleCn, locale)}</h1>
+            <p className="text-white/70 mt-2 max-w-xl">{tx(col.description, col.descriptionCn, locale)}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Mood images */}
+      {col.moodImages?.filter(Boolean).length ? (
+        <section className="section-padding bg-white">
+          <div className="container-custom grid grid-cols-3 gap-4">
+            {col.moodImages.filter(Boolean).map((img, i) => (
+              <div key={i} className="relative aspect-square overflow-hidden bg-[var(--primary-50)]">
+                <Image src={img} alt="" fill className="object-cover" sizes="33vw" />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {/* Projects */}
+      {projects.length > 0 && (
+        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
+          <div className="container-custom">
+            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>{isCn ? '相关项目' : 'Featured Projects'}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {projects.map(p => (
+                <Link key={p.slug} href={`/${locale}/portfolio/${p.slug}`} className="group">
+                  <div className="relative aspect-[4/3] overflow-hidden mb-3 bg-[var(--primary-50)]">
+                    {p.coverImage && <Image src={p.coverImage} alt={tx(p.title, p.titleCn, locale)} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="33vw" />}
+                  </div>
+                  <p className="font-serif text-sm font-medium" style={{ color: 'var(--primary)' }}>{tx(p.title, p.titleCn, locale)}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Products */}
+      {products.length > 0 && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>{isCn ? '系列商品' : 'Shop This Collection'}</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+              {products.map(p => (
+                <Link key={p.slug} href={`/${locale}/shop/${p.slug}`} className="group">
+                  <div className="relative aspect-square overflow-hidden mb-3 bg-[var(--primary-50)]">
+                    {p.images?.[0]?.src && <Image src={p.images[0].src} alt={tx(p.title, p.titleCn, locale)} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="25vw" />}
+                  </div>
+                  <p className="font-serif text-sm font-medium" style={{ color: 'var(--primary)' }}>{tx(p.title, p.titleCn, locale)}</p>
+                  {p.price && <p className="text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>${p.price.toLocaleString()}</p>}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <section className="py-16 border-t border-[var(--border)]" style={{ background: 'var(--backdrop-primary)' }}>
+        <div className="container-custom text-center">
+          <Link href={`/${locale}/contact`} className="btn-gold">{isCn ? '预约咨询' : 'Book Consultation'}</Link>
+        </div>
+      </section>
+    </>
+  );
+}

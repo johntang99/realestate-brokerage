@@ -1,0 +1,13 @@
+{
+  "sections": [
+    "hero",
+    "introduction",
+    "portfolioPreview",
+    "servicesOverview",
+    "featuredCollection",
+    "shopPreview",
+    "journalPreview",
+    "aboutTeaser",
+    "consultationCta"
+  ]
+}

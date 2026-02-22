@@ -21,7 +21,7 @@ interface ContentEditorProps {
   selectedSiteId: string;
   selectedLocale: string;
   initialFilePath?: string;
-  fileFilter?: 'all' | 'blog' | 'siteSettings';
+  fileFilter?: 'all' | 'blog' | 'siteSettings' | 'portfolio' | 'shopProducts' | 'journal' | 'collections' | 'testimonials';
   titleOverride?: string;
   basePath?: string;
 }
@@ -113,12 +113,23 @@ export function ContentEditor({
   const [blogConditionOptions, setBlogConditionOptions] = useState<
     Array<{ id: string; title: string }>
   >([]);
+  const COLLECTION_PREFIXES: Record<string, string> = {
+    portfolio: 'portfolio/',
+    shopProducts: 'shop-products/',
+    journal: 'journal/',
+    collections: 'collections/',
+    testimonials: 'testimonials',
+  };
+  const isCollectionFilter = fileFilter && fileFilter in COLLECTION_PREFIXES;
   const filesTitle =
-    fileFilter === 'blog'
-      ? 'Blog Posts'
-      : fileFilter === 'siteSettings'
-        ? 'Site Settings'
-        : 'Files';
+    fileFilter === 'blog' ? 'Blog Posts'
+    : fileFilter === 'siteSettings' ? 'Site Settings'
+    : fileFilter === 'portfolio' ? 'Portfolio Projects'
+    : fileFilter === 'shopProducts' ? 'Shop Products'
+    : fileFilter === 'journal' ? 'Journal Posts'
+    : fileFilter === 'collections' ? 'Design Collections'
+    : fileFilter === 'testimonials' ? 'Client Testimonials'
+    : 'Files';
 
   const site = useMemo(
     () => sites.find((item) => item.id === siteId),
@@ -160,9 +171,18 @@ export function ContentEditor({
       } else if (fileFilter === 'siteSettings') {
         nextFiles = nextFiles.filter((file) => SITE_SETTINGS_PATHS.has(file.path));
         nextFiles = [...nextFiles].sort((a, b) => a.label.localeCompare(b.label));
+      } else if (isCollectionFilter && fileFilter) {
+        const prefix = COLLECTION_PREFIXES[fileFilter];
+        nextFiles = nextFiles.filter((file) => file.path.startsWith(prefix) || file.path === prefix);
+        nextFiles = [...nextFiles].sort((a, b) => a.label.localeCompare(b.label));
       } else {
+        // 'all' — exclude all collection files so Content editor stays clean
+        const allCollectionPrefixes = Object.values(COLLECTION_PREFIXES);
         nextFiles = nextFiles.filter(
-          (file) => !file.path.startsWith('blog/') && !SITE_SETTINGS_PATHS.has(file.path)
+          (file) =>
+            !file.path.startsWith('blog/') &&
+            !SITE_SETTINGS_PATHS.has(file.path) &&
+            !allCollectionPrefixes.some(prefix => file.path.startsWith(prefix) || file.path === prefix)
         );
         nextFiles = [...nextFiles].sort((a, b) => a.label.localeCompare(b.label));
       }

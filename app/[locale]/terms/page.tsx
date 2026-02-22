@@ -1,88 +1,39 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
-import { buildPageMetadata } from '@/lib/seo';
-import type { Locale } from '@/lib/types';
+import { type Locale } from '@/lib/i18n';
+import Link from 'next/link';
 
-interface LegalSection {
-  heading: string;
-  body: string;
-  bullets?: string[];
-}
-
-interface LegalPageData {
-  title: string;
-  updatedAt?: string;
-  intro?: string;
-  sections: LegalSection[];
-}
-
-interface LegalPageProps {
-  params: { locale: Locale };
-}
-
-export async function generateMetadata({ params }: LegalPageProps): Promise<Metadata> {
-  const { locale } = params;
-  const siteId = await getRequestSiteId();
-  const content = await loadPageContent<LegalPageData>('terms', locale, siteId);
-  return buildPageMetadata({
-    siteId,
-    locale,
-    slug: 'terms',
-    title: content?.title,
-    description: content?.intro,
-  });
-}
-
-export default async function TermsPage({ params }: LegalPageProps) {
-  const { locale } = params;
-  const siteId = await getRequestSiteId();
-  const content = await loadPageContent<LegalPageData>('terms', locale, siteId);
-
-  if (!content) {
-    notFound();
-  }
-
+export default function TermsPage({ params }: { params: { locale: Locale } }) {
+  const isCn = params.locale === 'zh';
   return (
-    <main className="min-h-screen bg-white">
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-4xl space-y-6">
-          <div>
-            <h1 className="text-heading font-bold text-gray-900">{content.title}</h1>
-            {content.updatedAt && (
-              <p className="text-sm text-gray-500 mt-2">
-                {locale === 'en' ? 'Last updated:' : '最近更新：'} {content.updatedAt}
-              </p>
-            )}
-          </div>
-
-          {content.intro && (
-            <p className="text-gray-700 leading-relaxed">{content.intro}</p>
-          )}
-
-          <div className="space-y-8">
-            {content.sections.map((section, index) => (
-              <div key={`${section.heading}-${index}`} className="space-y-3">
-                <h2 className="text-subheading font-semibold text-gray-900">
-                  {section.heading}
-                </h2>
-                {section.body.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-gray-700 leading-relaxed">
-                    {paragraph}
-                  </p>
-                ))}
-                {section.bullets && section.bullets.length > 0 && (
-                  <ul className="list-disc pl-5 space-y-2 text-gray-700">
-                    {section.bullets.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
+    <div className="pt-32 pb-20 min-h-screen bg-white">
+      <div className="container-custom max-w-2xl">
+        <h1 className="font-serif text-3xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>
+          {isCn ? '服务条款' : 'Terms of Service'}
+        </h1>
+        <div className="space-y-6 text-sm leading-loose" style={{ color: 'var(--text-secondary)' }}>
+          <p>{isCn ? '最后更新：2026年2月' : 'Last updated: February 2026'}</p>
+          <p>{isCn
+            ? '使用Julia Studio网站，即表示您同意以下服务条款。请仔细阅读这些条款。'
+            : 'By using the Julia Studio website, you agree to the following terms of service. Please read these terms carefully.'
+          }</p>
+          <h2 className="font-serif text-xl font-semibold pt-4" style={{ color: 'var(--primary)' }}>{isCn ? '网站使用' : 'Use of Website'}</h2>
+          <p>{isCn
+            ? '本网站及其内容仅供一般信息目的，不构成对设计服务的提供或保证。'
+            : 'This website and its content are for general informational purposes only and do not constitute an offer or guarantee of design services.'
+          }</p>
+          <h2 className="font-serif text-xl font-semibold pt-4" style={{ color: 'var(--primary)' }}>{isCn ? '知识产权' : 'Intellectual Property'}</h2>
+          <p>{isCn
+            ? '本网站上的所有内容，包括项目照片、设计和文字，均为Julia Studio的财产，受版权法保护。未经书面许可，不得复制或使用。'
+            : 'All content on this website, including project photography, designs, and text, is the property of Julia Studio and protected by copyright law. It may not be reproduced or used without written permission.'
+          }</p>
+          <h2 className="font-serif text-xl font-semibold pt-4" style={{ color: 'var(--primary)' }}>{isCn ? '联系我们' : 'Contact Us'}</h2>
+          <p>{isCn ? '如有任何问题，请联系' : 'For any questions, please contact'}{' '}
+            <a href="mailto:hello@studio-julia.com" style={{ color: 'var(--secondary)' }}>hello@studio-julia.com</a>
+          </p>
         </div>
-      </section>
-    </main>
+        <div className="mt-10">
+          <Link href={`/${params.locale}`} style={{ color: 'var(--secondary)' }} className="text-sm">← {isCn ? '返回首页' : 'Back to Home'}</Link>
+        </div>
+      </div>
+    </div>
   );
 }

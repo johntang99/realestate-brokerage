@@ -5,8 +5,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { locales, defaultLocale } from './lib/i18n';
 
+// Domain → site_id mapping for production routing
+const DOMAIN_SITE_MAP: Record<string, string> = {
+  'studio-julia.com': 'julia-studio',
+  'www.studio-julia.com': 'julia-studio',
+};
+
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const host = request.headers.get('host') || '';
+
+  // Set site ID header for domain routing on production
+  const siteId = DOMAIN_SITE_MAP[host];
+  if (siteId) {
+    const response = NextResponse.next();
+    response.headers.set('x-site-id', siteId);
+    // If no locale prefix, redirect to default
+    const pathnameHasLocale = ['en', 'zh'].some(l => pathname.startsWith(`/${l}/`) || pathname === `/${l}`);
+    if (!pathnameHasLocale && !pathname.startsWith('/admin') && !pathname.startsWith('/api') &&
+        !pathname.startsWith('/_next') && !pathname.match(/\.(ico|png|jpg|jpeg|svg|css|js|txt|xml)$/)) {
+      return NextResponse.redirect(new URL(`/en${pathname}`, request.url));
+    }
+    return response;
+  }
   
   // Admin routes: require auth cookie (verify in API/routes)
   if (pathname.startsWith('/admin')) {

@@ -1,0 +1,54 @@
+{
+  "colors": {
+    "primary": {
+      "DEFAULT": "#2C2C2C",
+      "light": "#4A4A4A",
+      "dark": "#1A1A1A",
+      "50": "#F5F5F5",
+      "100": "#EBEBEB"
+    },
+    "secondary": {
+      "DEFAULT": "#C4A265",
+      "light": "#D4B87A",
+      "dark": "#A88B50",
+      "50": "#FDF8F0"
+    },
+    "accent": {
+      "DEFAULT": "#8B9D83",
+      "light": "#A3B39B",
+      "dark": "#6D7F66"
+    },
+    "backdrop": {
+      "primary": "#FAF8F5",
+      "secondary": "#1A1A1A"
+    },
+    "text": {
+      "primary": "#2C2C2C",
+      "secondary": "#6B6B6B",
+      "onDark": "#FAF8F5",
+      "onGold": "#1A1A1A"
+    },
+    "border": "#E5E2DD",
+    "success": "#8B9D83",
+    "error": "#C45B5B"
+  },
+  "typography": {
+    "display": "3.75rem",
+    "heading": "2.5rem",
+    "subheading": "1.5rem",
+    "body": "1rem",
+    "small": "0.875rem",
+    "fonts": {
+      "display": "var(--font-heading)",
+      "heading": "var(--font-heading)",
+      "subheading": "var(--font-heading)",
+      "body": "var(--font-body)",
+      "small": "var(--font-body)"
+    }
+  },
+  "borderRadius": {
+    "small": "2px",
+    "medium": "4px",
+    "large": "8px"
+  }
+}

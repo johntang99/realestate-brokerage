@@ -1,0 +1,24 @@
+{
+  "logo": {
+    "text": "Julia Studio",
+    "image": "",
+    "showText": true,
+    "showImage": false
+  },
+  "navigation": [
+    { "label": "Portfolio", "labelCn": "作品集", "href": "/portfolio" },
+    { "label": "Services", "labelCn": "服务", "href": "/services" },
+    { "label": "Shop", "labelCn": "商店", "href": "/shop" },
+    { "label": "Journal", "labelCn": "日志", "href": "/journal" },
+    { "label": "About", "labelCn": "关于", "href": "/about" },
+    { "label": "Contact", "labelCn": "联系", "href": "/contact" }
+  ],
+  "ctaButton": {
+    "label": "Book Consultation",
+    "labelCn": "预约咨询",
+    "href": "/contact",
+    "style": "gold"
+  },
+  "showLanguageSwitcher": true,
+  "transparentOnHero": true
+}

@@ -1,0 +1,28 @@
+{
+  "hero": {
+    "variant": "minimal-text",
+    "headline": "Client Stories",
+    "headlineCn": "客户故事",
+    "subline": "What our clients say about working with Julia Studio.",
+    "sublineCn": "客户对与 Julia Studio 合作的评价。"
+  },
+  "display": {
+    "variant": "masonry-cards",
+    "showFilters": true,
+    "filterByCategory": true,
+    "categories": [
+      { "value": "all", "label": "All", "labelCn": "全部" },
+      { "value": "residential", "label": "Residential", "labelCn": "住宅" },
+      { "value": "commercial", "label": "Commercial", "labelCn": "商业" },
+      { "value": "exhibition", "label": "Exhibition", "labelCn": "展览" }
+    ]
+  },
+  "cta": {
+    "variant": "centered",
+    "headline": "Ready to join them?",
+    "headlineCn": "准备好加入他们了吗？",
+    "ctaLabel": "Book Consultation",
+    "ctaLabelCn": "预约咨询",
+    "ctaHref": "/contact"
+  }
+}

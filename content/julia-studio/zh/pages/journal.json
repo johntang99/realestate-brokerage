@@ -1,0 +1,35 @@
+{
+  "hero": {
+    "variant": "minimal-text",
+    "headline": "Journal",
+    "headlineCn": "日志",
+    "subline": "Design insights, project stories, and inspiration.",
+    "sublineCn": "设计见解、项目故事和灵感。"
+  },
+  "featured": { "enabled": true, "postSlug": "5-rules-mixing-patterns" },
+  "filters": {
+    "categories": [
+      { "value": "all", "label": "All", "labelCn": "全部" },
+      { "value": "design-tips", "label": "Design Tips", "labelCn": "设计技巧" },
+      { "value": "project-stories", "label": "Project Stories", "labelCn": "项目故事" },
+      { "value": "behind-the-scenes", "label": "Behind the Scenes", "labelCn": "幕后花絮" },
+      { "value": "video", "label": "Video", "labelCn": "视频" },
+      { "value": "trends", "label": "Trends", "labelCn": "趋势" }
+    ]
+  },
+  "grid": {
+    "variant": "featured-hero",
+    "itemsPerPage": 9,
+    "loadMoreLabel": "Load More",
+    "loadMoreLabelCn": "加载更多"
+  },
+  "newsletter": {
+    "variant": "inline",
+    "headline": "Design inspiration, delivered weekly.",
+    "headlineCn": "每周设计灵感，直达邮箱。",
+    "placeholder": "Your email address",
+    "placeholderCn": "您的邮箱地址",
+    "buttonLabel": "Subscribe",
+    "buttonLabelCn": "订阅"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "tagline": "Creating timeless spaces since 2001.",
+  "taglineCn": "自2001年起，创造永恒空间。",
+  "columns": [
+    {
+      "title": "Explore",
+      "titleCn": "探索",
+      "links": [
+        { "label": "Portfolio", "labelCn": "作品集", "href": "/portfolio" },
+        { "label": "Services", "labelCn": "服务", "href": "/services" },
+        { "label": "Shop", "labelCn": "商店", "href": "/shop" },
+        { "label": "Journal", "labelCn": "日志", "href": "/journal" }
+      ]
+    },
+    {
+      "title": "Studio",
+      "titleCn": "工作室",
+      "links": [
+        { "label": "About", "labelCn": "关于", "href": "/about" },
+        { "label": "Press", "labelCn": "媒体", "href": "/press" },
+        { "label": "FAQ", "labelCn": "常见问题", "href": "/faq" },
+        { "label": "Contact", "labelCn": "联系", "href": "/contact" }
+      ]
+    }
+  ],
+  "socialLinks": {
+    "instagram": "https://instagram.com/juliastudio",
+    "pinterest": "https://pinterest.com/juliastudio",
+    "wechatQrImage": ""
+  },
+  "legal": {
+    "copyright": "© 2026 Julia Studio. All rights reserved.",
+    "copyrightCn": "© 2026 Julia Studio 版权所有",
+    "privacyLabel": "Privacy Policy",
+    "privacyHref": "/privacy",
+    "termsLabel": "Terms of Service",
+    "termsHref": "/terms"
+  },
+  "newsletter": {
+    "enabled": true,
+    "headline": "Design inspiration, delivered weekly.",
+    "headlineCn": "每周设计灵感，直达您的邮箱。",
+    "placeholder": "Your email address",
+    "placeholderCn": "您的邮箱地址",
+    "buttonLabel": "Subscribe",
+    "buttonLabelCn": "订阅"
+  }
+}

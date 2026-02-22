@@ -1,19 +1,16 @@
-import type { MetadataRoute } from 'next';
-import { headers } from 'next/headers';
-import { getBaseUrlFromHost } from '@/lib/seo';
+import { MetadataRoute } from 'next';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://studio-julia.com';
 
 export default function robots(): MetadataRoute.Robots {
-  const host = headers().get('host');
-  const baseUrl = getBaseUrlFromHost(host);
-
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api'],
+        disallow: ['/admin/', '/api/admin/'],
       },
     ],
-    sitemap: new URL('/sitemap.xml', baseUrl).toString(),
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

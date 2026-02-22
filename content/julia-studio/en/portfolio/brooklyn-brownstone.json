@@ -1,0 +1,44 @@
+{
+  "slug": "brooklyn-brownstone",
+  "title": "Brooklyn Brownstone Renovation",
+  "titleCn": "布鲁克林褐石建筑翻新",
+  "category": "residential",
+  "style": "classic",
+  "location": "Brooklyn Heights, NY",
+  "year": "2023",
+  "featured": false,
+  "coverImage": "",
+  "coverImageAlt": "Brooklyn brownstone living room",
+  "coverImageAltCn": "布鲁克林褐石建筑客厅",
+  "overview": {
+    "body": "A four-story 1880s brownstone restored to its historic grandeur while incorporating modern conveniences. The challenge was to honor the building's Victorian bones — original moldings, pocket doors, and fireplaces — while creating a home for contemporary family life.",
+    "bodyCn": "一栋四层19世纪80年代的褐石建筑，在融入现代便利设施的同时恢复了其历史风采。挑战在于尊重建筑的维多利亚式骨架——原始装饰线条、推拉门和壁炉——同时为当代家庭生活创造一个家。"
+  },
+  "details": {
+    "scope": "Historic Renovation",
+    "scopeCn": "历史建筑翻新",
+    "duration": "10 months",
+    "durationCn": "10个月",
+    "rooms": ["Parlor Floor", "Kitchen", "4 Bedrooms", "3 Bathrooms", "Garden Level", "Roof Terrace"],
+    "roomsCn": ["客厅层", "厨房", "4间卧室", "3间浴室", "花园层", "屋顶露台"],
+    "keyMaterials": ["Restored original moldings", "Reclaimed hardwood", "Subway tile", "Custom iron railings"],
+    "keyMaterialsCn": ["修复原始装饰线条", "再生硬木", "地铁砖", "定制铁艺扶手"]
+  },
+  "gallery": [
+    { "image": "", "alt": "Restored parlor with original fireplace", "altCn": "带原始壁炉的修复客厅", "layout": "full" },
+    { "image": "", "alt": "Kitchen with modern amenities", "altCn": "配备现代设施的厨房", "layout": "half" },
+    { "image": "", "alt": "Garden level family room", "altCn": "花园层家庭活动室", "layout": "half" }
+  ],
+  "shopThisLook": ["woven-throw-blanket"],
+  "testimonial": {
+    "quote": "Julia managed to give us both: a home that respects the history of this beautiful building and works for our busy modern family.",
+    "quoteCn": "Julia成功地给了我们两者：一个尊重这座美丽建筑历史的家，同时也适合我们忙碌的现代家庭生活。",
+    "author": "The Park Family",
+    "project": "Brooklyn Brownstone Renovation"
+  },
+  "relatedProjects": ["the-greenwich-estate", "midtown-penthouse"],
+  "seo": {
+    "title": "Brooklyn Brownstone Renovation — Julia Studio",
+    "description": "Historic 1880s brownstone renovation in Brooklyn Heights. Classic design preserving Victorian character with modern family living."
+  }
+}

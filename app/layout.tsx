@@ -1,23 +1,63 @@
 import type { Metadata } from 'next';
+import { Playfair_Display, DM_Sans, Noto_Serif_SC } from 'next/font/google';
 import '../styles/globals.css';
+import { generateLocalBusinessSchema, generateOrganizationSchema, generateWebSiteSchema } from '@/lib/schema';
+
+const playfairDisplay = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-heading',
+  preload: true,
+});
+
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700'],
+  display: 'swap',
+  variable: '--font-body',
+  preload: true,
+});
+
+const notoSerifSC = Noto_Serif_SC({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+  variable: '--font-chinese',
+  preload: false,
+});
 
 export const metadata: Metadata = {
-  title: 'Multi-Site Business Template',
-  description: 'Multi-site, multi-language template with booking and admin CMS',
-  icons: {
-    icon: '/icon',
-    shortcut: '/icon',
-    apple: '/icon',
-  },
+  title: 'Julia Studio — 25 Years of Timeless Interior Design',
+  description: 'Julia Studio creates timeless interior spaces for homes, offices, and exhibitions. 25 years of design excellence, 1,000+ projects completed.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://studio-julia.com'),
+  icons: { icon: '/icon', shortcut: '/icon', apple: '/icon' },
+  alternates: { canonical: './' },
+  openGraph: { type: 'website', siteName: 'Julia Studio' },
+  robots: { index: true, follow: true },
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${playfairDisplay.variable} ${dmSans.variable} ${notoSerifSC.variable}`}
+    >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateLocalBusinessSchema()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateOrganizationSchema()) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(generateWebSiteSchema()) }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );

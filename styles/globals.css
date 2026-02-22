@@ -3,101 +3,119 @@
 @tailwind utilities;
 
 /* ============================================
-   TCM THEME VARIABLES
-   These can be customized per clinic
+   JULIA STUDIO — GLOBAL THEME DEFAULTS
+   Overridden at runtime by theme.json → CSS vars
+   injected in [locale]/layout.tsx
    ============================================ */
 
 :root {
-  /* TYPOGRAPHY */
-  --text-display: 3rem;        /* 48px - Hero titles */
-  --text-heading: 2.25rem;     /* 36px - Section titles */
-  --text-subheading: 1.25rem;  /* 20px - Card titles */
-  --text-body: 1rem;           /* 16px - Body text */
-  --text-small: 0.875rem;      /* 14px - Meta/tags */
-  --font-body-default: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  --font-display: var(--font-body-default);
-  --font-heading: var(--font-body-default);
-  --font-subheading: var(--font-body-default);
-  --font-body: var(--font-body-default);
-  --font-small: var(--font-body-default);
+  /* Typography scale */
+  --text-display: 3.75rem;
+  --text-heading: 2.5rem;
+  --text-subheading: 1.5rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
 
-  /* PRIMARY COLORS - Green Theme (Default) */
-  --primary: #166534;          /* Green-700 - Main brand */
-  --primary-dark: #14532d;     /* Green-800 - Hover states */
-  --primary-light: #22c55e;    /* Green-500 - Light accents */
-  --primary-50: #f0fdf4;       /* Green-50 - Very light tint */
-  --primary-100: #dcfce7;      /* Green-100 - Light tint */
+  /* Font families (set by next/font variables from root layout) */
+  --font-body-default: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: var(--font-heading, 'Playfair Display', Georgia, serif);
+  --font-heading: var(--font-heading, 'Playfair Display', Georgia, serif);
+  --font-subheading: var(--font-heading, 'Playfair Display', Georgia, serif);
+  --font-body: var(--font-body, var(--font-body-default));
+  --font-small: var(--font-body, var(--font-body-default));
 
-  /* SECONDARY COLORS - Amber Theme */
-  --secondary: #78350f;        /* Amber-900 - Accent color */
-  --secondary-dark: #451a03;   /* Amber-950 - Darker accent */
-  --secondary-light: #f59e0b;  /* Amber-500 - Light accent */
-  --secondary-50: #fffbeb;     /* Amber-50 - Light tint */
+  /* Julia Studio default colors (warm charcoal + champagne gold) */
+  --primary: #2C2C2C;
+  --primary-dark: #1A1A1A;
+  --primary-light: #4A4A4A;
+  --primary-50: #F5F5F5;
+  --primary-100: #EBEBEB;
 
-  /* BACKDROP COLORS */
-  --backdrop-primary: #f0fdf4;    /* Light green background */
-  --backdrop-secondary: #fffbeb;  /* Light amber background */
+  --secondary: #C4A265;
+  --secondary-dark: #A88B50;
+  --secondary-light: #D4B87A;
+  --secondary-50: #FDF8F0;
+
+  --accent: #8B9D83;
+  --accent-light: #A3B39B;
+
+  --backdrop-primary: #FAF8F5;
+  --backdrop-secondary: #1A1A1A;
+
+  --border: #E5E2DD;
+  --text-primary: #2C2C2C;
+  --text-secondary: #6B6B6B;
 }
 
-/* Responsive Typography */
+/* Chinese locale — use Noto Serif SC for headings */
+:lang(zh) h1,
+:lang(zh) h2,
+:lang(zh) h3,
+:lang(zh) h4,
+:lang(zh) h5,
+:lang(zh) h6 {
+  font-family: var(--font-chinese, 'Noto Serif SC', 'Songti SC', serif);
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+:lang(zh) body {
+  line-height: 1.9;
+}
+
+/* Responsive typography */
 @media (max-width: 768px) {
   :root {
-    --text-display: 2.25rem;     /* 36px on mobile */
-    --text-heading: 1.875rem;    /* 30px on mobile */
-    --text-subheading: 1.125rem; /* 18px on mobile */
+    --text-display: 2.5rem;
+    --text-heading: 2rem;
+    --text-subheading: 1.25rem;
   }
 }
 
 /* ============================================
-   BASE STYLES
+   BASE
    ============================================ */
 
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 @layer base {
-  * {
-    @apply border-gray-200;
-  }
-  
   body {
-    @apply bg-white text-gray-900 antialiased;
+    background-color: var(--backdrop-primary, #FAF8F5);
+    color: var(--text-primary, #2C2C2C);
     font-family: var(--font-body, var(--font-body-default));
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold text-gray-900;
-    font-family: var(--font-heading, var(--font-body-default));
+    font-family: var(--font-heading, 'Playfair Display', Georgia, serif);
+    color: var(--text-primary, #2C2C2C);
+    line-height: 1.2;
+    font-weight: 600;
   }
 
   a {
-    @apply text-primary hover:text-primary-dark transition-colors;
+    color: var(--secondary, #C4A265);
+    transition: color 0.2s ease, opacity 0.2s ease;
+  }
+
+  a:hover {
+    opacity: 0.8;
+  }
+
+  ::selection {
+    background-color: var(--secondary-50, #FDF8F0);
+    color: var(--primary, #2C2C2C);
   }
 }
 
 /* ============================================
-   CUSTOM UTILITIES
+   UTILITIES
    ============================================ */
 
 @layer utilities {
-  .text-display {
-    font-family: var(--font-display, var(--font-body-default));
-  }
-
-  .text-heading {
-    font-family: var(--font-heading, var(--font-body-default));
-  }
-
-  .text-subheading {
-    font-family: var(--font-subheading, var(--font-body-default));
-  }
-
-  .text-body {
-    font-family: var(--font-body, var(--font-body-default));
-  }
-
-  .text-small {
-    font-family: var(--font-small, var(--font-body-default));
-  }
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
@@ -106,64 +124,55 @@
     @apply py-16 md:py-24;
   }
 
-  .gradient-backdrop {
-    background: linear-gradient(135deg, var(--backdrop-primary) 0%, var(--backdrop-secondary) 100%);
+  .font-serif {
+    font-family: var(--font-heading, 'Playfair Display', Georgia, serif);
   }
 
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
+  .font-sans {
+    font-family: var(--font-body, var(--font-body-default));
   }
 
-  /* Hide scrollbar but keep functionality */
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
-}
 
-/* ============================================
-   COMPONENT STYLES
-   ============================================ */
-
-@layer components {
-  /* Button base styles */
-  .btn {
-    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  /* Gold CTA button */
+  .btn-gold {
+    background-color: var(--secondary, #C4A265);
+    color: var(--primary-dark, #1A1A1A);
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 2px;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .btn-primary {
-    @apply btn bg-primary text-white hover:bg-primary-dark focus:ring-primary;
+  .btn-gold:hover {
+    background-color: var(--secondary-dark, #A88B50);
+    opacity: 1;
+    color: #FAF8F5;
   }
 
-  .btn-secondary {
-    @apply btn bg-secondary text-white hover:bg-secondary-dark focus:ring-secondary;
+  /* Thin input style (bottom border only) */
+  .input-minimal {
+    border: none;
+    border-bottom: 1px solid var(--border, #E5E2DD);
+    background: transparent;
+    outline: none;
+    padding: 0.5rem 0;
+    width: 100%;
+    transition: border-color 0.2s ease;
   }
 
-  .btn-outline {
-    @apply btn border-2 border-primary text-primary hover:bg-primary hover:text-white focus:ring-primary;
-  }
-
-  /* Card base styles */
-  .card {
-    @apply bg-white rounded-xl shadow-lg p-6 transition-shadow duration-200 hover:shadow-xl;
-  }
-
-  /* Badge styles */
-  .badge {
-    @apply inline-block px-3 py-1 text-sm font-semibold rounded-full;
-  }
-
-  .badge-primary {
-    @apply badge bg-primary-50 text-primary;
-  }
-
-  .badge-secondary {
-    @apply badge bg-secondary-50 text-secondary;
+  .input-minimal:focus {
+    border-color: var(--secondary, #C4A265);
   }
 }
 
@@ -171,43 +180,35 @@
    ANIMATIONS
    ============================================ */
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+@keyframes crossfade {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+.animate-fade-in-up {
+  animation: fadeInUp 0.7s ease-out forwards;
 }
 
-/* Stagger animation delays */
-.animate-delay-100 {
-  animation-delay: 100ms;
+.animate-crossfade {
+  animation: crossfade 1.5s ease forwards;
 }
 
-.animate-delay-200 {
-  animation-delay: 200ms;
+.animate-marquee {
+  animation: marquee 30s linear infinite;
 }
 
-.animate-delay-300 {
-  animation-delay: 300ms;
-}
+/* Stagger delays */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }

@@ -1,369 +1,84 @@
-import { Metadata } from 'next';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { getRequestSiteId, loadContent, loadPageContent } from '@/lib/content';
+import { type Locale } from '@/lib/i18n';
+import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
 import { buildPageMetadata } from '@/lib/seo';
-import { Locale } from '@/lib/types';
-import { Button, Badge, Icon, Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
-import ContactForm from '@/components/ContactForm';
+import type { SiteInfo } from '@/lib/types';
+import ContactForm from './ContactForm';
 
-interface ContactPageContent {
-  hero: {
-    variant?: 'centered' | 'split-photo-right' | 'split-photo-left' | 'photo-background';
-    title: string;
-    subtitle: string;
-    backgroundImage?: string;
-  };
-  introduction: { variant?: 'centered' | 'left'; text: string };
-  contactMethods: Array<{
-    icon: string;
-    title: string;
-    primary: string;
-    secondary: string | null;
-    description: string;
-    action: { text: string; link: string };
-  }>;
-  hours: {
-    variant?: 'grid' | 'list';
-    title: string;
-    schedule: Array<{ day: string; time: string; isOpen: boolean; note?: string }>;
-    note: string;
-  };
-  form: {
-    variant?: 'single-column' | 'two-column' | 'multi-step' | 'modal' | 'inline-minimal';
-    title: string;
-    subtitle: string;
-    fields: {
-      name: { label: string; placeholder: string; required: boolean };
-      email: { label: string; placeholder: string; required: boolean };
-      phone: { label: string; placeholder: string; required: boolean };
-      reason: { label: string; placeholder: string; required: boolean; options: string[] };
-      message: { label: string; placeholder: string; required: boolean };
-    };
-    submitButton: { text: string };
-    successMessage: string;
-    errorMessage: string;
-  };
-  map: {
-    variant?: 'shown' | 'hidden';
-    title: string;
-    embedUrl: string;
-    showMap: boolean;
-    directions: string;
-  };
-  emergency: {
-    title: string;
-    message: string;
-    phone: string;
-    visible: boolean;
-  };
-  faq: {
-    variant?: 'card' | 'simple';
-    title: string;
-    items: Array<{ question: string; answer: string }>;
-  };
-  cta?: {
-    title: string;
-    subtitle: string;
-    buttonText: string;
-    buttonLink: string;
-  };
+interface PageProps { params: { locale: Locale } }
+
+export async function generateMetadata({ params }: PageProps) {
+  const siteId = await getRequestSiteId();
+  return buildPageMetadata({ siteId, locale: params.locale, slug: 'contact',
+    title: 'Book a Consultation — Julia Studio',
+    description: 'Begin your design journey with Julia Studio. Book a complimentary consultation to discuss your project.' });
 }
 
-interface ContactPageProps {
-  params: {
-    locale: Locale;
+interface ContactData {
+  hero?: { headline?: string; headlineCn?: string; subline?: string; sublineCn?: string };
+  form?: {
+    submitLabel?: string; submitLabelCn?: string;
+    successMessage?: string; successMessageCn?: string;
+    fields?: Record<string, { label?: string; labelCn?: string; type?: string; required?: boolean; options?: Array<{ value: string; label: string; labelCn?: string }> }>;
   };
+  directContact?: { headline?: string; headlineCn?: string; showPhone?: boolean; showEmail?: boolean; showAddress?: boolean; showHours?: boolean; hours?: string; hoursCn?: string };
+  socialLinks?: { headline?: string; headlineCn?: string; showInstagram?: boolean; showPinterest?: boolean; showWechatQr?: boolean; showXiaohongshu?: boolean };
 }
 
-interface PageLayoutConfig {
-  sections: Array<{ id: string }>;
-}
-
-interface HeaderMenuConfig {
-  menu?: {
-    variant?: 'default' | 'centered' | 'transparent' | 'stacked';
-  };
-}
-
-export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
+export default async function ContactPage({ params }: PageProps) {
   const { locale } = params;
   const siteId = await getRequestSiteId();
-  const content = await loadPageContent<ContactPageContent>('contact', locale, siteId);
-  const layout = await loadPageContent<PageLayoutConfig>('contact.layout', locale, siteId);
-
-  return buildPageMetadata({
-    siteId,
-    locale,
-    slug: 'contact',
-    title: content?.hero?.title,
-    description: content?.hero?.subtitle || content?.introduction?.text,
-  });
-}
-
-export default async function ContactPage({ params }: ContactPageProps) {
-  const { locale } = params;
-  
-  // Load page content
-  const siteId = await getRequestSiteId();
-  const content = await loadPageContent<ContactPageContent>('contact', locale, siteId);
-  const layout = await loadPageContent<PageLayoutConfig>('contact.layout', locale, siteId);
-  const headerConfig = await loadContent<HeaderMenuConfig>(siteId, locale, 'header.json');
-  
-  if (!content) {
-    notFound();
-  }
-
-  const { hero, introduction, contactMethods, hours, form, map, emergency, faq, cta } = content;
-  const heroVariant = hero.variant || 'centered';
-  const isCenteredHero = heroVariant === 'centered';
-  const backgroundHero = heroVariant === 'photo-background' && Boolean(hero.backgroundImage);
-  const introVariant = introduction.variant || 'centered';
-  const hoursVariant = hours.variant || 'grid';
-  const showMap = map.variant === 'hidden' ? false : map.showMap;
-  const faqVariant = faq.variant || 'card';
-  const layoutOrder = new Map<string, number>(
-    layout?.sections?.map((section, index) => [section.id, index]) || []
-  );
-  const useLayout = layoutOrder.size > 0;
-  const isEnabled = (sectionId: string) => !useLayout || layoutOrder.has(sectionId);
-  const sectionStyle = (sectionId: string) =>
-    useLayout ? { order: layoutOrder.get(sectionId) ?? 0 } : undefined;
-  const isTransparentMenu = headerConfig?.menu?.variant === 'transparent';
-  const heroTopPaddingClass = isTransparentMenu ? 'pt-30 md:pt-36' : 'py-20 lg:py-32';
+  const [data, siteInfo] = await Promise.all([
+    loadPageContent<ContactData>('contact', locale, siteId),
+    loadSiteInfo(siteId, locale) as Promise<SiteInfo | null>,
+  ]);
 
   return (
-    <main className="min-h-screen flex flex-col">
-      {/* Hero Section */}
-      {isEnabled('hero') && (
-        <section
-          className={`relative ${heroTopPaddingClass} ${
-            backgroundHero
-              ? 'bg-cover bg-center before:absolute before:inset-0 before:bg-white/80'
-              : 'bg-gradient-to-br from-primary/10 via-backdrop-primary to-primary/5'
-          }`}
-          style={{
-            ...(sectionStyle('hero') || {}),
-            ...(backgroundHero ? { backgroundImage: `url(${hero.backgroundImage})` } : {}),
-          }}
-        >
-        <div className="container mx-auto px-4">
-          <div className={`max-w-4xl mx-auto relative z-10 ${isCenteredHero ? 'text-center' : 'text-left'}`}>
-            <h1 className="text-display font-bold text-gray-900 mb-6">
-              {hero.title}
-            </h1>
-            <p className="text-subheading text-gray-600">
-              {hero.subtitle}
-            </p>
-          </div>
-        </div>
-        </section>
-      )}
-
-      {/* Introduction */}
-      {isEnabled('introduction') && (
-        <section className="py-12 bg-white" style={sectionStyle('introduction')}>
-        <div className="container mx-auto px-4">
-          <div className={`max-w-4xl mx-auto ${introVariant === 'left' ? 'text-left' : 'text-center'}`}>
-            <p className="text-lg text-gray-700">
-              {introduction.text}
-            </p>
-          </div>
-        </div>
-        </section>
-      )}
-
-      {/* Emergency Notice */}
-      {isEnabled('emergency') && emergency.visible && (
-        <section
-          className="py-6 bg-red-50 border-y border-red-100"
-          style={sectionStyle('emergency')}
-        >
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto flex items-start gap-4">
-              <Icon name="AlertTriangle" className="text-red-600 flex-shrink-0 mt-1" />
-              <div>
-                <h3 className="font-semibold text-red-900 mb-1">{emergency.title}</h3>
-                <p className="text-red-800 text-sm">
-                  {emergency.message}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Contact Methods */}
-      {isEnabled('contactMethods') && (
-        <section
-          className="py-16 lg:py-24 bg-gradient-to-br from-backdrop-secondary to-white"
-          style={sectionStyle('contactMethods')}
-        >
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-              {contactMethods.map((method, index) => (
-                <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      <Icon name={method.icon as any} className="text-primary" size="lg" />
-                    </div>
-                    <CardTitle>{method.title}</CardTitle>
-                    <CardDescription>{method.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-2xl font-bold text-primary mb-1">{method.primary}</p>
-                    {method.secondary && (
-                      <p className="text-gray-600 mb-4">{method.secondary}</p>
-                    )}
-                    <Button asChild variant="outline" size="sm" className="w-full">
-                      <a href={method.action.link} target={method.icon === 'MapPin' ? '_blank' : undefined} rel={method.icon === 'MapPin' ? 'noopener noreferrer' : undefined}>
-                        {method.action.text}
-                      </a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Hours of Operation */}
-            <Card className="mb-16">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Icon name="Clock" className="text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle>{hours.title}</CardTitle>
-                    <CardDescription>{hours.note}</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className={hoursVariant === 'list' ? 'space-y-3' : 'grid sm:grid-cols-2 gap-4'}>
-                  {hours.schedule.map((schedule) => (
-                    <div key={schedule.day} className="flex items-start justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <span className="font-semibold text-gray-900">{schedule.day}</span>
-                        {schedule.note && (
-                          <p className="text-xs text-primary mt-1">{schedule.note}</p>
-                        )}
-                      </div>
-                      <span className={schedule.isOpen ? 'text-gray-600' : 'text-gray-400'}>
-                        {schedule.time}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-        </section>
-      )}
-
-      {/* Contact Form & Map */}
-      {isEnabled('formMap') && (
-        <section className="py-16 lg:py-24 bg-white" style={sectionStyle('formMap')}>
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12">
-              {/* Contact Form */}
-              <div>
-                <h2 className="text-heading font-bold text-gray-900 mb-4">
-                  {form.title}
-                </h2>
-                <p className="text-gray-600 mb-8">
-                  {form.subtitle}
-                </p>
-
-                <ContactForm 
-                  formConfig={form}
-                  locale={locale}
-                />
-              </div>
-
-              {/* Map & Quick Answers */}
-              <div className="space-y-8">
-                {/* Map */}
-                {showMap && (
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">{map.title}</h3>
-                    <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4">
-                      <iframe
-                        title="Business location map"
-                        src={map.embedUrl}
-                        className="absolute inset-0 w-full h-full"
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                      />
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      {map.directions}
-                    </p>
-                  </div>
-                )}
-
-                {/* Quick Answers */}
-                {faqVariant === 'simple' ? (
-                  <div className="space-y-4">
-                    <h3 className="text-xl font-bold text-gray-900">{faq.title}</h3>
-                    {faq.items.map((item, index) => (
-                      <div key={index}>
-                        <h4 className="font-semibold text-gray-900 text-sm mb-1">{item.question}</h4>
-                        <p className="text-gray-600 text-sm">{item.answer}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>{faq.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {faq.items.map((item, index) => (
-                        <div key={index}>
-                          <h4 className="font-semibold text-gray-900 text-sm mb-1">{item.question}</h4>
-                          <p className="text-gray-600 text-sm">{item.answer}</p>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-        </section>
-      )}
-
-      {/* CTA Section */}
-      {isEnabled('cta') && (
-        <section
-          className="py-16 px-4 bg-gradient-to-br from-[var(--primary)] to-[var(--primary-dark)]"
-          style={sectionStyle('cta')}
-        >
-        <div className="container mx-auto max-w-4xl text-center text-white">
-          <h2 className="text-heading text-white mb-4">
-            {cta?.title || (locale === 'en' ? 'Need help getting started?' : '初次了解服务？')}
-          </h2>
-          <p className="text-subheading mb-10 leading-relaxed max-w-3xl mx-auto text-white/95">
-            {cta?.subtitle ||
-              (locale === 'en'
-                ? 'Learn what to expect before getting started'
-                : '了解开始服务前需要准备的内容')}
+    <>
+      {/* Hero */}
+      <section className="pt-32 pb-16 md:pt-40 md:pb-20" style={{ background: 'var(--backdrop-primary)' }}>
+        <div className="container-custom max-w-xl">
+          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4" style={{ color: 'var(--primary)' }}>
+            {locale === 'zh' ? (data?.hero?.headlineCn || '开启您的设计之旅') : (data?.hero?.headline || 'Begin Your Design Journey')}
+          </h1>
+          <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
+            {locale === 'zh' ? (data?.hero?.sublineCn || '我们期待了解您的项目。') : (data?.hero?.subline || "We'd love to hear about your project.")}
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href={cta?.buttonLink || `/${locale}/book`}
-              className="bg-white text-[var(--primary)] px-8 py-4 rounded-lg hover:bg-gray-50 font-semibold text-subheading transition-all shadow-lg"
-            >
-              {cta?.buttonText || (locale === 'en' ? 'Getting Started Guide' : '新手指南')}
-            </Link>
+        </div>
+      </section>
+
+      {/* Form + Sidebar */}
+      <section className="section-padding bg-white">
+        <div className="container-custom grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
+          <ContactForm locale={locale} formConfig={data?.form} siteId={siteId} />
+
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {data?.directContact && (
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--secondary)' }}>
+                  {locale === 'zh' ? (data.directContact.headlineCn || '直接联系') : (data.directContact.headline || 'Or reach us directly')}
+                </p>
+                <div className="space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  {data.directContact.showPhone && siteInfo?.phone && <p><span className="font-medium" style={{ color: 'var(--primary)' }}>{siteInfo.phone}</span></p>}
+                  {data.directContact.showEmail && siteInfo?.email && <p><a href={`mailto:${siteInfo.email}`} style={{ color: 'var(--secondary)' }}>{siteInfo.email}</a></p>}
+                  {data.directContact.showAddress && siteInfo?.address && <p>{siteInfo.address}</p>}
+                  {data.directContact.showHours && <p>{locale === 'zh' ? (data.directContact.hoursCn || data.directContact.hours) : data.directContact.hours}</p>}
+                </div>
+              </div>
+            )}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--secondary)' }}>
+                {locale === 'zh' ? '关注我们' : 'Follow Along'}
+              </p>
+              <div className="space-y-2 text-sm">
+                {data?.socialLinks?.showInstagram && <a href="#" className="block" style={{ color: 'var(--text-secondary)' }}>Instagram</a>}
+                {data?.socialLinks?.showPinterest && <a href="#" className="block" style={{ color: 'var(--text-secondary)' }}>Pinterest</a>}
+                {data?.socialLinks?.showWechatQr && <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{locale === 'zh' ? '微信：JuliaStudioDesign' : 'WeChat: JuliaStudioDesign'}</p>}
+              </div>
+            </div>
           </div>
         </div>
-        </section>
-      )}
-    </main>
+      </section>
+    </>
   );
 }

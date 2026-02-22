@@ -1,5 +1,10 @@
--- Admin dashboard tables for sites, users, media, and bookings.
+-- Julia Studio — BAAM System F
+-- Run this in your Supabase SQL editor (design project)
+-- No booking tables — design studio, not a clinic
 
+create extension if not exists pgcrypto;
+
+-- ── Sites ──────────────────────────────────────────────────────────────────────
 create table if not exists public.sites (
   id text primary key,
   name text not null,
@@ -25,6 +30,7 @@ create table if not exists public.site_domains (
 
 create index if not exists site_domains_domain_idx on public.site_domains (domain);
 
+-- ── Admin users ────────────────────────────────────────────────────────────────
 create table if not exists public.admin_users (
   id text primary key,
   email text not null unique,
@@ -37,6 +43,7 @@ create table if not exists public.admin_users (
   last_login_at timestamptz not null default now()
 );
 
+-- ── Media assets ───────────────────────────────────────────────────────────────
 create table if not exists public.media_assets (
   id uuid primary key default gen_random_uuid(),
   site_id text not null,
@@ -47,38 +54,50 @@ create table if not exists public.media_assets (
   unique (site_id, path)
 );
 
-create table if not exists public.booking_services (
-  site_id text primary key,
-  services jsonb not null default '[]'::jsonb,
-  updated_at timestamptz not null default now()
-);
-
-create table if not exists public.booking_settings (
-  site_id text primary key,
-  settings jsonb not null default '{}'::jsonb,
-  updated_at timestamptz not null default now()
-);
-
-create table if not exists public.bookings (
-  id text primary key,
+-- ── Content entries (DB-first CMS) ─────────────────────────────────────────────
+create table if not exists public.content_entries (
+  id uuid primary key default gen_random_uuid(),
   site_id text not null,
-  service_id text not null,
-  service_type text,
-  date date not null,
-  time text not null,
-  duration_minutes integer not null,
+  locale text not null,
+  path text not null,
+  data jsonb not null,
+  updated_at timestamptz not null default now(),
+  updated_by text,
+  unique (site_id, locale, path)
+);
+
+-- ── Content revisions (audit trail) ───────────────────────────────────────────
+create table if not exists public.content_revisions (
+  id uuid primary key default gen_random_uuid(),
+  entry_id uuid not null references public.content_entries(id) on delete cascade,
+  data jsonb not null,
+  created_at timestamptz not null default now(),
+  created_by text,
+  note text
+);
+
+-- ── Consultation requests (contact form submissions) ───────────────────────────
+create table if not exists public.consultation_requests (
+  id uuid primary key default gen_random_uuid(),
+  site_id text not null,
   name text not null,
-  phone text not null,
   email text not null,
-  note text,
-  details jsonb not null default '{}'::jsonb,
-  status text not null,
+  phone text,
+  project_type text,
+  scope text,
+  budget text,
+  location text,
+  referral text,
+  preferred_language text default 'en',
+  message text not null,
+  status text not null default 'new',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
-create index if not exists bookings_site_date_idx on public.bookings (site_id, date);
+create index if not exists consultation_requests_site_idx on public.consultation_requests (site_id, created_at desc);
 
+-- ── Admin audit logs ───────────────────────────────────────────────────────────
 create table if not exists public.admin_audit_logs (
   id uuid primary key default gen_random_uuid(),
   actor_id text,
@@ -89,8 +108,7 @@ create table if not exists public.admin_audit_logs (
   created_at timestamptz not null default now()
 );
 
--- Safe incremental migration for existing projects
-alter table public.bookings
-  add column if not exists service_type text;
-alter table public.bookings
-  add column if not exists details jsonb not null default '{}'::jsonb;
+-- ── Seed Julia Studio site entry ───────────────────────────────────────────────
+insert into public.sites (id, name, domain, enabled, default_locale, supported_locales)
+values ('julia-studio', 'Julia Studio', 'studio-julia.com', true, 'en', array['en','zh']::text[])
+on conflict (id) do nothing;

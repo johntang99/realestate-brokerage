@@ -4,7 +4,7 @@
   "description": "Multi-site content management template",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3003",
+    "dev": "next dev -p 3040",
     "dev:default": "next dev",
     "build": "next build",
     "start": "next start",
@@ -12,7 +12,13 @@
     "type-check": "tsc --noEmit",
     "ci:check": "npm run type-check && npm run lint && npm run build",
     "media:migrate": "node scripts/migrate-media-to-supabase.mjs",
-    "content:normalize-media-urls": "node scripts/normalize-content-media-urls.mjs"
+    "content:normalize-media-urls": "node scripts/normalize-content-media-urls.mjs",
+    "seed": "node scripts/seed-julia-content.mjs",
+    "qa:routes": "node scripts/qa/check-routes.mjs",
+    "qa:seo": "node scripts/qa/check-seo.mjs",
+    "qa:content": "node scripts/qa/check-content.mjs",
+    "qa:bilingual": "node scripts/qa/check-bilingual.mjs",
+    "qa:all": "npm run qa:content && npm run qa:bilingual && npm run qa:routes && npm run qa:seo"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.20",
