@@ -1,12 +1,28 @@
-# Julia Studio Site (BAAM Multi-Site Platform)
+# BAAM System G — REA Premium (Real Estate Agent Template)
 
+> **GitHub:** https://github.com/johntang99/realestate  
+> **Supabase project:** Real estate (jbbcuczsrwizbxbnhedc)  
+> **Dev port:** 3050  
+> **Admin:** admin@example.com / admin123 (change after first login)
 
+## Quick start
+
+```bash
+# Kill port if in use
 lsof -ti:3050 | xargs kill -9
+
+# Clean build cache if needed
 rm -rf .next
+
+# Dev server
 npm run dev
 
+# Install
 npm install
+
+# Production build
 npm run build
+```
 
 git add .
 git commit -m "Update: describe your changes"
