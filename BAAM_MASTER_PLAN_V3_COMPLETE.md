@@ -7,6 +7,7 @@
 > **Two stages:** Stage A (Strategy & Design) produces the blueprint. Stage B (Implementation) executes it.
 > **The quality of Stage A determines the quality of the final site.**
 > **V3.1 additions:** Admin collection editors, governance model, dual timelines, automation checks, rollback SOP.
+> **V3.2 additions:** Platform Guardrails (Julia Studio Learnings): public/admin API boundary, host-based site resolution, import/export direction rules, slug integrity, sync observability.
 
 ---
 
@@ -45,6 +46,7 @@
 - [24. Anti-Patterns & Lessons Learned](#24-anti-patterns--lessons-learned)
 - [25. Process Summary Diagram](#25-process-summary-diagram)
 - [26. Theme Token Normalization Playbook](#26-theme-token-normalization-playbook)
+- [27. Platform Guardrails (Julia Studio Learnings)](#27-platform-guardrails-julia-studio-learnings)
 
 ---
 
@@ -1586,6 +1588,65 @@ Any PR that introduces new hardcoded visual values must either:
 2. add/update tokens and utilities in the same PR.
 
 This keeps BAAM sites maintainable and prevents style drift over time.
+
+---
+
+## 27. Platform Guardrails (Julia Studio Learnings)
+
+This addendum captures implementation-level rules derived from Julia Studio production work. Keep these as non-optional guardrails for future BAAM builds.
+
+### 27.1 Public vs Admin Data Access
+
+- Public pages must never depend on `/api/admin/*` routes.
+- Visitor-facing content should use public content loaders/endpoints only.
+- Reason: admin auth/rbac behavior in production can return empty responses and make public pages appear blank.
+
+### 27.2 Site Resolution in Multi-Site Environments
+
+- Do not hardcode `siteId` in public client fetches.
+- Resolve site context from host/domain by default, with explicit override only when required.
+- Public APIs should accept optional `siteId` and safely infer from request host when absent.
+
+### 27.3 Content Sync Direction (Import vs Export)
+
+- **Import (overwrite):** DB -> local files.
+- **Export:** local files -> DB.
+- Before running either action, require an explicit source-of-truth decision for this operation.
+- If `DB newer conflicts = 0` and DB is authoritative, import is the default safe path.
+
+### 27.4 Slug Integrity Contract
+
+- For collection entries, `slug` must always equal filename stem (path-derived slug).
+- Create, save, and duplicate flows must enforce slug/path synchronization automatically.
+- Diff tooling must include collection directories so slug mismatches are always detected.
+
+### 27.5 Diff Observability Standard
+
+- "Check Update From DB" outputs must include:
+  - total changed file counts (`create`, `update`, `conflicts`)
+  - folder-level breakdown (`portfolio`, `journal`, `shop-products`, etc.)
+  - sample changed paths for rapid diagnosis
+- Goal: make operator decisions obvious before any overwrite action.
+
+### 27.6 Theme Token Governance
+
+- Visual changes (font, color, radius, shadow, overlay, spacing rhythm) must be token-first:
+  1. define in `theme.json`
+  2. map to CSS variables in layout
+  3. consume via semantic classes/utilities
+- Avoid one-off visual literals in page components when a tokenized equivalent exists.
+
+### 27.7 Admin Form Completeness Rule
+
+- Complex content contracts (for example testimonials/services) require dedicated panel components, not monolithic inline editors.
+- Required capabilities: add/remove/reorder, constrained options (dropdowns), media field support, and JSON/Form roundtrip parity.
+
+### 27.8 Pre-Deploy Operational Checklist (Minimum)
+
+- Run production build (`npm run build`) and ensure zero type/lint failures.
+- Smoke test core listing pages (`portfolio`, `collections`, `shop`, `journal`) on target domain and both locales.
+- Run sync dry-run and resolve direction (`import` vs `export`) before content operations.
+- Spot-check at least one collection file for slug/path consistency after duplicate/create flows.
 
 ---
 
