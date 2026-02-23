@@ -32,6 +32,16 @@ async function getLocalDefaultSiteId(): Promise<string | null> {
   }
 }
 
+// Reads both env var names so Vercel works whether the user set
+// NEXT_PUBLIC_DEFAULT_SITE or NEXT_PUBLIC_DEFAULT_SITE_ID
+function getEnvSiteId(): string | undefined {
+  return (
+    process.env.NEXT_PUBLIC_DEFAULT_SITE_ID ||
+    process.env.NEXT_PUBLIC_DEFAULT_SITE ||
+    undefined
+  );
+}
+
 async function resolveSiteId(siteId?: string): Promise<string> {
   if (siteId) return siteId;
   try {
@@ -51,15 +61,32 @@ async function resolveSiteId(siteId?: string): Promise<string> {
       if (localSiteId) return localSiteId;
     }
 
+    // For production hosts (Vercel, custom domain), try domain match first
     const site = await getSiteByHost(host);
     if (site?.id) return site.id;
+
+    // Fall back: DB default → env var → local _sites.json → hard-fail safe default
     const defaultSite = await getDefaultSite();
-    return defaultSite?.id || process.env.NEXT_PUBLIC_DEFAULT_SITE || 'default-site';
-  } catch (error) {
+    if (defaultSite?.id) return defaultSite.id;
+
+    const envSiteId = getEnvSiteId();
+    if (envSiteId) return envSiteId;
+
     const localSiteId = await getLocalDefaultSiteId();
     if (localSiteId) return localSiteId;
-    const defaultSite = await getDefaultSite();
-    return defaultSite?.id || process.env.NEXT_PUBLIC_DEFAULT_SITE || 'default-site';
+
+    return 'default-site';
+  } catch (error) {
+    // On any error, try every fallback so production never returns empty
+    try {
+      const localSiteId = await getLocalDefaultSiteId();
+      if (localSiteId) return localSiteId;
+    } catch {}
+    try {
+      const defaultSite = await getDefaultSite();
+      if (defaultSite?.id) return defaultSite.id;
+    } catch {}
+    return getEnvSiteId() || 'default-site';
   }
 }
 
