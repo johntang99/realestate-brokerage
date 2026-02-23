@@ -1,10 +1,10 @@
 {
-  "name": "multi-site-content-platform",
+  "name": "baam-system-g-rea",
   "version": "1.0.0",
-  "description": "Multi-site content management template",
+  "description": "BAAM System G — Real Estate Agent Premium Template",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3040",
+    "dev": "next dev -p 3050",
     "dev:default": "next dev",
     "build": "next build",
     "start": "next start",
@@ -13,7 +13,7 @@
     "ci:check": "npm run type-check && npm run lint && npm run build",
     "media:migrate": "node scripts/migrate-media-to-supabase.mjs",
     "content:normalize-media-urls": "node scripts/normalize-content-media-urls.mjs",
-    "seed": "node scripts/seed-julia-content.mjs",
+    "seed": "node scripts/seed-rea-content.mjs",
     "qa:routes": "node scripts/qa/check-routes.mjs",
     "qa:seo": "node scripts/qa/check-seo.mjs",
     "qa:content": "node scripts/qa/check-content.mjs",

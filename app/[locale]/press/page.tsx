@@ -1,48 +1,49 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { type Locale } from '@/lib/i18n';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
-import { buildPageMetadata } from '@/lib/seo';
+import { Award, ExternalLink } from 'lucide-react';
 
-interface PageProps { params: { locale: Locale } }
-interface PressData {
-  hero?: { headline?: string; headlineCn?: string; subline?: string; sublineCn?: string };
-  awards?: { headline?: string; headlineCn?: string; items?: Array<{ name?: string; organization?: string; year?: string; logo?: string }> };
-  press?: { headline?: string; headlineCn?: string; items?: Array<{ publication?: string; title?: string; titleCn?: string; date?: string; url?: string; logo?: string }> };
-}
+export default function PressPage() {
+  const [pageData, setPageData] = useState<any>({});
+  const [locale, setLocale] = useState('en');
 
-function tx(en?: string, cn?: string, locale?: Locale) { return (locale === 'zh' && cn) ? cn : (en || ''); }
+  useEffect(() => {
+    const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
+    setLocale(loc);
+    fetch(`/api/content/file?locale=${loc}&path=pages/press.json`).then(r => r.json()).then(res => {
+      try { setPageData(JSON.parse(res.content || '{}')); } catch {}
+    });
+  }, []);
 
-export async function generateMetadata({ params }: PageProps) {
-  const siteId = await getRequestSiteId();
-  return buildPageMetadata({ siteId, locale: params.locale, slug: 'press', title: 'Press & Awards — Julia Studio', description: 'Julia Studio in the press. Awards and media features.' });
-}
-
-export default async function PressPage({ params }: PageProps) {
-  const { locale } = params;
-  const siteId = await getRequestSiteId();
-  const data = await loadPageContent<PressData>('press', locale, siteId);
-  const isCn = locale === 'zh';
+  const d = pageData;
 
   return (
     <>
-      <section className="pt-32 pb-16 md:pt-40" style={{ background: 'var(--backdrop-primary)' }}>
-        <div className="container-custom max-w-xl">
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-3" style={{ color: 'var(--primary)' }}>
-            {tx(data?.hero?.headline, data?.hero?.headlineCn, locale) || (isCn ? '媒体与奖项' : 'Press & Awards')}
+      <section className="pt-32 pb-10 md:pt-40" style={{ background: 'var(--backdrop-primary)' }}>
+        <div className="container-custom">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Recognition</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-semibold" style={{ color: 'var(--primary)' }}>
+            {d.hero?.headline || 'Awards & Recognition'}
           </h1>
         </div>
       </section>
 
-      {data?.awards?.items && (
+      {/* Awards */}
+      {d.awards?.length > 0 && (
         <section className="section-padding bg-white">
           <div className="container-custom">
-            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>{tx(data.awards.headline, data.awards.headlineCn, locale) || (isCn ? '奖项' : 'Awards')}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-              {data.awards.items.map((award, i) => (
-                <div key={i} className="border border-[var(--border)] p-6 text-center hover:border-[var(--secondary)] transition-colors">
-                  <p className="font-serif text-sm font-medium" style={{ color: 'var(--primary)' }}>{award.name}</p>
-                  {award.organization && <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{award.organization}</p>}
-                  <p className="text-xs mt-1" style={{ color: 'var(--secondary)' }}>{award.year}</p>
+            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>Awards</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl">
+              {d.awards.map((item: any, i: number) => (
+                <div key={i} className="flex items-start gap-4 p-5 border border-[var(--border)] rounded-xl">
+                  <Award className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--secondary)' }} />
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{item.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+                      {item.organization} · {item.year}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -50,21 +51,26 @@ export default async function PressPage({ params }: PageProps) {
         </section>
       )}
 
-      {data?.press?.items && (
+      {/* Press */}
+      {d.press?.length > 0 && (
         <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
           <div className="container-custom">
-            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>{tx(data.press.headline, data.press.headlineCn, locale) || (isCn ? '媒体报道' : 'Featured In')}</h2>
-            <div className="space-y-4">
-              {data.press.items.map((item, i) => (
-                <div key={i} className="bg-white border border-[var(--border)] p-6 flex items-center gap-6">
-                  <div className="flex-shrink-0 w-24 text-right">
-                    <p className="font-serif text-sm font-semibold" style={{ color: 'var(--primary)' }}>{item.publication}</p>
-                    <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{item.date}</p>
+            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>Press Features</h2>
+            <div className="space-y-4 max-w-3xl">
+              {d.press.map((item: any, i: number) => (
+                <div key={i} className="flex items-start justify-between gap-4 p-5 bg-white border border-[var(--border)] rounded-xl">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--secondary)' }}>{item.publication}</p>
+                    <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{item.title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{item.date}</p>
                   </div>
-                  <div className="border-l border-[var(--border)] pl-6 flex-1">
-                    <p className="font-serif text-base" style={{ color: 'var(--primary)' }}>{tx(item.title, item.titleCn, locale)}</p>
-                    {item.url && <a href={item.url} target="_blank" rel="noreferrer" className="text-xs mt-1 block" style={{ color: 'var(--secondary)' }}>{isCn ? '阅读文章 →' : 'Read Article →'}</a>}
-                  </div>
+                  {item.url && item.url !== '#' && (
+                    <a href={item.url} target="_blank" rel="noreferrer"
+                      className="flex-shrink-0 hover:opacity-70 transition-opacity mt-0.5"
+                      style={{ color: 'var(--secondary)' }}>
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
@@ -72,9 +78,33 @@ export default async function PressPage({ params }: PageProps) {
         </section>
       )}
 
-      <section className="py-16 border-t border-[var(--border)] bg-white">
+      {/* Designations */}
+      {d.designations?.length > 0 && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>Professional Designations</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-4xl">
+              {d.designations.map((item: any, i: number) => (
+                <div key={i} className="p-5 border border-[var(--border)] rounded-xl">
+                  <p className="font-serif text-2xl font-bold mb-2" style={{ color: 'var(--secondary)' }}>{item.abbreviation}</p>
+                  <p className="font-semibold text-sm mb-2" style={{ color: 'var(--primary)' }}>{item.name}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* CTA */}
+      <section className="section-padding" style={{ background: 'var(--primary)' }}>
         <div className="container-custom text-center">
-          <Link href={`/${locale}/contact`} className="btn-gold">{isCn ? '预约咨询' : 'Book Consultation'}</Link>
+          <h2 className="font-serif text-3xl font-semibold text-white mb-4">
+            {d.cta?.headline || 'Work with an award-winning agent.'}
+          </h2>
+          <Link href={`/${locale}${d.cta?.ctaHref || '/contact'}`} className="btn-gold inline-block mt-2">
+            {d.cta?.ctaLabel || 'Schedule a Consultation'}
+          </Link>
         </div>
       </section>
     </>

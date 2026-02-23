@@ -1,141 +1,131 @@
 import Link from 'next/link';
-import { Instagram } from 'lucide-react';
+import { Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
 import type { Locale } from '@/lib/i18n';
-
-interface FooterColumn {
-  title: string;
-  titleCn?: string;
-  links: Array<{ label: string; labelCn?: string; href: string }>;
-}
-
-interface FooterSocialLinks {
-  instagram?: string;
-  pinterest?: string;
-  wechatQrImage?: string;
-}
-
-interface FooterLegal {
-  copyright?: string;
-  copyrightCn?: string;
-  privacyLabel?: string;
-  privacyHref?: string;
-  termsLabel?: string;
-  termsHref?: string;
-}
-
-interface FooterNewsletter {
-  enabled?: boolean;
-  headline?: string;
-  headlineCn?: string;
-  placeholder?: string;
-  placeholderCn?: string;
-  buttonLabel?: string;
-  buttonLabelCn?: string;
-}
 
 export interface JuliaFooterData {
   tagline?: string;
   taglineCn?: string;
-  columns?: FooterColumn[];
-  socialLinks?: FooterSocialLinks;
-  legal?: FooterLegal;
-  newsletter?: FooterNewsletter;
+  columns?: Array<{
+    title: string; titleCn?: string;
+    links: Array<{ label: string; labelCn?: string; href: string }>;
+  }>;
+  newsletter?: { enabled?: boolean; headline?: string; headlineCn?: string; subline?: string; sublineCn?: string; submitLabel?: string };
+  compliance?: {
+    showEqualHousingLogo?: boolean;
+    showMlsDisclaimer?: boolean;
+    showLicenseNumber?: boolean;
+    showBrokerageLogo?: boolean;
+  };
+  legalLinks?: Array<{ label: string; labelCn?: string; href: string }>;
+  copyright?: string;
 }
 
 interface FooterProps {
   locale: Locale;
   siteId: string;
   footer?: JuliaFooterData | Record<string, unknown>;
+  siteInfo?: Record<string, unknown> | null;
 }
 
-export default function Footer({ locale, footer }: FooterProps) {
+export default function Footer({ locale, footer, siteInfo }: FooterProps) {
   const data = (footer ?? {}) as JuliaFooterData;
   const isCn = locale === 'zh';
-  const tagline = isCn ? (data.taglineCn || data.tagline) : data.tagline || 'Creating timeless spaces since 2001.';
-  const year = new Date().getFullYear();
-  const copyright = isCn
-    ? (data.legal?.copyrightCn || `© ${year} Julia Studio 版权所有`)
-    : (data.legal?.copyright || `© ${year} Julia Studio. All rights reserved.`);
+  const tx = (en?: string, cn?: string) => (isCn && cn) ? cn : (en || '');
 
-  const columns: FooterColumn[] = data.columns || [
-    {
-      title: 'Explore', titleCn: '探索',
-      links: [
-        { label: 'Portfolio', labelCn: '作品集', href: '/portfolio' },
-        { label: 'Services', labelCn: '服务', href: '/services' },
-        { label: 'Shop', labelCn: '商店', href: '/shop' },
-        { label: 'Journal', labelCn: '日志', href: '/journal' },
-      ],
-    },
-    {
-      title: 'Studio', titleCn: '工作室',
-      links: [
-        { label: 'About', labelCn: '关于', href: '/about' },
-        { label: 'Press', labelCn: '媒体', href: '/press' },
-        { label: 'FAQ', labelCn: '常见问题', href: '/faq' },
-        { label: 'Contact', labelCn: '联系', href: '/contact' },
-      ],
-    },
+  const year = new Date().getFullYear();
+  const tagline = tx(data.tagline, data.taglineCn);
+  const copyright = data.copyright || `© ${year} Alexandra Reeves Real Estate. All rights reserved.`;
+
+  const licenseNumber = (siteInfo as any)?.licenseNumber as string | undefined;
+  const mlsDisclaimer = (siteInfo as any)?.compliance?.mlsDisclaimer as string | undefined;
+
+  const defaultColumns: JuliaFooterData['columns'] = [
+    { title: 'Properties', links: [
+      { label: 'All Listings', href: '/properties' },
+      { label: 'For Sale', href: '/properties?status=for-sale' },
+      { label: 'Sold Portfolio', href: '/sold' },
+      { label: 'Neighborhoods', href: '/neighborhoods' },
+    ]},
+    { title: 'Services', links: [
+      { label: 'Buying', href: '/services#buying' },
+      { label: 'Selling', href: '/services#selling' },
+      { label: 'Leasing', href: '/services#leasing' },
+      { label: 'Commercial', href: '/services#commercial' },
+      { label: 'Investment', href: '/services#investment' },
+    ]},
+    { title: 'Resources', links: [
+      { label: 'Blog & Insights', href: '/blog' },
+      { label: 'Market Reports', href: '/market-reports' },
+      { label: "Buyer's Guide", href: '/buyers-guide' },
+      { label: "Seller's Guide", href: '/sellers-guide' },
+      { label: 'FAQ', href: '/faq' },
+    ]},
+    { title: 'Connect', links: [
+      { label: 'Contact Me', href: '/contact' },
+      { label: 'Home Valuation', href: '/home-valuation' },
+      { label: 'About', href: '/about' },
+      { label: 'Testimonials', href: '/testimonials' },
+      { label: 'Press & Awards', href: '/press' },
+    ]},
   ];
 
+  const columns = data.columns || defaultColumns;
   const newsletter = data.newsletter;
-  const newsletterHeadline = isCn ? (newsletter?.headlineCn || newsletter?.headline) : newsletter?.headline || 'Design inspiration, delivered weekly.';
-  const newsletterPlaceholder = isCn ? (newsletter?.placeholderCn || newsletter?.placeholder) : newsletter?.placeholder || 'Your email address';
-  const newsletterBtn = isCn ? (newsletter?.buttonLabelCn || newsletter?.buttonLabel) : newsletter?.buttonLabel || 'Subscribe';
+  const compliance = data.compliance;
 
   return (
-    <footer style={{ background: 'var(--backdrop-secondary, #1A1A1A)', color: 'var(--text-on-dark, #FAF8F5)' }}>
+    <footer style={{ background: 'var(--backdrop-secondary, #1A1A1A)', color: 'var(--text-on-dark, #FFFFFF)' }}>
       <div className="container-custom py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
 
           {/* Brand col */}
           <div className="lg:col-span-1">
-            <div className="font-serif text-xl font-semibold mb-3" style={{ color: 'var(--text-on-dark, #FAF8F5)' }}>
-              Julia Studio
+            <div className="font-serif text-xl font-semibold mb-3" style={{ color: 'var(--text-on-dark)' }}>
+              {(siteInfo as any)?.name || 'Alexandra Reeves'}
             </div>
-            <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--on-dark-medium, rgba(250,248,245,0.6))' }}>{tagline}</p>
+            {tagline && <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--on-dark-medium)' }}>{tagline}</p>}
+
             {/* Social icons */}
             <div className="flex gap-4">
-              {data.socialLinks?.instagram && (
-                <a
-                  href={data.socialLinks.instagram}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="hover:text-[var(--secondary)] transition-colors"
-                  style={{ color: 'var(--on-dark-low, rgba(250,248,245,0.4))' }}
-                >
-                  <Instagram className="w-5 h-5" />
+              {(siteInfo as any)?.socialLinks?.instagram && (
+                <a href={(siteInfo as any).socialLinks.instagram} target="_blank" rel="noreferrer"
+                  className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
+                  <Instagram className="w-4 h-4" />
                 </a>
               )}
-              {/* Pinterest text link */}
-              {data.socialLinks?.pinterest && (
-                <a
-                  href={data.socialLinks.pinterest}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs hover:text-[var(--secondary)] transition-colors font-medium"
-                  style={{ color: 'var(--on-dark-low, rgba(250,248,245,0.4))' }}
-                >
-                  Pinterest
+              {(siteInfo as any)?.socialLinks?.facebook && (
+                <a href={(siteInfo as any).socialLinks.facebook} target="_blank" rel="noreferrer"
+                  className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
+                  <Facebook className="w-4 h-4" />
+                </a>
+              )}
+              {(siteInfo as any)?.socialLinks?.linkedin && (
+                <a href={(siteInfo as any).socialLinks.linkedin} target="_blank" rel="noreferrer"
+                  className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
+                  <Linkedin className="w-4 h-4" />
+                </a>
+              )}
+              {(siteInfo as any)?.socialLinks?.youtube && (
+                <a href={(siteInfo as any).socialLinks.youtube} target="_blank" rel="noreferrer"
+                  className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
+                  <Youtube className="w-4 h-4" />
                 </a>
               )}
             </div>
           </div>
 
-          {/* Navigation columns */}
+          {/* Nav columns */}
           {columns.map((col) => (
             <div key={col.title}>
-              <h4 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--secondary, #C4A265)' }}>
+              <h4 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--secondary)' }}>
                 {isCn ? (col.titleCn || col.title) : col.title}
               </h4>
               <ul className="space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      href={`/${locale}${link.href}`}
+                    <Link href={`/${locale}${link.href}`}
                       className="text-sm hover:text-white transition-colors"
-                      style={{ color: 'var(--on-dark-medium, rgba(250,248,245,0.6))' }}
-                    >
+                      style={{ color: 'var(--on-dark-medium)' }}>
                       {isCn ? (link.labelCn || link.label) : link.label}
                     </Link>
                   </li>
@@ -143,49 +133,75 @@ export default function Footer({ locale, footer }: FooterProps) {
               </ul>
             </div>
           ))}
+        </div>
 
-          {/* Newsletter */}
-          {newsletter?.enabled !== false && (
-            <div>
-              <h4 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--secondary, #C4A265)' }}>
-                {isCn ? '设计通讯' : 'Newsletter'}
-              </h4>
-              <p className="text-sm mb-4 leading-relaxed" style={{ color: 'var(--on-dark-medium, rgba(250,248,245,0.6))' }}>{newsletterHeadline}</p>
+        {/* Newsletter */}
+        {newsletter?.enabled !== false && newsletter && (
+          <div className="mt-12 pt-10 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+            <div className="max-w-md">
+              <p className="font-serif text-base font-semibold mb-1" style={{ color: 'var(--text-on-dark)' }}>
+                {tx(newsletter.headline, newsletter.headlineCn) || 'Get Market Updates'}
+              </p>
+              {newsletter.subline && <p className="text-sm mb-4" style={{ color: 'var(--on-dark-medium)' }}>{tx(newsletter.subline, newsletter.sublineCn)}</p>}
               <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder={newsletterPlaceholder}
-                  className="flex-1 rounded-sm px-3 py-2 text-sm placeholder-white/30 outline-none focus:border-[var(--secondary)]"
-                  style={{
-                    background: 'rgb(var(--on-dark-rgb, 250 248 245) / 0.10)',
-                    border: '1px solid rgb(var(--on-dark-rgb, 250 248 245) / 0.20)',
-                    color: 'var(--text-on-dark, #FAF8F5)',
-                  }}
-                />
-                <button className="px-3 py-2 text-xs font-semibold rounded-sm transition-colors" style={{ background: 'var(--secondary, #C4A265)', color: 'var(--text-on-gold, #1A1A1A)' }}>
-                  {newsletterBtn}
+                <input type="email" placeholder="Your email address"
+                  className="flex-1 rounded-sm px-3 py-2 text-sm outline-none focus:border-[var(--secondary)]"
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)', color: 'var(--text-on-dark)' }} />
+                <button className="px-4 py-2 text-xs font-semibold rounded-sm"
+                  style={{ background: 'var(--secondary)', color: '#1A1A1A' }}>
+                  {newsletter.submitLabel || 'Subscribe'}
                 </button>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
+      {/* Compliance row — REQUIRED for real estate */}
+      {(compliance?.showEqualHousingLogo || compliance?.showLicenseNumber || compliance?.showMlsDisclaimer || licenseNumber) && (
+        <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.2)' }}>
+          <div className="container-custom py-6">
+            <div className="flex flex-wrap items-start gap-6">
+              {/* Equal Housing symbol */}
+              {compliance?.showEqualHousingLogo !== false && (
+                <div className="flex-shrink-0 flex items-center gap-2">
+                  <div className="w-8 h-8 border-2 border-white/30 rounded flex items-center justify-center">
+                    <span className="font-bold text-xs text-white/60">⊜</span>
+                  </div>
+                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Equal Housing<br />Opportunity</span>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                {licenseNumber && compliance?.showLicenseNumber !== false && (
+                  <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    License: {licenseNumber}
+                  </p>
+                )}
+                {mlsDisclaimer && compliance?.showMlsDisclaimer !== false && (
+                  <p className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    {mlsDisclaimer}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom bar */}
-      <div className="border-t" style={{ borderColor: 'rgb(var(--on-dark-rgb, 250 248 245) / 0.10)' }}>
-        <div className="container-custom py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs" style={{ color: 'var(--text-on-dark, #FAF8F5)' }}>{copyright}</p>
-          <div className="flex gap-5 text-xs" style={{ color: 'var(--on-dark-subtle, rgba(250,248,245,0.3))' }}>
-            {data.legal?.privacyHref && (
-              <Link href={`/${locale}${data.legal.privacyHref}`} className="transition-colors hover:opacity-90">
-                {isCn ? '隐私政策' : (data.legal.privacyLabel || 'Privacy Policy')}
+      <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="container-custom py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs" style={{ color: 'var(--text-on-dark)' }}>{copyright}</p>
+          <div className="flex gap-5 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            {(data.legalLinks || [
+              { label: 'Privacy Policy', href: '/privacy' },
+              { label: 'Terms of Service', href: '/terms' },
+            ]).map(link => (
+              <Link key={link.href} href={`/${locale}${link.href}`}
+                className="transition-colors hover:opacity-80">
+                {isCn ? (link.labelCn || link.label) : link.label}
               </Link>
-            )}
-            {data.legal?.termsHref && (
-              <Link href={`/${locale}${data.legal.termsHref}`} className="transition-colors hover:opacity-90">
-                {isCn ? '服务条款' : (data.legal.termsLabel || 'Terms')}
-              </Link>
-            )}
+            ))}
           </div>
         </div>
       </div>

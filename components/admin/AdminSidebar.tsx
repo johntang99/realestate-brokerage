@@ -1,15 +1,17 @@
 import Link from 'next/link';
 import {
-  BookOpen,
+  Home,
   Building2,
-  Calendar,
+  Map,
   FileText,
+  BarChart2,
+  MessageSquare,
   Image,
   Layers,
-  LayoutGrid,
   Settings,
   SlidersHorizontal,
   Users,
+  BookOpen,
 } from 'lucide-react';
 import { getSession } from '@/lib/admin/auth';
 import { isSuperAdmin } from '@/lib/admin/permissions';
@@ -18,11 +20,11 @@ const navigation = [
   { name: 'Sites', href: '/admin/sites', icon: Building2 },
   { name: 'Site Settings', href: '/admin/site-settings', icon: SlidersHorizontal },
   { name: 'Content', href: '/admin/content', icon: FileText },
-  { name: 'Portfolio', href: '/admin/portfolio', icon: LayoutGrid },
-  { name: 'Shop Products', href: '/admin/shop-products', icon: Image },
-  { name: 'Journal', href: '/admin/journal', icon: BookOpen },
-  { name: 'Collections', href: '/admin/collections', icon: Layers },
-  { name: 'Testimonials', href: '/admin/testimonials', icon: Users },
+  { name: 'Properties', href: '/admin/properties', icon: Home },
+  { name: 'Neighborhoods', href: '/admin/neighborhoods', icon: Map },
+  { name: 'Blog', href: '/admin/blog', icon: BookOpen },
+  { name: 'Market Reports', href: '/admin/market-reports', icon: BarChart2 },
+  { name: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare },
   { name: 'Media', href: '/admin/media', icon: Image },
   { name: 'Variants', href: '/admin/variants', icon: Layers },
   { name: 'Users', href: '/admin/users', icon: Users },

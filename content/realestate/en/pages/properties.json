@@ -1,0 +1,19 @@
+{
+  "hero": { "variant": "minimal-text", "headline": "Properties", "subline": "Browse active listings, pending sales, and Alexandra's sold portfolio across Westchester County." },
+  "filters": {
+    "statusOptions": ["for-sale","pending","sold","for-lease"],
+    "statusLabels": { "for-sale": "For Sale", "pending": "Pending", "sold": "Sold", "for-lease": "For Lease" },
+    "typeOptions": ["single-family","condo","townhouse","commercial","land","multi-family"],
+    "typeLabels": { "single-family": "Single Family", "condo": "Condo", "townhouse": "Townhouse", "commercial": "Commercial", "land": "Land", "multi-family": "Multi-Family" },
+    "priceRanges": ["0-500000","500000-1000000","1000000-2000000","2000000-3500000","3500000+"],
+    "priceRangeLabels": { "0-500000": "Under $500K", "500000-1000000": "$500K–$1M", "1000000-2000000": "$1M–$2M", "2000000-3500000": "$2M–$3.5M", "3500000+": "$3.5M+" },
+    "bedOptions": ["1","2","3","4","5+"],
+    "bathOptions": ["1","2","3","4+"],
+    "showNeighborhoodFilter": true,
+    "showSqftFilter": false
+  },
+  "grid": { "variant": "property-cards", "itemsPerPage": 12, "defaultSort": "newest", "sortOptions": ["newest","price-low","price-high","sqft"] },
+  "mapView": { "enabled": false },
+  "idxSection": { "enabled": false, "headline": "Search All Westchester Listings", "ctaLabel": "Search MLS", "ctaHref": "#" },
+  "cta": { "headline": "Don't see what you're looking for?", "body": "Tell me your criteria and I'll find it for you — often before it hits the market.", "ctaLabel": "Get in Touch", "ctaHref": "/contact" }
+}

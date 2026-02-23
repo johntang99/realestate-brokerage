@@ -1,5 +1,25 @@
 # Julia Studio Site (BAAM Multi-Site Platform)
 
+
+lsof -ti:3050 | xargs kill -9
+rm -rf .next
+npm run dev
+
+npm install
+npm run build
+
+git add .
+git commit -m "Update: describe your changes"
+git push
+
+
+curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_ImGwacnTH1L6WRCMgW2ykDSTHste/6E4SwnmEJg
+
+
+
+
+
+
 Production-ready bilingual (EN/ZH) studio website built on the BAAM platform.  
 It includes public pages, admin CMS, DB-first content storage, file fallback, media tools, and site/domain-aware routing.
 
@@ -26,7 +46,7 @@ npm run dev
 
 Default dev port from `package.json`:
 
-- `http://localhost:3040`
+- `http://localhost:3050`
 
 ### Build and run checks
 

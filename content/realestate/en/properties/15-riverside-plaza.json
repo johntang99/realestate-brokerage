@@ -1,0 +1,63 @@
+{
+  "slug": "15-riverside-plaza",
+  "address": "15 Riverside Plaza, Suite 200",
+  "city": "Mamaroneck",
+  "state": "NY",
+  "zip": "10543",
+  "neighborhood": "mamaroneck",
+  "price": 4500,
+  "priceDisplay": "$4,500/mo",
+  "status": "for-lease",
+  "type": "commercial",
+  "beds": 0,
+  "baths": 1,
+  "sqft": 1800,
+  "yearBuilt": 2008,
+  "garage": "4 reserved spaces",
+  "taxAmount": "Included in NNN",
+  "mlsNumber": "HGAR-5891238",
+  "featured": false,
+  "coverImage": "",
+  "coverImageAlt": "15 Riverside Plaza, Mamaroneck NY",
+  "images": [],
+  "description": "Premier Class-A office suite in Mamaroneck's most desirable professional building. This 1,800 SF second-floor suite offers an ideal environment for a professional services firm, medical practice, or creative agency.\n\nThe space features an open-plan work area accommodating 12-15 workstations, two private offices, a glass-enclosed conference room, a dedicated reception area, and a kitchenette. Recent renovation in 2023 includes new LED lighting, updated HVAC, and high-speed fiber connectivity.",
+  "features": {
+    "interior": [
+      "12-15 Workstation Open Plan",
+      "2 Private Offices",
+      "Glass Conference Room",
+      "Reception Area",
+      "Kitchenette",
+      "New LED Lighting",
+      "Updated HVAC 2023"
+    ],
+    "exterior": [
+      "4 Reserved Parking Spaces",
+      "Building Signage Available",
+      "ADA Accessible",
+      "Loading Zone"
+    ],
+    "community": [
+      "Class-A Professional Building",
+      "Mamaroneck Village",
+      "0.3 Miles to Metro-North",
+      "On-Site Property Management"
+    ],
+    "utilities": [
+      "High-Speed Fiber",
+      "Central HVAC",
+      "24/7 Building Access"
+    ]
+  },
+  "leaseDetails": {
+    "monthlyRent": 4500,
+    "leaseTerm": "3-5 years preferred",
+    "availableDate": "2026-02-01",
+    "petPolicy": "N/A",
+    "utilitiesIncluded": "Water, trash, common area maintenance"
+  },
+  "seo": {
+    "title": "15 Riverside Plaza Suite 200, Mamaroneck NY — $4,500/mo",
+    "description": "1,800 SF Class-A office suite in Mamaroneck. 2 private offices, conference room, 4 parking spaces. For lease."
+  }
+}

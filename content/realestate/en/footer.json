@@ -1,0 +1,62 @@
+{
+  "tagline": "Helping Westchester families find home for 18 years.",
+  "columns": [
+    {
+      "title": "Properties",
+      "links": [
+        { "label": "All Listings", "href": "/properties" },
+        { "label": "For Sale", "href": "/properties?status=for-sale" },
+        { "label": "For Lease", "href": "/properties?status=for-lease" },
+        { "label": "Sold Portfolio", "href": "/sold" },
+        { "label": "Neighborhoods", "href": "/neighborhoods" }
+      ]
+    },
+    {
+      "title": "Services",
+      "links": [
+        { "label": "Buying", "href": "/services#buying" },
+        { "label": "Selling", "href": "/services#selling" },
+        { "label": "Leasing", "href": "/services#leasing" },
+        { "label": "Commercial", "href": "/services#commercial" },
+        { "label": "Investment", "href": "/services#investment" }
+      ]
+    },
+    {
+      "title": "Resources",
+      "links": [
+        { "label": "Blog & Insights", "href": "/blog" },
+        { "label": "Market Reports", "href": "/market-reports" },
+        { "label": "Buyer's Guide", "href": "/buyers-guide" },
+        { "label": "Seller's Guide", "href": "/sellers-guide" },
+        { "label": "FAQ", "href": "/faq" }
+      ]
+    },
+    {
+      "title": "Connect",
+      "links": [
+        { "label": "Contact Me", "href": "/contact" },
+        { "label": "Home Valuation", "href": "/home-valuation" },
+        { "label": "About Alexandra", "href": "/about" },
+        { "label": "Press & Awards", "href": "/press" },
+        { "label": "Testimonials", "href": "/testimonials" }
+      ]
+    }
+  ],
+  "newsletter": {
+    "enabled": true,
+    "headline": "Get Market Updates Delivered Monthly",
+    "subline": "Westchester real estate data, neighborhood news, and listing alerts.",
+    "submitLabel": "Subscribe"
+  },
+  "compliance": {
+    "showEqualHousingLogo": true,
+    "showMlsDisclaimer": true,
+    "showLicenseNumber": true,
+    "showBrokerageLogo": false
+  },
+  "legalLinks": [
+    { "label": "Privacy Policy", "href": "/privacy" },
+    { "label": "Terms of Service", "href": "/terms" }
+  ],
+  "copyright": "© 2026 Alexandra Reeves Real Estate. All rights reserved. Technical Support By baamplatform.com."
+}

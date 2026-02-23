@@ -1,0 +1,24 @@
+{
+  "hero": { "variant": "single-image", "headline": "What's Your Home Worth?", "subline": "Get a free, no-obligation comparative market analysis from Westchester's most trusted agent.", "image": "" },
+  "form": {
+    "fields": [
+      {"name":"propertyAddress","type":"text","label":"Property Address","required":true,"placeholder":"123 Main St, Scarsdale, NY"},
+      {"name":"beds","type":"select","label":"Bedrooms","required":true,"options":[{"value":"1","label":"1"},{"value":"2","label":"2"},{"value":"3","label":"3"},{"value":"4","label":"4"},{"value":"5+","label":"5+"}]},
+      {"name":"baths","type":"select","label":"Bathrooms","required":true,"options":[{"value":"1","label":"1"},{"value":"2","label":"2"},{"value":"3","label":"3"},{"value":"4+","label":"4+"}]},
+      {"name":"sqft","type":"text","label":"Approximate Sq Ft","required":false},
+      {"name":"yearBuilt","type":"text","label":"Year Built","required":false},
+      {"name":"condition","type":"select","label":"Overall Condition","required":true,"options":[{"value":"excellent","label":"Excellent"},{"value":"good","label":"Good"},{"value":"fair","label":"Fair"},{"value":"needs-work","label":"Needs Work"}]},
+      {"name":"recentUpdates","type":"checkboxes","label":"Recent Updates (check all that apply)","required":false,"options":[{"value":"kitchen","label":"Kitchen"},{"value":"bathrooms","label":"Bathrooms"},{"value":"roof","label":"Roof"},{"value":"hvac","label":"HVAC"},{"value":"flooring","label":"Flooring"},{"value":"none","label":"None"}]},
+      {"name":"fullName","type":"text","label":"Your Full Name","required":true},
+      {"name":"email","type":"email","label":"Email","required":true},
+      {"name":"phone","type":"tel","label":"Phone","required":true},
+      {"name":"bestTimeToCall","type":"select","label":"Best Time to Call","required":false,"options":[{"value":"morning","label":"Morning (8am–12pm)"},{"value":"afternoon","label":"Afternoon (12pm–5pm)"},{"value":"evening","label":"Evening (5pm–8pm)"}]}
+    ],
+    "submitLabel": "Get My Free Valuation",
+    "successMessage": "Thank you! I'll analyze your home and send a detailed valuation report within 24 hours."
+  },
+  "whatToExpect": { "headline": "What to Expect", "steps": [{"number":1,"title":"Submit Your Info","description":"Takes less than 2 minutes. No obligation, no pressure."},{"number":2,"title":"I Analyze the Market","description":"I review comparable sales, current inventory, and local trends."},{"number":3,"title":"Receive Your CMA","description":"A detailed comparative market analysis within 24 hours — plus a personal call if you'd like."}] },
+  "whyMyValuation": { "headline": "Why My Valuation is Different", "body": "Online estimates miss what makes your home special — the renovated kitchen, the extra half-acre, the school district premium, the quiet cul-de-sac. My in-person analysis accounts for every factor that online algorithms ignore. 18 years of Westchester sales means I know exactly what today's buyers will pay for your specific property." },
+  "testimonial": { "testimonialId": "test-003" },
+  "cta": { "variant": "centered", "headline": "Prefer to talk first?", "body": "Call or text me directly." }
+}

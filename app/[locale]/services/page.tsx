@@ -1,230 +1,152 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ArrowRight } from 'lucide-react';
-import { type Locale } from '@/lib/i18n';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
-import { buildPageMetadata } from '@/lib/seo';
+import Link from 'next/link';
+import { CheckCircle } from 'lucide-react';
 
-export const revalidate = 86400; // 24 hours
+export default function ServicesPage() {
+  const [pageData, setPageData] = useState<any>({});
+  const [locale, setLocale] = useState('en');
 
-interface PageProps { params: { locale: Locale } }
+  useEffect(() => {
+    const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
+    setLocale(loc);
+    fetch(`/api/content/file?locale=${loc}&path=pages/services.json`).then(r => r.json()).then(res => {
+      try { setPageData(JSON.parse(res.content || '{}')); } catch {}
+    });
+  }, []);
 
-interface ServiceItem { title?: string; titleCn?: string; description?: string; descriptionCn?: string; image?: string }
-interface ProcessStep { number?: number; title?: string; titleCn?: string; description?: string; descriptionCn?: string }
-interface SpecialtyItem { icon?: string; label?: string; labelCn?: string }
+  const d = pageData;
 
-interface ServicesData {
-  hero?: { headline?: string; headlineCn?: string; subline?: string; sublineCn?: string; backgroundImage?: string };
-  designServices?: { headline?: string; headlineCn?: string; items?: ServiceItem[] };
-  constructionServices?: { variant?: string; headline?: string; headlineCn?: string; body?: string; bodyCn?: string; image?: string; capabilities?: Array<{ label?: string; labelCn?: string }> };
-  furnishingServices?: { variant?: string; headline?: string; headlineCn?: string; body?: string; bodyCn?: string; image?: string; ctaLabel?: string; ctaLabelCn?: string; ctaHref?: string };
-  process?: { headline?: string; headlineCn?: string; steps?: ProcessStep[]; variant?: string };
-  specialties?: { headline?: string; headlineCn?: string; items?: SpecialtyItem[] };
-  cta?: { headline?: string; headlineCn?: string; ctaLabel?: string; ctaLabelCn?: string; ctaHref?: string; backgroundImage?: string };
-}
+  // Reusable service section renderer
+  const ServiceSection = ({ section, id, reverse = false }: { section: any; id: string; reverse?: boolean }) => {
+    if (!section?.title) return null;
+    return (
+      <section id={id} className="section-padding border-b border-[var(--border)]" style={{ background: reverse ? 'var(--backdrop-primary)' : 'white' }}>
+        <div className="container-custom">
+          <div className={`grid grid-cols-1 md:grid-cols-2 gap-12 items-center`}>
+            <div className={reverse ? 'md:order-2' : ''}>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Services</p>
+              <h2 className="font-serif text-3xl font-semibold mb-4" style={{ color: 'var(--primary)' }}>{section.title}</h2>
+              <p className="text-base leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>{section.body}</p>
 
-function tx(en?: string, cn?: string, locale?: Locale) { return (locale === 'zh' && cn) ? cn : (en || ''); }
+              {/* Steps (buying) */}
+              {section.steps?.length > 0 && (
+                <div className="space-y-3 mb-6">
+                  {section.steps.map((step: any, i: number) => (
+                    <div key={i} className="flex gap-3">
+                      <div className="w-7 h-7 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
+                        style={{ background: 'var(--secondary)' }}>{step.number || i + 1}</div>
+                      <div>
+                        <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{step.title}</p>
+                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{step.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
-export async function generateMetadata({ params }: PageProps) {
-  const siteId = await getRequestSiteId();
-  return buildPageMetadata({ siteId, locale: params.locale, slug: 'services',
-    title: 'Services — Julia Studio',
-    description: 'Full-service interior design, construction, and furniture sourcing. From concept to reveal.' });
-}
+              {/* Marketing highlights (selling) */}
+              {section.marketingHighlights?.length > 0 && (
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {section.marketingHighlights.map((h: any, i: number) => (
+                    <div key={i} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-primary)' }}>
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
+                      {h.title}
+                    </div>
+                  ))}
+                </div>
+              )}
 
-export default async function ServicesPage({ params }: PageProps) {
-  const { locale } = params;
-  const siteId = await getRequestSiteId();
-  const data = await loadPageContent<ServicesData>('services', locale, siteId);
-  if (!data) notFound();
-  const isCn = locale === 'zh';
+              {/* Capabilities list */}
+              {(section.capabilities || section.propertyTypes)?.length > 0 && (
+                <ul className="space-y-2 mb-6">
+                  {(section.capabilities || section.propertyTypes).map((item: any, i: number) => (
+                    <li key={i} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-primary)' }}>
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: 'var(--accent)' }} />
+                      {item.text || item}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {section.ctaLabel && section.ctaHref && (
+                <Link href={`/${locale}${section.ctaHref}`} className="btn-gold inline-block text-sm">
+                  {section.ctaLabel}
+                </Link>
+              )}
+            </div>
+            <div className={reverse ? 'md:order-1' : ''}>
+              {section.image ? (
+                <div className="relative aspect-[4/3] rounded-xl overflow-hidden" style={{ boxShadow: 'var(--card-shadow)' }}>
+                  <Image src={section.image} alt={section.imageAlt || section.title} fill className="object-cover" sizes="50vw" />
+                </div>
+              ) : (
+                <div className="aspect-[4/3] rounded-xl flex items-center justify-center"
+                  style={{ background: 'var(--primary)', opacity: 0.08, borderRadius: 'var(--card-radius)' }} />
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  };
 
   return (
     <>
       {/* Hero */}
-      <section
-        className="relative hero-pad-services min-h-[62vh] md:min-h-[78vh] overflow-hidden flex items-end"
-        style={{ background: 'var(--primary)' }}
-      >
-        {data.hero?.backgroundImage && (
-          <>
-            <div className="absolute inset-0">
-              <Image
-                src={data.hero.backgroundImage}
-                alt=""
-                fill
-                className="object-cover"
-                style={{
-                  opacity: 0.9,
-                  objectPosition: 'center 20%',
-                }}
-                sizes="100vw"
-                priority
-              />
-            </div>
-            <div
-              className="absolute inset-0"
-              style={{ background: 'rgb(var(--hero-overlay-rgb, 26 26 26) / 0.25)' }}
-            />
-          </>
+      <section className="relative pt-20 min-h-[45vh] flex items-end" style={{ background: 'var(--primary)' }}>
+        {d.hero?.image && (
+          <Image src={d.hero.image} alt={d.hero.imageAlt || ''} fill className="object-cover opacity-30" priority />
         )}
-        <div className="relative z-10 container-custom max-w-2xl">
-          <h1 className="font-serif text-4xl md:text-6xl font-semibold mb-5" style={{ color: 'var(--text-on-dark, #FAF8F5)' }}>{tx(data.hero?.headline, data.hero?.headlineCn, locale) || (isCn?'我们的服务':'Our Services')}</h1>
-          <p className="text-lg" style={{ color: 'var(--on-dark-medium, rgb(var(--on-dark-rgb, 250 248 245) / 0.6))' }}>{tx(data.hero?.subline, data.hero?.sublineCn, locale)}</p>
+        <div className="relative z-10 container-custom pb-16 pt-20">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Services</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3">
+            {d.hero?.headline || 'Full-Service Real Estate'}
+          </h1>
+          <p className="text-lg text-white/70 max-w-xl">{d.hero?.subline}</p>
         </div>
       </section>
 
-      {/* Design Services */}
-      {data.designServices?.items?.map((item, i) => (
-        <section key={i} className={`section-padding ${i % 2 === 0 ? 'bg-white' : ''}`} style={i % 2 !== 0 ? { background: 'var(--backdrop-primary)' } : {}}>
-          <div className="container-custom grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            <div className={i % 2 === 1 ? 'lg:order-2' : ''}>
-              <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-5" style={{ color: 'var(--primary)' }}>{tx(item.title, item.titleCn, locale)}</h2>
-              <p className="text-base leading-loose" style={{ color: 'var(--text-secondary)' }}>{tx(item.description, item.descriptionCn, locale)}</p>
-            </div>
-            <div className={`relative aspect-[4/3] image-frame ${i % 2 === 1 ? 'lg:order-1' : ''}`}>
-              {item.image ? <Image src={item.image} alt={tx(item.title, item.titleCn, locale)} fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" /> : <div className="w-full h-full bg-[var(--primary-50)]" />}
-            </div>
-          </div>
-        </section>
-      ))}
+      <ServiceSection section={d.buyingServices} id="buying" />
+      <ServiceSection section={d.sellingServices} id="selling" reverse />
+      <ServiceSection section={d.leasingServices} id="leasing" />
+      <ServiceSection section={d.commercialServices} id="commercial" reverse />
+      <ServiceSection section={d.investmentServices} id="investment" />
+      <ServiceSection section={d.relocationServices} id="relocation" reverse />
 
-      {/* Construction Services */}
-      {data.constructionServices && (
-        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
-          <div className="container-custom grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            <div
-              className={
-                data.constructionServices.variant === 'image-text'
-                  ? 'lg:order-2'
-                  : ''
-              }
-            >
-              <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-5" style={{ color: 'var(--primary)' }}>
-                {tx(data.constructionServices.headline, data.constructionServices.headlineCn, locale) || (isCn ? '施工与安装' : 'Construction & Installation')}
-              </h2>
-              <p className="text-base leading-loose" style={{ color: 'var(--text-secondary)' }}>
-                {tx(data.constructionServices.body, data.constructionServices.bodyCn, locale)}
-              </p>
-              {data.constructionServices.capabilities?.length ? (
-                <ul className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {data.constructionServices.capabilities.map((item, i) => (
-                    <li
-                      key={i}
-                      className="text-sm border border-[var(--border)] px-3 py-2 bg-white"
-                      style={{ color: 'var(--primary)' }}
-                    >
-                      {tx(item.label, item.labelCn, locale)}
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-            <div
-              className={`relative aspect-[4/3] image-frame ${
-                data.constructionServices.variant === 'image-text' ? 'lg:order-1' : ''
-              }`}
-            >
-              {data.constructionServices.image ? (
-                <Image
-                  src={data.constructionServices.image}
-                  alt={tx(data.constructionServices.headline, data.constructionServices.headlineCn, locale)}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width:1024px) 100vw, 50vw"
-                />
-              ) : (
-                <div className="w-full h-full bg-[var(--primary-50)]" />
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Furnishing Services */}
-      {data.furnishingServices && (
-        <section className="section-padding bg-white">
-          <div className="container-custom grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            <div
-              className={
-                data.furnishingServices.variant === 'image-text'
-                  ? 'lg:order-2'
-                  : ''
-              }
-            >
-              <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-5" style={{ color: 'var(--primary)' }}>
-                {tx(data.furnishingServices.headline, data.furnishingServices.headlineCn, locale) || (isCn ? '家具与装饰' : 'Furniture & Decor')}
-              </h2>
-              <p className="text-base leading-loose" style={{ color: 'var(--text-secondary)' }}>
-                {tx(data.furnishingServices.body, data.furnishingServices.bodyCn, locale)}
-              </p>
-              {data.furnishingServices.ctaHref && (
-                <div className="mt-6">
-                  <Link href={`/${locale}${data.furnishingServices.ctaHref}`} className="inline-flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
-                    {tx(data.furnishingServices.ctaLabel, data.furnishingServices.ctaLabelCn, locale) || (isCn ? '选购我们的系列' : 'Shop Our Collection')}
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
-              )}
-            </div>
-            <div
-              className={`relative aspect-[4/3] image-frame ${
-                data.furnishingServices.variant === 'image-text' ? 'lg:order-1' : ''
-              }`}
-            >
-              {data.furnishingServices.image ? (
-                <Image
-                  src={data.furnishingServices.image}
-                  alt={tx(data.furnishingServices.headline, data.furnishingServices.headlineCn, locale)}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width:1024px) 100vw, 50vw"
-                />
-              ) : (
-                <div className="w-full h-full bg-[var(--primary-50)]" />
-              )}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Process */}
-      {data.process?.steps && (
+      {/* Process timeline */}
+      {d.process?.steps?.length > 0 && (
         <section className="section-padding bg-white">
           <div className="container-custom">
-            <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-14 text-center" style={{ color: 'var(--primary)' }}>
-              {tx(data.process.headline, data.process.headlineCn, locale) || (isCn?'我们的流程':'Our Process')}
+            <h2 className="font-serif text-2xl font-semibold mb-10 text-center" style={{ color: 'var(--primary)' }}>
+              {d.process?.headline || 'Your Journey With Me'}
             </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-              {data.process.steps.map((step, i) => (
-                <div key={i} className="text-center relative">
-                  {i < data.process!.steps!.length - 1 && (
-                    <div className="hidden lg:block absolute top-5 left-full w-full h-px" style={{ background: 'var(--border)' }} />
+            {/* Desktop horizontal */}
+            <div className="hidden md:flex items-start gap-0">
+              {d.process.steps.map((step: any, i: number) => (
+                <div key={i} className="flex-1 relative text-center px-4">
+                  {i < d.process.steps.length - 1 && (
+                    <div className="absolute top-5 left-1/2 w-full h-px" style={{ background: 'var(--border)' }} />
                   )}
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-sm font-semibold font-serif" style={{ background: 'var(--secondary-50)', color: 'var(--secondary)' }}>
-                    {step.number || i + 1}
-                  </div>
-                  <p className="font-serif text-sm font-semibold mb-2" style={{ color: 'var(--primary)' }}>{tx(step.title, step.titleCn, locale)}</p>
-                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{tx(step.description, step.descriptionCn, locale)}</p>
+                  <div className="relative z-10 w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white mx-auto mb-3"
+                    style={{ background: 'var(--secondary)' }}>{step.number || i + 1}</div>
+                  <p className="font-semibold text-sm mb-1" style={{ color: 'var(--primary)' }}>{step.title}</p>
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{step.description}</p>
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      )}
-
-      {/* Specialties */}
-      {data.specialties?.items && (
-        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
-          <div className="container-custom">
-            <h2 className="font-serif text-3xl font-semibold mb-10 text-center" style={{ color: 'var(--primary)' }}>
-              {tx(data.specialties.headline, data.specialties.headlineCn, locale) || (isCn?'专业领域':'Specialties')}
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {data.specialties.items.map((item, i) => (
-                <div key={i} className="border border-[var(--border)] p-5 text-center hover:border-[var(--secondary)] transition-colors bg-white">
-                  <p className="text-sm font-medium" style={{ color: 'var(--primary)' }}>{tx(item.label, item.labelCn, locale)}</p>
+            {/* Mobile vertical */}
+            <div className="md:hidden space-y-4">
+              {d.process.steps.map((step: any, i: number) => (
+                <div key={i} className="flex gap-4">
+                  <div className="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center text-sm font-bold text-white"
+                    style={{ background: 'var(--secondary)' }}>{step.number || i + 1}</div>
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{step.title}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{step.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -233,26 +155,13 @@ export default async function ServicesPage({ params }: PageProps) {
       )}
 
       {/* CTA */}
-      <section className="relative section-padding overflow-hidden" style={{ background: 'var(--primary)' }}>
-        {data.cta?.backgroundImage && (
-          <>
-            <div className="absolute inset-0">
-              <Image
-                src={data.cta.backgroundImage}
-                alt=""
-                fill
-                className="object-cover"
-                style={{ opacity: 'var(--media-dim-light, 0.25)' }}
-                sizes="100vw"
-              />
-            </div>
-            <div className="absolute inset-0" style={{ background: 'rgb(var(--hero-overlay-rgb, 26 26 26) / var(--overlay-strong, 0.7))' }} />
-          </>
-        )}
-        <div className="relative z-10 container-custom text-center">
-          <p className="font-serif text-3xl md:text-4xl mb-8 max-w-xl mx-auto" style={{ color: 'var(--text-on-dark, #FAF8F5)' }}>{tx(data.cta?.headline, data.cta?.headlineCn, locale)}</p>
-          <Link href={`/${locale}${data.cta?.ctaHref || '/contact'}`} className="btn-gold btn-gold-lg text-base">
-            {tx(data.cta?.ctaLabel, data.cta?.ctaLabelCn, locale) || (isCn?'预约免费咨询':'Book Your Free Consultation')}
+      <section className="section-padding" style={{ background: 'var(--primary)' }}>
+        <div className="container-custom text-center">
+          <h2 className="font-serif text-3xl font-semibold text-white mb-4">
+            {d.cta?.headline || 'Which service do you need? Let\'s talk.'}
+          </h2>
+          <Link href={`/${locale}${d.cta?.ctaHref || '/contact'}`} className="btn-gold inline-block mt-2">
+            {d.cta?.ctaLabel || 'Schedule a Consultation'}
           </Link>
         </div>
       </section>

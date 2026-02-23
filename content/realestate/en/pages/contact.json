@@ -1,0 +1,21 @@
+{
+  "hero": { "variant": "minimal-text", "headline": "Let's Talk Real Estate", "subline": "Whether you're ready to buy, sell, or just exploring — reach out. I respond to every inquiry within 2 hours during business hours." },
+  "form": {
+    "fields": [
+      {"name":"fullName","type":"text","label":"Full Name","required":true},
+      {"name":"email","type":"email","label":"Email","required":true},
+      {"name":"phone","type":"tel","label":"Phone","required":true},
+      {"name":"interestedIn","type":"select","label":"I'm Interested In","required":true,"options":[{"value":"buying","label":"Buying"},{"value":"selling","label":"Selling"},{"value":"leasing","label":"Leasing"},{"value":"commercial","label":"Commercial"},{"value":"investment","label":"Investment"},{"value":"other","label":"Other"}]},
+      {"name":"propertyType","type":"select","label":"Property Type","required":false,"options":[{"value":"single-family","label":"Single Family"},{"value":"condo","label":"Condo"},{"value":"townhouse","label":"Townhouse"},{"value":"commercial","label":"Commercial"},{"value":"multi-family","label":"Multi-Family"},{"value":"land","label":"Land"}]},
+      {"name":"budgetRange","type":"select","label":"Budget / Price Range","required":false,"options":[{"value":"under-500k","label":"Under $500K"},{"value":"500k-1m","label":"$500K–$1M"},{"value":"1m-2m","label":"$1M–$2M"},{"value":"2m-plus","label":"$2M+"}]},
+      {"name":"timeline","type":"select","label":"Timeline","required":false,"options":[{"value":"asap","label":"ASAP"},{"value":"1-3-months","label":"1–3 Months"},{"value":"3-6-months","label":"3–6 Months"},{"value":"6-12-months","label":"6–12 Months"},{"value":"just-exploring","label":"Just Exploring"}]},
+      {"name":"preferredArea","type":"text","label":"Preferred Area or Neighborhood","required":false},
+      {"name":"referralSource","type":"select","label":"How did you hear about me?","required":false,"options":[{"value":"google","label":"Google"},{"value":"social-media","label":"Social Media"},{"value":"referral","label":"Referral"},{"value":"open-house","label":"Open House"},{"value":"zillow","label":"Zillow / Realtor.com"},{"value":"other","label":"Other"}]},
+      {"name":"message","type":"textarea","label":"Tell me about your real estate goals","required":true}
+    ],
+    "submitLabel": "Request a Consultation",
+    "successMessage": "Thank you! I'll be in touch within 2 hours during business hours."
+  },
+  "directContact": { "responsePromise": "I personally respond to every inquiry within 2 hours during business hours. No bots, no gatekeepers — just me." },
+  "map": { "enabled": false, "embedUrl": "" }
+}

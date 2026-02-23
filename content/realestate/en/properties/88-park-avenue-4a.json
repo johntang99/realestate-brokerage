@@ -1,0 +1,56 @@
+{
+  "slug": "88-park-avenue-4a",
+  "address": "88 Park Avenue, Unit 4A",
+  "city": "New Rochelle",
+  "state": "NY",
+  "zip": "10801",
+  "neighborhood": "white-plains",
+  "price": 520000,
+  "priceDisplay": "$520,000",
+  "status": "sold",
+  "type": "condo",
+  "beds": 1,
+  "baths": 1,
+  "sqft": 920,
+  "yearBuilt": 2016,
+  "hoa": "$680/month",
+  "taxAmount": "$5,800/year",
+  "mlsNumber": "HGAR-5891240",
+  "schoolDistrict": "New Rochelle City School District",
+  "featured": false,
+  "coverImage": "",
+  "coverImageAlt": "88 Park Avenue Unit 4A, New Rochelle NY",
+  "images": [],
+  "description": "Bright and modern one-bedroom condo in downtown New Rochelle's newest luxury building. Bamboo floors, quartz countertops, in-unit laundry, and a private balcony. Steps to Metro-North and waterfront.",
+  "features": {
+    "interior": [
+      "Bamboo Floors",
+      "Quartz Countertops",
+      "In-Unit Washer/Dryer",
+      "Balcony"
+    ],
+    "exterior": [
+      "Assigned Parking"
+    ],
+    "community": [
+      "Doorman",
+      "Rooftop Lounge",
+      "Steps to Metro-North",
+      "New Rochelle Waterfront"
+    ],
+    "utilities": [
+      "Central A/C",
+      "Heat Pump"
+    ]
+  },
+  "soldDetails": {
+    "soldPrice": 535000,
+    "soldDate": "2025-07-22",
+    "daysOnMarket": 9,
+    "listPrice": 519000
+  },
+  "seo": {
+    "title": "88 Park Avenue Unit 4A, New Rochelle NY — SOLD $535,000",
+    "description": "1BR condo sold in 9 days at $535,000. Listed at $519,000."
+  }
+}

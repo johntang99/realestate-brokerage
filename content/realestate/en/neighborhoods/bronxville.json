@@ -1,0 +1,57 @@
+{
+  "slug": "bronxville",
+  "name": "Bronxville",
+  "tagline": "Walkable village, architectural gems, and one of NY's top school districts",
+  "coverImage": "",
+  "coverImageAlt": "Bronxville NY village",
+  "overview": "Bronxville is a unique place — a one-square-mile village with the personality of a small English town and the academic standards of a world-class institution. The Bronxville School District (K-12 in a single building) is routinely ranked among the top 10 school districts in New York State, and for many families, that's all they need to hear.\n\nThe architectural character of Bronxville is extraordinary. Tudor Revival, English Cottage, and Craftsman homes line the tree-shaded streets, many dating to the 1910s-1930s and meticulously maintained. The village center has evolved into one of Westchester's best dining destinations, with restaurants that draw visitors from across the county.\n\nBronxville's walkability is unmatched in suburban Westchester. Residents walk to the train (Metro-North Harlem Line to Grand Central in 28 minutes), to restaurants, to the library, and to the K-12 school — all within a quarter mile.\n\nThe housing market in Bronxville is consistently competitive. Demand far outstrips supply, and well-priced properties regularly receive multiple offers within days of listing.",
+  "marketSnapshot": {
+    "medianPrice": "$1,800,000",
+    "avgPricePerSqft": "$520",
+    "inventory": "18 active listings",
+    "avgDaysOnMarket": "14 days",
+    "yoyChange": "+7.1%"
+  },
+  "schools": [
+    {
+      "name": "Bronxville School (K-12)",
+      "type": "high",
+      "rating": "10/10",
+      "distance": "0.3 mi"
+    }
+  ],
+  "lifestyle": {
+    "restaurants": [
+      "Underhills Crossing",
+      "Slave to the Grape",
+      "Zero Otto Nove",
+      "Crabtree's Kittle House"
+    ],
+    "parks": [
+      "Bronxville Field Club",
+      "Pondfield Road Park",
+      "Grassy Sprain Reservoir"
+    ],
+    "shopping": [
+      "Pondfield Road Village Center",
+      "Bronxville Book Shop",
+      "Village Cheese Shop"
+    ],
+    "transit": [
+      "Harlem Line — 28 min to Grand Central",
+      "Bronx River Pkwy",
+      "I-87 Access"
+    ]
+  },
+  "gallery": [],
+  "nearbyNeighborhoods": [
+    "scarsdale",
+    "white-plains"
+  ],
+  "featured": false,
+  "region": "Southern Westchester",
+  "seo": {
+    "title": "Bronxville NY Real Estate — Homes for Sale",
+    "description": "Bronxville NY — walkable village, Tudor architecture, top-10 school district. Browse homes with local expert Alexandra Reeves."
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "slug": "78-elm-street",
+  "address": "78 Elm Street",
+  "city": "Bronxville",
+  "state": "NY",
+  "zip": "10708",
+  "neighborhood": "bronxville",
+  "price": 925000,
+  "priceDisplay": "$925,000",
+  "status": "pending",
+  "type": "townhouse",
+  "beds": 3,
+  "baths": 2.5,
+  "sqft": 2100,
+  "yearBuilt": 2015,
+  "garage": "1-car attached",
+  "hoa": "$450/month",
+  "taxAmount": "$19,800/year",
+  "mlsNumber": "HGAR-5891237",
+  "schoolDistrict": "Bronxville Union Free School District",
+  "featured": false,
+  "coverImage": "",
+  "coverImageAlt": "78 Elm Street, Bronxville NY",
+  "images": [],
+  "description": "Stunning end-unit townhouse in the heart of Bronxville Village — steps from the train, restaurants, and top-ranked schools. Built in 2015 with superior craftsmanship, this three-bedroom residence offers townhome living without compromise.\n\nThe main level features 9-foot ceilings, wide-plank hardwood floors, and an open-concept kitchen with granite countertops and stainless appliances. The living/dining area opens to a private patio perfect for summer entertaining. A powder room completes the first floor. Upstairs, the primary suite includes a walk-in closet and en-suite bath. Two additional bedrooms share a well-appointed hall bath.",
+  "features": {
+    "interior": [
+      "9-Foot Ceilings",
+      "Wide-Plank Hardwood Floors",
+      "Granite Countertops",
+      "Stainless Appliances",
+      "Primary En-Suite Bath",
+      "Walk-In Closet",
+      "Gas Fireplace"
+    ],
+    "exterior": [
+      "Private Patio",
+      "End-Unit",
+      "1-Car Attached Garage"
+    ],
+    "community": [
+      "Village Location",
+      "Steps to Metro-North",
+      "Bronxville Schools",
+      "Restaurant Row"
+    ],
+    "utilities": [
+      "Central A/C",
+      "Gas Heat",
+      "In-Unit Washer/Dryer"
+    ]
+  },
+  "seo": {
+    "title": "78 Elm Street, Bronxville NY — $925,000",
+    "description": "3BR end-unit townhouse in Bronxville Village. Steps to Metro-North and top-ranked Bronxville schools. PENDING."
+  }
+}

@@ -551,3 +551,79 @@ html {
 .delay-200 { animation-delay: 200ms; }
 .delay-300 { animation-delay: 300ms; }
 .delay-500 { animation-delay: 500ms; }
+
+/* ============================================
+   REA PREMIUM — SPECIFIC UTILITIES
+   ============================================ */
+
+/* Status badges */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.status-badge-active  { background: var(--status-active, #059669); }
+.status-badge-pending { background: var(--status-pending, #D97706); }
+.status-badge-sold    { background: var(--status-sold, #C53030); }
+.status-badge-lease   { background: var(--status-lease, #3B82F6); }
+
+/* Gold stars */
+.star-filled  { color: var(--gold-star, #F59E0B); }
+.star-empty   { color: #D1D5DB; }
+
+/* Property card hover */
+.property-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: var(--card-radius, 8px);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--card-shadow, 0 4px 20px rgba(0,0,0,0.08));
+}
+.property-card:hover {
+  transform: scale(var(--card-hover-scale, 1.02));
+  box-shadow: var(--card-shadow-hover, 0 8px 30px rgba(0,0,0,0.15));
+}
+
+/* Price display */
+.price-display {
+  font-family: var(--font-heading, 'Playfair Display', Georgia, serif);
+  font-weight: 600;
+  color: var(--primary, #1B2838);
+}
+.price-display-gold { color: var(--secondary, #C8A97E); }
+
+/* REA section spacing */
+.rea-section { padding: 5rem 0; }
+@media (max-width: 768px) { .rea-section { padding: 3rem 0; } }
+
+/* Stats bar numbers */
+.stat-number {
+  font-family: var(--font-heading, 'Playfair Display', Georgia, serif);
+  font-weight: 700;
+  color: var(--secondary, #C8A97E);
+  line-height: 1;
+}
+
+/* Mortgage calculator */
+.calc-input {
+  border: 1px solid var(--border, #E5E7EB);
+  border-radius: var(--radius-medium, 8px);
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  outline: none;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  color: var(--text-primary, #2C2C2C);
+}
+.calc-input:focus { border-color: var(--secondary, #C8A97E); }
+
+/* YoY change arrows */
+.metric-up   { color: var(--status-active, #059669); }
+.metric-down { color: var(--status-sold, #C53030); }
+.metric-flat { color: var(--text-secondary, #6B7280); }

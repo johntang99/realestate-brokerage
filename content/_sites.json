@@ -1,14 +1,13 @@
 {
   "sites": [
     {
-      "id": "julia-studio",
-      "name": "Julia Studio",
-      "domain": "studio-julia.com",
-      "enabled": true,
+      "id": "realestate",
+      "name": "REA Premium Template",
+      "domain": "rea.local",
+      "locales": ["en"],
       "defaultLocale": "en",
-      "supportedLocales": ["en", "zh"],
-      "createdAt": "2026-02-21T00:00:00Z",
-      "updatedAt": "2026-02-21T00:00:00Z"
+      "enabled": true,
+      "description": "BAAM System G — Real Estate Agent premium template"
     }
   ]
 }

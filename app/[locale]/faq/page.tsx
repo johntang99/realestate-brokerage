@@ -4,76 +4,115 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ChevronDown } from 'lucide-react';
 
-interface FAQItem { question?: string; questionCn?: string; answer?: string; answerCn?: string }
-interface FAQCategory { name?: string; nameCn?: string; items?: FAQItem[] }
-interface FAQData {
-  hero?: { headline?: string; headlineCn?: string; subline?: string; sublineCn?: string };
-  categories?: FAQCategory[];
-  cta?: { headline?: string; headlineCn?: string; ctaLabel?: string; ctaLabelCn?: string; ctaHref?: string };
-}
-
-export default function FAQPage() {
-  const [data, setData] = useState<FAQData>({});
+export default function FaqPage() {
+  const [pageData, setPageData] = useState<any>({});
   const [locale, setLocale] = useState('en');
-  const [openKeys, setOpenKeys] = useState<Set<string>>(new Set());
+  const [openItem, setOpenItem] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   useEffect(() => {
     const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
     setLocale(loc);
-    fetch(`/api/admin/content/file?siteId=julia-studio&locale=${loc}&path=pages/faq.json`)
-      .then(r => r.json()).then(d => { try { setData(JSON.parse(d.content || '{}')); } catch {} });
+    fetch(`/api/content/file?locale=${loc}&path=pages/faq.json`).then(r => r.json()).then(res => {
+      try {
+        const data = JSON.parse(res.content || '{}');
+        setPageData(data);
+        if (data.categories?.length > 0) setActiveCategory(data.categories[0].name);
+      } catch {}
+    });
   }, []);
 
-  const isCn = locale === 'zh';
-  const tx = (en?: string, cn?: string) => (isCn && cn) ? cn : (en || '');
-  const toggle = (key: string) => setOpenKeys(prev => { const n = new Set(prev); n.has(key) ? n.delete(key) : n.add(key); return n; });
+  const d = pageData;
+  const categories = d.categories || [];
+  const activeGroup = categories.find((c: any) => c.name === activeCategory);
 
   return (
     <>
-      <section className="pt-32 pb-16 md:pt-40" style={{ background: 'var(--backdrop-primary)' }}>
-        <div className="container-custom max-w-2xl">
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-3" style={{ color: 'var(--primary)' }}>
-            {tx(data.hero?.headline, data.hero?.headlineCn) || (isCn ? '常见问题' : 'FAQ')}
+      <section className="pt-32 pb-10 md:pt-40" style={{ background: 'var(--backdrop-primary)' }}>
+        <div className="container-custom">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>FAQ</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-semibold" style={{ color: 'var(--primary)' }}>
+            {d.hero?.headline || 'Frequently Asked Questions'}
           </h1>
-          <p className="text-base" style={{ color: 'var(--text-secondary)' }}>{tx(data.hero?.subline, data.hero?.sublineCn)}</p>
         </div>
       </section>
 
       <section className="section-padding bg-white">
-        <div className="container-custom max-w-2xl">
-          {(data.categories || []).map((cat, ci) => (
-            <div key={ci} className="mb-10">
-              <h2 className="font-serif text-lg font-semibold mb-5 pb-3 border-b border-[var(--border)]" style={{ color: 'var(--primary)' }}>
-                {tx(cat.name, cat.nameCn)}
-              </h2>
-              <div className="space-y-3">
-                {(cat.items || []).map((item, qi) => {
-                  const key = `${ci}-${qi}`;
-                  const open = openKeys.has(key);
-                  return (
-                    <div key={qi} className="border border-[var(--border)]">
-                      <button onClick={() => toggle(key)} className="w-full flex items-center justify-between px-5 py-4 text-left">
-                        <span className="font-serif text-base font-medium pr-4" style={{ color: 'var(--primary)' }}>{tx(item.question, item.questionCn)}</span>
-                        <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: 'var(--secondary)' }} />
-                      </button>
-                      {open && (
-                        <div className="px-5 pb-5 text-sm leading-loose border-t border-[var(--border)]" style={{ color: 'var(--text-secondary)', paddingTop: '16px' }}>
-                          {tx(item.answer, item.answerCn)}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+
+            {/* Category sidebar */}
+            {categories.length > 0 && (
+              <div className="lg:col-span-1">
+                <div className="sticky top-24 space-y-1">
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-secondary)' }}>Categories</p>
+                  {categories.map((cat: any) => (
+                    <button key={cat.name} onClick={() => { setActiveCategory(cat.name); setOpenItem(null); }}
+                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        activeCategory === cat.name
+                          ? 'bg-[var(--primary)] text-white'
+                          : 'hover:bg-[var(--backdrop-primary)] text-[var(--text-secondary)]'
+                      }`}>
+                      {cat.name}
+                      <span className="ml-2 text-xs opacity-60">({cat.items?.length || 0})</span>
+                    </button>
+                  ))}
+                </div>
               </div>
+            )}
+
+            {/* Accordion */}
+            <div className={categories.length > 0 ? 'lg:col-span-3' : 'lg:col-span-4'}>
+              {activeGroup ? (
+                <>
+                  <h2 className="font-serif text-xl font-semibold mb-6" style={{ color: 'var(--primary)' }}>
+                    {activeGroup.name}
+                  </h2>
+                  <div className="space-y-2">
+                    {(activeGroup.items || []).map((item: any, i: number) => {
+                      const key = `${activeGroup.name}-${i}`;
+                      const isOpen = openItem === key;
+                      return (
+                        <div key={key} className="border border-[var(--border)] rounded-xl overflow-hidden">
+                          <button
+                            className="w-full flex items-center justify-between p-5 text-left"
+                            onClick={() => setOpenItem(isOpen ? null : key)}>
+                            <span className="font-semibold text-sm pr-4" style={{ color: 'var(--primary)' }}>
+                              {item.question}
+                            </span>
+                            <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                              style={{ color: 'var(--text-secondary)' }} />
+                          </button>
+                          {isOpen && (
+                            <div className="px-5 pb-5 border-t border-[var(--border)]"
+                              style={{ paddingTop: '1rem', color: 'var(--text-secondary)' }}>
+                              <p className="text-sm leading-relaxed">{item.answer}</p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Select a category to view questions.</p>
+              )}
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
-      <section className="py-16 border-t border-[var(--border)]" style={{ background: 'var(--backdrop-primary)' }}>
+      <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
         <div className="container-custom text-center">
-          <p className="font-serif text-xl mb-5" style={{ color: 'var(--primary)' }}>{tx(data.cta?.headline, data.cta?.headlineCn) || (isCn ? '还有疑问？' : 'Still have questions?')}</p>
-          <Link href={`/${locale}${data.cta?.ctaHref || '/contact'}`} className="btn-gold">{tx(data.cta?.ctaLabel, data.cta?.ctaLabelCn) || (isCn ? '联系我们' : 'Contact Us')}</Link>
+          <h2 className="font-serif text-2xl font-semibold mb-3" style={{ color: 'var(--primary)' }}>
+            {d.cta?.headline || 'Still have questions?'}
+          </h2>
+          <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
+            I'm happy to answer anything — call, text, or email.
+          </p>
+          <Link href={`/${locale}${d.cta?.ctaHref || '/contact'}`} className="btn-gold inline-block">
+            {d.cta?.ctaLabel || "Let's Chat"}
+          </Link>
         </div>
       </section>
     </>

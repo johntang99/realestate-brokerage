@@ -32,6 +32,11 @@ export interface SeoConfig {
   title?: string;
   description?: string;
   ogImage?: string;
+  titleTemplate?: string;
+  titleTemplateCn?: string;
+  defaultDescription?: string;
+  defaultDescriptionCn?: string;
+  twitterHandle?: string;
   home?: {
     title?: string;
     description?: string;

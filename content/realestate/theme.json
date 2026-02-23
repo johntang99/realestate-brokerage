@@ -1,0 +1,49 @@
+{
+  "colors": {
+    "primary": "#1B2838",
+    "secondary": "#C8A97E",
+    "accent": "#4A7C5B",
+    "backdropLight": "#FAF9F7",
+    "backdropDark": "#1A1A1A",
+    "textPrimary": "#2C2C2C",
+    "textSecondary": "#6B7280",
+    "textOnDark": "#FFFFFF",
+    "textOnDarkMuted": "#D1D5DB",
+    "border": "#E5E7EB",
+    "statusSold": "#C53030",
+    "statusPending": "#D97706",
+    "statusActive": "#059669",
+    "statusLease": "#3B82F6",
+    "success": "#059669",
+    "warning": "#D97706",
+    "error": "#C53030",
+    "goldStar": "#F59E0B"
+  },
+  "typography": {
+    "headingFont": "Playfair Display",
+    "bodyFont": "DM Sans",
+    "chineseHeadingFont": "Noto Serif SC",
+    "headingWeight": "600",
+    "bodyWeight": "400"
+  },
+  "borderRadius": {
+    "small": "4px",
+    "medium": "8px",
+    "large": "12px",
+    "card": "8px"
+  },
+  "effects": {
+    "heroOverlayOpacity": "0.45",
+    "cardHoverScale": "1.02",
+    "cardShadow": "0 4px 20px rgba(0,0,0,0.08)",
+    "cardHoverShadow": "0 8px 30px rgba(0,0,0,0.15)",
+    "statusBadgePadding": "4px 12px"
+  },
+  "spacing": {
+    "sectionGap": "80px",
+    "sectionGapMobile": "48px",
+    "cardGap": "24px",
+    "contentMaxWidth": "1280px"
+  },
+  "preset": "classic-authority"
+}

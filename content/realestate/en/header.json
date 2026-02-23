@@ -1,0 +1,21 @@
+{
+  "logo": "",
+  "logoText": "Alexandra Reeves",
+  "navigation": [
+    { "label": "Properties", "href": "/properties" },
+    { "label": "Neighborhoods", "href": "/neighborhoods" },
+    { "label": "Services", "href": "/services" },
+    { "label": "About", "href": "/about" },
+    { "label": "Blog", "href": "/blog" },
+    { "label": "Testimonials", "href": "/testimonials" },
+    { "label": "Contact", "href": "/contact" }
+  ],
+  "ctaButton": {
+    "label": "Schedule Consultation",
+    "href": "/contact",
+    "variant": "gold"
+  },
+  "showLanguageSwitcher": false,
+  "showPhone": true,
+  "transparentOnHero": true
+}

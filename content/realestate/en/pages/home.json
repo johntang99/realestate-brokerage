@@ -1,0 +1,112 @@
+{
+  "hero": {
+    "variant": "slideshow",
+    "slides": [
+      { "image": "", "alt": "Luxury home exterior in Scarsdale" },
+      { "image": "", "alt": "Modern living room interior" },
+      { "image": "", "alt": "Waterfront home in Larchmont" }
+    ],
+    "headline": "Find Your Perfect Home in Westchester County",
+    "subline": "18 years of local expertise. $150M+ in career sales. Your trusted partner from search to closing.",
+    "ctaPrimary": { "label": "Schedule a Consultation", "href": "/contact" },
+    "ctaSecondary": { "label": "View Properties", "href": "/properties" },
+    "showScrollIndicator": true,
+    "overlayOpacity": 0.45
+  },
+  "quickSearch": {
+    "variant": "compact",
+    "headline": "Search Properties",
+    "showPriceRange": true,
+    "showPropertyType": true,
+    "showBedsBaths": true,
+    "showLocation": true,
+    "submitLabel": "Search"
+  },
+  "statsBar": {
+    "variant": "animated-count",
+    "items": [
+      { "value": "150", "label": "In Career Sales", "prefix": "$", "suffix": "M+" },
+      { "value": "500", "label": "Families Helped", "suffix": "+" },
+      { "value": "18", "label": "Years of Experience" },
+      { "value": "200", "label": "Five-Star Reviews", "suffix": "+" }
+    ]
+  },
+  "featuredListings": {
+    "variant": "luxury-cards",
+    "headline": "Featured Properties",
+    "subline": "Handpicked listings across Westchester's finest neighborhoods.",
+    "propertySlugs": ["45-oak-ridge-lane", "12-harbor-view-drive", "155-country-club-road"],
+    "maxDisplay": 6,
+    "ctaLabel": "View All Properties",
+    "ctaHref": "/properties"
+  },
+  "servicesOverview": {
+    "variant": "icon-cards",
+    "headline": "How I Can Help",
+    "subline": "Comprehensive real estate services tailored to your goals.",
+    "items": [
+      { "icon": "Home", "title": "Buying", "description": "Expert guidance from search to closing. I find properties that match your lifestyle and budget.", "href": "/services#buying" },
+      { "icon": "DollarSign", "title": "Selling", "description": "Strategic pricing, premium marketing, and skilled negotiation to sell your home for more.", "href": "/services#selling" },
+      { "icon": "Key", "title": "Leasing", "description": "Rental search and tenant placement for landlords and tenants throughout Westchester.", "href": "/services#leasing" },
+      { "icon": "Building2", "title": "Commercial", "description": "Office, retail, and industrial transactions with institutional-quality expertise.", "href": "/services#commercial" },
+      { "icon": "TrendingUp", "title": "Investment", "description": "Portfolio analysis, cap rate evaluation, and 1031 exchange guidance for investors.", "href": "/services#investment" },
+      { "icon": "Truck", "title": "Relocation", "description": "Seamless transitions for families moving to Westchester. School research and area orientation included.", "href": "/services#relocation" }
+    ]
+  },
+  "neighborhoodSpotlight": {
+    "variant": "featured-cards",
+    "headline": "Explore Westchester Neighborhoods",
+    "subline": "Local knowledge that no algorithm can replicate.",
+    "neighborhoodSlugs": ["scarsdale", "larchmont", "bronxville"],
+    "ctaLabel": "Explore All Neighborhoods",
+    "ctaHref": "/neighborhoods"
+  },
+  "testimonialPreview": {
+    "variant": "rotating-quotes",
+    "headline": "What My Clients Say",
+    "testimonialIds": ["test-001", "test-004", "test-007"],
+    "ctaLabel": "Read All Reviews",
+    "ctaHref": "/testimonials"
+  },
+  "recentSold": {
+    "variant": "sold-strip",
+    "headline": "Recently Sold",
+    "subline": "Results that speak for themselves.",
+    "maxDisplay": 4,
+    "ctaLabel": "View Full Portfolio",
+    "ctaHref": "/sold"
+  },
+  "blogPreview": {
+    "variant": "three-cards",
+    "headline": "Real Estate Insights",
+    "subline": "Market updates, buyer and seller tips, and neighborhood guides.",
+    "maxDisplay": 3,
+    "ctaLabel": "Read More Insights",
+    "ctaHref": "/blog"
+  },
+  "valuationCta": {
+    "variant": "full-width-banner",
+    "headline": "Thinking of Selling?",
+    "subline": "Get Your Free Home Valuation — no obligation, no pressure.",
+    "backgroundImage": "",
+    "ctaLabel": "Get My Free Estimate",
+    "ctaHref": "/home-valuation"
+  },
+  "agentIntro": {
+    "variant": "portrait-text",
+    "portrait": "",
+    "portraitAlt": "Alexandra Reeves, Westchester Real Estate Agent",
+    "headline": "Meet Alexandra Reeves",
+    "body": "With 18 years of experience in Westchester County real estate, I've helped over 500 families buy, sell, and invest with confidence. My approach is simple: deep local knowledge, honest advice, and relentless dedication to your goals. Whether you're buying your first home or selling a multi-million dollar estate, you'll have a trusted partner by your side every step of the way.",
+    "ctaLabel": "My Story",
+    "ctaHref": "/about"
+  },
+  "consultationCta": {
+    "variant": "full-width-elegant",
+    "headline": "Ready to Make Your Move?",
+    "subline": "Let's talk about your real estate goals. I respond to every inquiry within 2 hours.",
+    "backgroundImage": "",
+    "ctaLabel": "Schedule a Consultation",
+    "ctaHref": "/contact"
+  }
+}

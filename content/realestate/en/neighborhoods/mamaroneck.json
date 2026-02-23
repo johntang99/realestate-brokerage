@@ -1,0 +1,70 @@
+{
+  "slug": "mamaroneck",
+  "name": "Mamaroneck",
+  "tagline": "Diverse harbor village with waterfront dining and excellent value",
+  "coverImage": "",
+  "coverImageAlt": "Mamaroneck NY harbor",
+  "overview": "Mamaroneck is one of Westchester's best-kept secrets — a vibrant harbor village with genuine diversity, an exceptional restaurant scene, waterfront access, and real estate values that remain more accessible than neighboring communities while offering comparable lifestyle quality.\n\nThe village of Mamaroneck sits within the town of Mamaroneck, and understanding the distinction matters for school districts. Village residents primarily attend Mamaroneck High School in the MUFSD, while other parts of the town are served by different districts. I'll help you understand exactly which district a prospective home falls within.\n\nMamaroneck Harbor is a hub of summer activity — the Mamaroneck Yacht Club, Harbor Island Park, and numerous waterfront restaurants create a waterfront culture that feels more coastal than suburban. Halstead Avenue is one of Westchester's most diverse and interesting dining streets, with restaurants representing dozens of cuisines.\n\nThe Metro-North New Haven Line connects Mamaroneck to Grand Central in approximately 38 minutes. Housing values represent genuine value in the context of the greater Westchester market, making Mamaroneck popular with buyers who want the county lifestyle without the Scarsdale or Bronxville price tag.",
+  "marketSnapshot": {
+    "medianPrice": "$850,000",
+    "avgPricePerSqft": "$350",
+    "inventory": "38 active listings",
+    "avgDaysOnMarket": "24 days",
+    "yoyChange": "+4.1%"
+  },
+  "schools": [
+    {
+      "name": "Mamaroneck High School",
+      "type": "high",
+      "rating": "8/10",
+      "distance": "1.0 mi"
+    },
+    {
+      "name": "Hommocks Middle School",
+      "type": "middle",
+      "rating": "9/10",
+      "distance": "0.9 mi"
+    },
+    {
+      "name": "Central School",
+      "type": "elementary",
+      "rating": "8/10",
+      "distance": "0.5 mi"
+    }
+  ],
+  "lifestyle": {
+    "restaurants": [
+      "Lusardi's",
+      "Taiko",
+      "La Piccola Casa",
+      "Mango Mango",
+      "Sonora Restaurant"
+    ],
+    "parks": [
+      "Harbor Island Park",
+      "Mamaroneck Beach & Yacht Club",
+      "Mamaroneck Community Pool"
+    ],
+    "shopping": [
+      "Halstead Avenue",
+      "Downtown Mamaroneck",
+      "Harbor View Market"
+    ],
+    "transit": [
+      "New Haven Line — 38 min to Grand Central",
+      "I-95 Access",
+      "Boston Post Road"
+    ]
+  },
+  "gallery": [],
+  "nearbyNeighborhoods": [
+    "larchmont",
+    "rye"
+  ],
+  "featured": false,
+  "region": "Southern Westchester",
+  "seo": {
+    "title": "Mamaroneck NY Real Estate — Homes for Sale",
+    "description": "Mamaroneck NY — harbor village living with excellent value. Browse homes with local expert Alexandra Reeves. MUFSD schools, waterfront access."
+  }
+}

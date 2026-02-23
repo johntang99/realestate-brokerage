@@ -37,3 +37,11 @@ next-env.d.ts
 
 # admin history backups
 /content/_history/
+
+# environment secrets — never commit
+.env.local
+.env.production
+.env.staging
+
+# build artifacts
+tsconfig.tsbuildinfo

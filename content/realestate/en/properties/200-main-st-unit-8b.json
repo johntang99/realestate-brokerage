@@ -1,0 +1,61 @@
+{
+  "slug": "200-main-st-unit-8b",
+  "address": "200 Main Street, Unit 8B",
+  "city": "White Plains",
+  "state": "NY",
+  "zip": "10601",
+  "neighborhood": "white-plains",
+  "price": 675000,
+  "priceDisplay": "$675,000",
+  "status": "for-sale",
+  "type": "condo",
+  "beds": 2,
+  "baths": 2,
+  "sqft": 1350,
+  "yearBuilt": 2018,
+  "garage": "1 assigned space",
+  "hoa": "$950/month (includes heat, water, gym, doorman)",
+  "taxAmount": "$8,200/year",
+  "mlsNumber": "HGAR-5891236",
+  "schoolDistrict": "White Plains City School District",
+  "featured": false,
+  "coverImage": "",
+  "coverImageAlt": "200 Main Street Unit 8B, White Plains NY",
+  "images": [],
+  "description": "Modern luxury in the heart of White Plains. This stunning 8th-floor residence at 200 Main offers an exceptional urban lifestyle with the convenience of Westchester County living. Floor-to-ceiling windows flood every room with natural light and frame sweeping views of the Westchester skyline.\n\nThe open-concept living and dining area flows seamlessly to a private balcony — perfect for morning coffee or evening cocktails. The chef's kitchen features Bosch appliances, waterfall quartz countertops, and a wine refrigerator. The primary suite includes a walk-in closet and spa-inspired bath with rainfall shower. The second bedroom is perfect for a guest room or home office.",
+  "features": {
+    "interior": [
+      "Floor-to-Ceiling Windows",
+      "Private Balcony",
+      "Chef's Kitchen",
+      "Bosch Appliances",
+      "Wine Refrigerator",
+      "Primary Spa Bath",
+      "Rainfall Shower",
+      "Walk-In Closet",
+      "In-Unit Washer/Dryer"
+    ],
+    "exterior": [
+      "Balcony with City Views",
+      "Assigned Parking Garage",
+      "Package Room"
+    ],
+    "community": [
+      "24-Hour Doorman",
+      "Concierge",
+      "Fitness Center",
+      "Rooftop Terrace",
+      "Walking Distance to Metro-North",
+      "Downtown White Plains"
+    ],
+    "utilities": [
+      "Central A/C",
+      "Heat Included in HOA",
+      "High-Speed Internet Ready"
+    ]
+  },
+  "seo": {
+    "title": "200 Main Street Unit 8B, White Plains NY — $675,000",
+    "description": "Modern 2BR/2BA condo with city views in downtown White Plains. Doorman building, private balcony, steps to Metro-North."
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "slug": "january-2026-westchester-market-report",
+  "title": "January 2026 Westchester County Market Report",
+  "date": "2026-01-31",
+  "area": "Westchester County, NY",
+  "coverImage": "",
+  "keyMetrics": [
+    {
+      "label": "Median Sale Price",
+      "value": "$875,000",
+      "change": "+5.8%",
+      "direction": "up"
+    },
+    {
+      "label": "Active Listings",
+      "value": "1,842",
+      "change": "-12.0%",
+      "direction": "down"
+    },
+    {
+      "label": "Avg Days on Market",
+      "value": "24 days",
+      "change": "-3 days",
+      "direction": "down"
+    },
+    {
+      "label": "Closed Sales",
+      "value": "312",
+      "change": "+2.1%",
+      "direction": "up"
+    },
+    {
+      "label": "List-to-Sale Ratio",
+      "value": "101.8%",
+      "change": "+1.2%",
+      "direction": "up"
+    },
+    {
+      "label": "New Listings",
+      "value": "428",
+      "change": "-8.5%",
+      "direction": "down"
+    }
+  ],
+  "body": "## Executive Summary\n\nWestchester County's real estate market begins 2026 in the same constrained, competitive posture that defined the second half of 2025. Inventory remains at multi-year lows, demand from qualified buyers remains robust, and properly presented homes continue to attract multiple offers.\n\n## Inventory Analysis\n\nThe county closed January with 1,842 active listings — down 12% from the same period last year and the lowest January inventory count since 2018. New listings entering the market (428) fell 8.5% year-over-year, reflecting the persistent 'lock-in effect' among homeowners with sub-4% mortgage rates.\n\nAt the current pace of sales, absorption stands at approximately 5.9 months of supply county-wide — technically a balanced market, but with significant variation by price tier. Below $1M, supply is well under 3 months (a strong seller's market). Above $3M, supply approaches 12+ months.\n\n## Price Trends\n\nThe county-wide median sale price of $875,000 represents a 5.8% year-over-year increase, continuing the steady appreciation trend established in 2024. The appreciation is most pronounced in the $750K-$1.5M range, where competition is most intense.\n\n## Notable Observations\n\n- **Multiple-offer situations** remain common for well-priced properties under $2M in top school districts\n- **Luxury segment ($2M+)** showing pickup in activity, particularly in Scarsdale, Rye, and Harrison\n- **Condo/townhouse market** benefiting from buyers priced out of single-family; White Plains and New Rochelle showing strong condo demand\n- **Commercial and investment** activity remains steady, with office leasing at selective occupancy and multi-family continuing to attract investor interest\n\n## Outlook\n\nI expect Q1 2026 to continue the current pattern. If mortgage rates decline toward 6% — possible if the Fed delivers on current projections — I anticipate a meaningful increase in both listings and buyer activity in Q2 2026. This would be the healthiest development for the market, adding supply while maintaining price stability.",
+  "neighborhoodBreakdown": [
+    {
+      "neighborhood": "Scarsdale",
+      "medianPrice": "$1,480,000",
+      "inventory": "18 active",
+      "daysOnMarket": "12 days"
+    },
+    {
+      "neighborhood": "Larchmont",
+      "medianPrice": "$1,150,000",
+      "inventory": "14 active",
+      "daysOnMarket": "18 days"
+    },
+    {
+      "neighborhood": "Bronxville",
+      "medianPrice": "$1,750,000",
+      "inventory": "9 active",
+      "daysOnMarket": "11 days"
+    },
+    {
+      "neighborhood": "Rye",
+      "medianPrice": "$1,280,000",
+      "inventory": "16 active",
+      "daysOnMarket": "16 days"
+    },
+    {
+      "neighborhood": "White Plains",
+      "medianPrice": "$565,000",
+      "inventory": "38 active",
+      "daysOnMarket": "25 days"
+    },
+    {
+      "neighborhood": "Mamaroneck",
+      "medianPrice": "$820,000",
+      "inventory": "22 active",
+      "daysOnMarket": "21 days"
+    }
+  ],
+  "relatedReports": [],
+  "seo": {
+    "title": "Westchester County Real Estate Market Report — January 2026",
+    "description": "January 2026 Westchester County real estate market data. Median price $875,000, up 5.8% YoY. Inventory at 7-year lows. Complete analysis from Alexandra Reeves."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "slug": "302-summit-avenue",
+  "address": "302 Summit Avenue",
+  "city": "Rye",
+  "state": "NY",
+  "zip": "10580",
+  "neighborhood": "rye",
+  "price": 1650000,
+  "priceDisplay": "$1,650,000",
+  "status": "sold",
+  "type": "single-family",
+  "beds": 4,
+  "baths": 3,
+  "sqft": 3600,
+  "lotSize": "0.5 acres",
+  "yearBuilt": 1992,
+  "garage": "2-car attached",
+  "taxAmount": "$32,000/year",
+  "mlsNumber": "HGAR-5891239",
+  "schoolDistrict": "Rye City School District",
+  "featured": false,
+  "coverImage": "",
+  "coverImageAlt": "302 Summit Avenue, Rye NY",
+  "images": [],
+  "description": "Classic Rye colonial on half an acre in a quiet neighborhood minutes from Rye Beach and country clubs. Four bedrooms, three full baths, two-car garage, and a renovated kitchen make this turnkey home perfect for families seeking the Rye lifestyle.",
+  "features": {
+    "interior": [
+      "Renovated Kitchen",
+      "Stainless Appliances",
+      "Hardwood Floors",
+      "Primary Suite",
+      "Updated Baths",
+      "Finished Basement"
+    ],
+    "exterior": [
+      "Half-Acre Lot",
+      "2-Car Garage",
+      "Bluestone Patio",
+      "Perennial Gardens"
+    ],
+    "community": [
+      "Rye City Schools",
+      "Near Rye Beach",
+      "Country Club Area"
+    ],
+    "utilities": [
+      "Central A/C",
+      "Gas Heat"
+    ]
+  },
+  "soldDetails": {
+    "soldPrice": 1720000,
+    "soldDate": "2025-09-15",
+    "daysOnMarket": 11,
+    "listPrice": 1650000
+  },
+  "seo": {
+    "title": "302 Summit Avenue, Rye NY — SOLD $1,720,000",
+    "description": "Sold above asking in 11 days. 4BR colonial on half-acre in Rye. Listed at $1,650,000 — sold for $1,720,000."
+  }
+}

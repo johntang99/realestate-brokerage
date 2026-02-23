@@ -6,11 +6,12 @@ import type { Locale, SiteConfig } from '@/lib/types';
 import { Button } from '@/components/ui';
 import { CONTENT_TEMPLATES } from '@/lib/admin/templates';
 import { ImagePickerModal } from '@/components/admin/ImagePickerModal';
-import { ShopProductItemPanel } from '@/components/admin/panels/ShopProductItemPanel';
-import { CollectionItemPanel } from '@/components/admin/panels/CollectionItemPanel';
-import { PortfolioItemPanel } from '@/components/admin/panels/PortfolioItemPanel';
 import { JournalItemPanel } from '@/components/admin/panels/JournalItemPanel';
 import { BlogPostItemPanel } from '@/components/admin/panels/BlogPostItemPanel';
+import { PropertyItemPanel } from '@/components/admin/panels/PropertyItemPanel';
+import { NeighborhoodItemPanel } from '@/components/admin/panels/NeighborhoodItemPanel';
+import { MarketReportPanel } from '@/components/admin/panels/MarketReportPanel';
+import { REATestimonialsPanel } from '@/components/admin/panels/REATestimonialsPanel';
 import { SeoPanel } from '@/components/admin/panels/SeoPanel';
 import { HeaderPanel } from '@/components/admin/panels/HeaderPanel';
 import { ThemePanel } from '@/components/admin/panels/ThemePanel';
@@ -28,8 +29,6 @@ import { CaseStudiesPanel } from '@/components/admin/panels/CaseStudiesPanel';
 import { ServicesListPanel } from '@/components/admin/panels/ServicesListPanel';
 import { FeaturedPostPanel } from '@/components/admin/panels/FeaturedPostPanel';
 import { PostsPanel } from '@/components/admin/panels/PostsPanel';
-import { TestimonialsPanel } from '@/components/admin/panels/TestimonialsPanel';
-import { ServicesPagePanel } from '@/components/admin/panels/ServicesPagePanel';
 
 interface ContentFileItem {
   id: string;
@@ -44,7 +43,7 @@ interface ContentEditorProps {
   selectedSiteId: string;
   selectedLocale: string;
   initialFilePath?: string;
-  fileFilter?: 'all' | 'blog' | 'siteSettings' | 'portfolio' | 'shopProducts' | 'journal' | 'collections' | 'testimonials';
+  fileFilter?: 'all' | 'blog' | 'siteSettings' | 'portfolio' | 'shopProducts' | 'journal' | 'collections' | 'testimonials' | 'properties' | 'neighborhoods' | 'market-reports';
   titleOverride?: string;
   basePath?: string;
 }
@@ -165,6 +164,9 @@ export function ContentEditor({
     journal: 'journal/',
     collections: 'collections/',
     testimonials: 'testimonials',
+    properties: 'properties/',
+    neighborhoods: 'neighborhoods/',
+    'market-reports': 'market-reports/',
   };
   const TARGET_DIR_BY_FILTER: Record<string, string> = {
     blog: 'blog',
@@ -173,6 +175,9 @@ export function ContentEditor({
     journal: 'journal',
     collections: 'collections',
     testimonials: 'testimonials',
+    properties: 'properties',
+    neighborhoods: 'neighborhoods',
+    'market-reports': 'market-reports',
   };
   const isCollectionFilter = fileFilter && fileFilter in COLLECTION_PREFIXES;
   const filesTitle =
@@ -182,7 +187,10 @@ export function ContentEditor({
     : fileFilter === 'shopProducts' ? 'Shop Products'
     : fileFilter === 'journal' ? 'Journal Posts'
     : fileFilter === 'collections' ? 'Design Collections'
-    : fileFilter === 'testimonials' ? 'Client Testimonials'
+    : fileFilter === 'testimonials' ? 'Testimonials'
+    : fileFilter === 'properties' ? 'Properties'
+    : fileFilter === 'neighborhoods' ? 'Neighborhoods'
+    : fileFilter === 'market-reports' ? 'Market Reports'
     : 'Files';
 
   const site = useMemo(
@@ -984,6 +992,10 @@ export function ContentEditor({
   const isCollectionItemFile = activeFile?.path.startsWith('collections/');
   const isTestimonialsFile =
     activeFile?.path === 'testimonials.json' || activeFile?.path.startsWith('testimonials/');
+  // REA-specific panels
+  const isPropertyItemFile = activeFile?.path.startsWith('properties/');
+  const isNeighborhoodItemFile = activeFile?.path.startsWith('neighborhoods/');
+  const isMarketReportFile = activeFile?.path.startsWith('market-reports/');
   const canDeleteActiveFile = Boolean(
     activeFile &&
       (
@@ -992,14 +1004,17 @@ export function ContentEditor({
         activeFile.path.startsWith('portfolio/') ||
         activeFile.path.startsWith('shop-products/') ||
         activeFile.path.startsWith('journal/') ||
-        activeFile.path.startsWith('collections/')
+        activeFile.path.startsWith('collections/') ||
+        activeFile.path.startsWith('properties/') ||
+        activeFile.path.startsWith('neighborhoods/') ||
+        activeFile.path.startsWith('market-reports/')
       )
   );
   const isHeaderFile = activeFile?.path === 'header.json';
   const isThemeFile = activeFile?.path === 'theme.json';
   const isHomePageFile = activeFile?.path === 'pages/home.json';
   const isServicesPageFile = activeFile?.path === 'pages/services.json';
-  const allowCreateOrDuplicate = fileFilter !== 'siteSettings' && fileFilter !== 'testimonials';
+  const allowCreateOrDuplicate = fileFilter !== 'siteSettings';
   const variantSections = formData
     ? Object.entries(SECTION_VARIANT_OPTIONS).filter(
         ([key]) =>
@@ -1634,14 +1649,6 @@ export function ContentEditor({
                 />
               )}
 
-              {isServicesPageFile && formData && (
-                <ServicesPagePanel
-                  formData={formData}
-                  updateFormValue={updateFormValue}
-                  openImagePicker={openImagePicker}
-                />
-              )}
-
               {formData?.hero && (
                 <HeroPanel
                   formData={formData}
@@ -1737,40 +1744,41 @@ export function ContentEditor({
                 />
               )}
 
-              {isShopProductItemFile && formData && (
-                <ShopProductItemPanel
+              {isPropertyItemFile && formData && (
+                <PropertyItemPanel
                   formData={formData}
-                  locale={locale}
-                  shopCategoryOptions={shopCategoryOptions}
-                  shopRoomOptions={shopRoomOptions}
-                  updateFormValue={updateFormValue}
+                  updateFormValue={(path: string, value: any) => updateFormValue(path.split('.'), value)}
+                  openImagePicker={(field: string) => openImagePicker(field.split('.'))}
+                />
+              )}
+
+              {isNeighborhoodItemFile && formData && (
+                <NeighborhoodItemPanel
+                  formData={formData}
+                  updateFormValue={(path: string, value: any) => updateFormValue(path.split('.'), value)}
+                  openImagePicker={(field: string) => openImagePicker(field.split('.'))}
+                />
+              )}
+
+              {isMarketReportFile && formData && (
+                <MarketReportPanel
+                  formData={formData}
+                  updateFormValue={(path: string, value: any) => updateFormValue(path.split('.'), value)}
+                />
+              )}
+
+              {isTestimonialsFile && formData && (
+                <REATestimonialsPanel
+                  formData={formData}
+                  updateFormValue={(path: string, value: any) => updateFormValue(path.split('.'), value)}
                 />
               )}
 
               {isBlogPostFile && formData?.slug && (
                 <BlogPostItemPanel
                   formData={formData}
-                  blogServiceOptions={blogServiceOptions}
-                  blogConditionOptions={blogConditionOptions}
-                  markdownPreview={markdownPreview}
-                  updateFormValue={updateFormValue}
-                  openImagePicker={openImagePicker}
-                  toggleSelection={toggleSelection}
-                  toggleMarkdownPreview={toggleMarkdownPreview}
-                  normalizeMarkdown={normalizeMarkdown}
-                />
-              )}
-
-              {isPortfolioItemFile && formData && (
-                <PortfolioItemPanel
-                  formData={formData}
-                  locale={locale}
-                  portfolioCategoryOptions={portfolioCategoryOptions}
-                  portfolioStyleOptions={portfolioStyleOptions}
-                  updateFormValue={updateFormValue}
-                  openImagePicker={openImagePicker}
-                  addPortfolioGalleryItem={addPortfolioGalleryItem}
-                  removePortfolioGalleryItem={removePortfolioGalleryItem}
+                  updateFormValue={(path: string, value: any) => updateFormValue(path.split('.'), value)}
+                  openImagePicker={(field: string) => openImagePicker(field.split('.'))}
                 />
               )}
 
@@ -1784,28 +1792,7 @@ export function ContentEditor({
                 />
               )}
 
-              {isCollectionItemFile && formData && (
-                <CollectionItemPanel
-                  formData={formData}
-                  updateFormValue={updateFormValue}
-                  openImagePicker={openImagePicker}
-                  addCollectionMoodImage={addCollectionMoodImage}
-                  removeCollectionMoodImage={removeCollectionMoodImage}
-                />
-              )}
-
-              {isTestimonialsFile && formData && (
-                <TestimonialsPanel
-                  items={Array.isArray(formData.items) ? formData.items : []}
-                  locale={locale}
-                  categoryOptions={testimonialCategoryOptions}
-                  updateFormValue={updateFormValue}
-                  addTestimonialItem={addTestimonialItem}
-                  removeTestimonialItem={removeTestimonialItem}
-                />
-              )}
-
-              {formData && !formData.hero && !formData.introduction && !formData.cta && !isBlogPostFile && !isPortfolioItemFile && !isJournalItemFile && !isShopProductItemFile && !isCollectionItemFile && !isTestimonialsFile && (
+              {formData && !formData.hero && !formData.introduction && !formData.cta && !isBlogPostFile && !isJournalItemFile && !isPropertyItemFile && !isNeighborhoodItemFile && !isMarketReportFile && !isTestimonialsFile && (
                 <div className="text-sm text-gray-500">
                   No schema panels available for this file yet. Use the JSON tab.
                 </div>

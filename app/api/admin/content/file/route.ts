@@ -23,6 +23,9 @@ const ALLOWED_TARGET_DIRS = [
   'journal',
   'collections',
   'testimonials',
+  'properties',
+  'neighborhoods',
+  'market-reports',
 ] as const;
 
 type TargetDir = (typeof ALLOWED_TARGET_DIRS)[number];
@@ -31,7 +34,7 @@ function syncSlugWithPath(filePath: string, data: any): any {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return data;
   const [dir, fileName] = filePath.split('/');
   if (!dir || !fileName) return data;
-  if (!['blog', 'portfolio', 'shop-products', 'journal', 'collections'].includes(dir)) {
+  if (!['blog', 'portfolio', 'shop-products', 'journal', 'collections', 'properties', 'neighborhoods', 'market-reports'].includes(dir)) {
     return data;
   }
   const slug = fileName.replace(/\.json$/i, '').trim().toLowerCase();

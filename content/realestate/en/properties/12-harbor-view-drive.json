@@ -1,0 +1,67 @@
+{
+  "slug": "12-harbor-view-drive",
+  "address": "12 Harbor View Drive",
+  "city": "Larchmont",
+  "state": "NY",
+  "zip": "10538",
+  "neighborhood": "larchmont",
+  "price": 2400000,
+  "priceDisplay": "$2,400,000",
+  "status": "for-sale",
+  "type": "single-family",
+  "beds": 5,
+  "baths": 4,
+  "sqft": 5800,
+  "lotSize": "1.1 acres",
+  "yearBuilt": 1998,
+  "garage": "2-car attached",
+  "taxAmount": "$52,000/year",
+  "mlsNumber": "HGAR-5891235",
+  "schoolDistrict": "Mamaroneck Union Free School District",
+  "featured": true,
+  "coverImage": "",
+  "coverImageAlt": "12 Harbor View Drive, Larchmont NY",
+  "images": [],
+  "description": "Commanding views of Long Island Sound define this spectacular five-bedroom residence on one of Larchmont's most coveted streets. Designed by acclaimed architect Robert Stern, every room is oriented to capture the breathtaking water views that change with the light throughout the day.\n\nThe great room soars to 22-foot ceilings and features a floor-to-ceiling stone fireplace, wide-plank white oak floors, and walls of glass opening to a wraparound terrace. The recently renovated kitchen features custom cabinetry, Quartzite countertops, and a Wolf/Sub-Zero appliance suite.\n\nThe primary suite occupies its own wing with a private balcony overlooking the Sound, spa bath with soaking tub, and a custom dressing room. Four additional bedrooms, including a first-floor guest suite, provide flexible living arrangements.",
+  "features": {
+    "interior": [
+      "Water Views from Every Room",
+      "22-Foot Great Room Ceilings",
+      "Stone Fireplace",
+      "Wide-Plank White Oak Floors",
+      "Custom Kitchen",
+      "Quartzite Countertops",
+      "Primary Suite with Balcony",
+      "Custom Dressing Room",
+      "First-Floor Guest Suite"
+    ],
+    "exterior": [
+      "Wraparound Terrace",
+      "Sound Views",
+      "1.1 Acre Property",
+      "2-Car Garage",
+      "Professional Landscape Lighting",
+      "Outdoor Kitchen"
+    ],
+    "community": [
+      "Larchmont Village",
+      "Manor Park Beach Club Eligible",
+      "MUFSD Schools",
+      "Metro-North Access"
+    ],
+    "utilities": [
+      "Geothermal Heating/Cooling",
+      "Generator",
+      "Smart Home System",
+      "200-Amp Electric"
+    ]
+  },
+  "relatedProperties": [
+    "45-oak-ridge-lane",
+    "155-country-club-road"
+  ],
+  "seo": {
+    "title": "12 Harbor View Drive, Larchmont NY — $2,400,000",
+    "description": "Spectacular 5BR water-view estate designed by Robert Stern. 22-ft ceilings, wraparound terrace, Long Island Sound views. Larchmont Manor."
+  }
+}

@@ -1,80 +1,218 @@
-import { type Locale } from '@/lib/i18n';
-import { getRequestSiteId, loadPageContent, loadSiteInfo } from '@/lib/content';
-import { buildPageMetadata } from '@/lib/seo';
-import type { SiteInfo } from '@/lib/types';
-import ContactForm from './ContactForm';
+'use client';
 
-interface PageProps { params: { locale: Locale } }
+import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { Phone, Mail, MapPin, Clock, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
 
-export async function generateMetadata({ params }: PageProps) {
-  const siteId = await getRequestSiteId();
-  return buildPageMetadata({ siteId, locale: params.locale, slug: 'contact',
-    title: 'Book a Consultation — Julia Studio',
-    description: 'Begin your design journey with Julia Studio. Book a complimentary consultation to discuss your project.' });
-}
+export default function ContactPage() {
+  const [pageData, setPageData] = useState<any>({});
+  const [siteData, setSiteData] = useState<any>({});
+  const [locale, setLocale] = useState('en');
+  const [formValues, setFormValues] = useState<Record<string, string>>({});
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-interface ContactData {
-  hero?: { headline?: string; headlineCn?: string; subline?: string; sublineCn?: string };
-  form?: {
-    submitLabel?: string; submitLabelCn?: string;
-    successMessage?: string; successMessageCn?: string;
-    fields?: Record<string, { label?: string; labelCn?: string; type?: string; required?: boolean; options?: Array<{ value: string; label: string; labelCn?: string }> }>;
+  useEffect(() => {
+    const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
+    setLocale(loc);
+    Promise.all([
+      fetch(`/api/content/file?locale=${loc}&path=pages/contact.json`).then(r => r.json()),
+      fetch(`/api/content/file?locale=${loc}&path=site.json`).then(r => r.json()),
+    ]).then(([pageRes, siteRes]) => {
+      try { setPageData(JSON.parse(pageRes.content || '{}')); } catch {}
+      try { setSiteData(JSON.parse(siteRes.content || '{}')); } catch {}
+    });
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'consultation', data: formValues }),
+    }).catch(() => {});
+    setSubmitted(true);
+    setSubmitting(false);
   };
-  directContact?: { headline?: string; headlineCn?: string; showPhone?: boolean; showEmail?: boolean; showAddress?: boolean; showHours?: boolean; hours?: string; hoursCn?: string };
-  socialLinks?: { headline?: string; headlineCn?: string; showInstagram?: boolean; showPinterest?: boolean; showWechatQr?: boolean; showXiaohongshu?: boolean };
-}
 
-export default async function ContactPage({ params }: PageProps) {
-  const { locale } = params;
-  const siteId = await getRequestSiteId();
-  const [data, siteInfo] = await Promise.all([
-    loadPageContent<ContactData>('contact', locale, siteId),
-    loadSiteInfo(siteId, locale) as Promise<SiteInfo | null>,
-  ]);
+  const setField = (name: string, value: string) =>
+    setFormValues(v => ({ ...v, [name]: value }));
+
+  const d = pageData;
+  const fields = d.form?.fields || [
+    { name: 'fullName', type: 'text', label: 'Full Name', required: true },
+    { name: 'email', type: 'email', label: 'Email', required: true },
+    { name: 'phone', type: 'tel', label: 'Phone', required: true },
+    { name: 'interestedIn', type: 'select', label: "I'm Interested In", required: true,
+      options: [
+        { value: 'buying', label: 'Buying' }, { value: 'selling', label: 'Selling' },
+        { value: 'leasing', label: 'Leasing' }, { value: 'commercial', label: 'Commercial' },
+        { value: 'investment', label: 'Investment' }, { value: 'other', label: 'Other' },
+      ]},
+    { name: 'timeline', type: 'select', label: 'Timeline', required: false,
+      options: [
+        { value: 'asap', label: 'ASAP' }, { value: '1-3-months', label: '1–3 Months' },
+        { value: '3-6-months', label: '3–6 Months' }, { value: 'just-exploring', label: 'Just Exploring' },
+      ]},
+    { name: 'message', type: 'textarea', label: 'Tell me about your real estate goals', required: true },
+  ];
 
   return (
     <>
       {/* Hero */}
-      <section className="pt-32 pb-16 md:pt-40 md:pb-20" style={{ background: 'var(--backdrop-primary)' }}>
-        <div className="container-custom max-w-xl">
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-4" style={{ color: 'var(--primary)' }}>
-            {locale === 'zh' ? (data?.hero?.headlineCn || '开启您的设计之旅') : (data?.hero?.headline || 'Begin Your Design Journey')}
+      <section className="pt-32 pb-12 md:pt-40" style={{ background: 'var(--backdrop-primary)' }}>
+        <div className="container-custom">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Contact</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-semibold mb-3" style={{ color: 'var(--primary)' }}>
+            {d.hero?.headline || "Let's Talk Real Estate"}
           </h1>
-          <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
-            {locale === 'zh' ? (data?.hero?.sublineCn || '我们期待了解您的项目。') : (data?.hero?.subline || "We'd love to hear about your project.")}
+          <p className="text-base max-w-xl" style={{ color: 'var(--text-secondary)' }}>
+            {d.hero?.subline || "Reach out about buying, selling, or anything real estate. I respond within 2 hours."}
           </p>
         </div>
       </section>
 
-      {/* Form + Sidebar */}
       <section className="section-padding bg-white">
-        <div className="container-custom grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-16">
-          <ContactForm locale={locale} formConfig={data?.form} siteId={siteId} />
+        <div className="container-custom">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-14">
 
-          {/* Sidebar */}
-          <div className="space-y-8">
-            {data?.directContact && (
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'var(--secondary)' }}>
-                  {locale === 'zh' ? (data.directContact.headlineCn || '直接联系') : (data.directContact.headline || 'Or reach us directly')}
-                </p>
-                <div className="space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  {data.directContact.showPhone && siteInfo?.phone && <p><span className="font-medium" style={{ color: 'var(--primary)' }}>{siteInfo.phone}</span></p>}
-                  {data.directContact.showEmail && siteInfo?.email && <p><a href={`mailto:${siteInfo.email}`} style={{ color: 'var(--secondary)' }}>{siteInfo.email}</a></p>}
-                  {data.directContact.showAddress && siteInfo?.address && <p>{siteInfo.address}</p>}
-                  {data.directContact.showHours && <p>{locale === 'zh' ? (data.directContact.hoursCn || data.directContact.hours) : data.directContact.hours}</p>}
+            {/* Form — 60% */}
+            <div className="lg:col-span-3">
+              {submitted ? (
+                <div className="p-10 border border-[var(--secondary)] rounded-xl text-center">
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
+                    style={{ background: 'var(--backdrop-primary)' }}>
+                    <span className="text-2xl">✓</span>
+                  </div>
+                  <p className="font-serif text-2xl mb-3" style={{ color: 'var(--primary)' }}>Thank you!</p>
+                  <p style={{ color: 'var(--text-secondary)' }}>
+                    {d.form?.successMessage || "I'll be in touch within 2 hours during business hours."}
+                  </p>
                 </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  {fields.map((field: any) => (
+                    <div key={field.name}>
+                      <label className="block text-sm font-medium mb-1.5" style={{ color: 'var(--text-primary)' }}>
+                        {field.label}{field.required && <span className="text-red-500 ml-1">*</span>}
+                      </label>
+                      {field.type === 'select' ? (
+                        <select required={field.required} className="calc-input"
+                          onChange={e => setField(field.name, e.target.value)}>
+                          <option value="">Select…</option>
+                          {field.options?.map((o: any) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                        </select>
+                      ) : field.type === 'textarea' ? (
+                        <textarea rows={4} required={field.required} className="calc-input resize-none"
+                          onChange={e => setField(field.name, e.target.value)} />
+                      ) : (
+                        <input type={field.type} required={field.required} placeholder={field.placeholder}
+                          className="calc-input" onChange={e => setField(field.name, e.target.value)} />
+                      )}
+                    </div>
+                  ))}
+                  <button type="submit" disabled={submitting}
+                    className="w-full btn-gold py-3.5 text-sm mt-2">
+                    {submitting ? 'Sending…' : (d.form?.submitLabel || 'Request a Consultation')}
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Sidebar — 40% */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Response promise */}
+              {d.directContact?.responsePromise && (
+                <div className="p-5 rounded-xl border-l-4" style={{ borderColor: 'var(--secondary)', background: 'var(--backdrop-primary)' }}>
+                  <p className="text-sm leading-relaxed italic" style={{ color: 'var(--text-primary)' }}>
+                    "{d.directContact.responsePromise}"
+                  </p>
+                </div>
+              )}
+
+              {/* Contact info from site.json */}
+              <div className="space-y-4">
+                <h3 className="font-serif text-lg font-semibold" style={{ color: 'var(--primary)' }}>Direct Contact</h3>
+                {siteData.phone && (
+                  <a href={`tel:${siteData.phone.replace(/\D/g,'')}`}
+                    className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity"
+                    style={{ color: 'var(--primary)' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--backdrop-primary)' }}>
+                      <Phone className="w-4 h-4" style={{ color: 'var(--secondary)' }} />
+                    </div>
+                    {siteData.phone}
+                  </a>
+                )}
+                {siteData.email && (
+                  <a href={`mailto:${siteData.email}`}
+                    className="flex items-center gap-3 text-sm hover:opacity-70 transition-opacity"
+                    style={{ color: 'var(--primary)' }}>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--backdrop-primary)' }}>
+                      <Mail className="w-4 h-4" style={{ color: 'var(--secondary)' }} />
+                    </div>
+                    {siteData.email}
+                  </a>
+                )}
+                {siteData.address?.street && (
+                  <div className="flex items-start gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center" style={{ background: 'var(--backdrop-primary)' }}>
+                      <MapPin className="w-4 h-4" style={{ color: 'var(--secondary)' }} />
+                    </div>
+                    <span>
+                      {siteData.address.street}{siteData.address.suite ? `, ${siteData.address.suite}` : ''}<br />
+                      {siteData.address.city}, {siteData.address.state} {siteData.address.zip}
+                    </span>
+                  </div>
+                )}
               </div>
-            )}
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--secondary)' }}>
-                {locale === 'zh' ? '关注我们' : 'Follow Along'}
-              </p>
-              <div className="space-y-2 text-sm">
-                {data?.socialLinks?.showInstagram && <a href="#" className="block" style={{ color: 'var(--text-secondary)' }}>Instagram</a>}
-                {data?.socialLinks?.showPinterest && <a href="#" className="block" style={{ color: 'var(--text-secondary)' }}>Pinterest</a>}
-                {data?.socialLinks?.showWechatQr && <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{locale === 'zh' ? '微信：JuliaStudioDesign' : 'WeChat: JuliaStudioDesign'}</p>}
-              </div>
+
+              {/* Social links */}
+              {siteData.socialLinks && (
+                <div>
+                  <h3 className="font-serif text-base font-semibold mb-3" style={{ color: 'var(--primary)' }}>Connect</h3>
+                  <div className="flex gap-3">
+                    {siteData.socialLinks.instagram && (
+                      <a href={siteData.socialLinks.instagram} target="_blank" rel="noreferrer"
+                        className="w-9 h-9 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity"
+                        style={{ background: 'var(--backdrop-primary)' }}>
+                        <Instagram className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      </a>
+                    )}
+                    {siteData.socialLinks.facebook && (
+                      <a href={siteData.socialLinks.facebook} target="_blank" rel="noreferrer"
+                        className="w-9 h-9 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity"
+                        style={{ background: 'var(--backdrop-primary)' }}>
+                        <Facebook className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      </a>
+                    )}
+                    {siteData.socialLinks.linkedin && (
+                      <a href={siteData.socialLinks.linkedin} target="_blank" rel="noreferrer"
+                        className="w-9 h-9 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity"
+                        style={{ background: 'var(--backdrop-primary)' }}>
+                        <Linkedin className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      </a>
+                    )}
+                    {siteData.socialLinks.youtube && (
+                      <a href={siteData.socialLinks.youtube} target="_blank" rel="noreferrer"
+                        className="w-9 h-9 rounded-full flex items-center justify-center hover:opacity-70 transition-opacity"
+                        style={{ background: 'var(--backdrop-primary)' }}>
+                        <Youtube className="w-4 h-4" style={{ color: 'var(--primary)' }} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Brokerage info */}
+              {siteData.brokerageName && (
+                <div className="pt-4 border-t border-[var(--border)]">
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    {siteData.name} is a licensed real estate salesperson affiliated with {siteData.brokerageName}.
+                    License: {siteData.licenseNumber}.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>

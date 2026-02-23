@@ -1,0 +1,69 @@
+{
+  "slug": "scarsdale",
+  "name": "Scarsdale",
+  "tagline": "Westchester's crown jewel — top schools, village charm, estate properties",
+  "coverImage": "",
+  "coverImageAlt": "Scarsdale NY neighborhood",
+  "overview": "Scarsdale is widely considered the pinnacle of Westchester County living. This affluent village of 18,000 residents consistently ranks among the top school districts in the United States — and that single fact drives demand for real estate here year after year.\n\nThe Scarsdale Union Free School District is routinely ranked in the top 10 nationally, with Scarsdale High School sending graduates to Ivy League universities at extraordinary rates. For families with education as a priority, Scarsdale is often the non-negotiable choice.\n\nHousing ranges from historic Tudor estates to mid-century moderns to recently built contemporary colonials. The village center offers boutique shopping, acclaimed restaurants, and a strong sense of community identity. The Metro-North Harlem Line connects Scarsdale to Grand Central Terminal in approximately 35 minutes.\n\nProperty values in Scarsdale have shown remarkable resilience through every market cycle. While the entry price point is high — the median home price hovers around $1.5 million — buyers consistently find that the combination of school quality, property appreciation, and lifestyle value justifies the premium.",
+  "marketSnapshot": {
+    "medianPrice": "$1,500,000",
+    "avgPricePerSqft": "$485",
+    "inventory": "42 active listings",
+    "avgDaysOnMarket": "18 days",
+    "yoyChange": "+6.2%"
+  },
+  "schools": [
+    {
+      "name": "Scarsdale High School",
+      "type": "high",
+      "rating": "10/10",
+      "distance": "0.8 mi"
+    },
+    {
+      "name": "Scarsdale Middle School",
+      "type": "middle",
+      "rating": "10/10",
+      "distance": "0.5 mi"
+    },
+    {
+      "name": "Fox Meadow Elementary",
+      "type": "elementary",
+      "rating": "10/10",
+      "distance": "0.3 mi"
+    }
+  ],
+  "lifestyle": {
+    "restaurants": [
+      "Scarsdale Prime",
+      "Harvest on Hudson",
+      "Origins",
+      "Robbie Ribs BBQ"
+    ],
+    "parks": [
+      "Weinberg Nature Center",
+      "Butler Woods",
+      "Scarsdale Pool"
+    ],
+    "shopping": [
+      "Scarsdale Village Center",
+      "Whole Foods",
+      "Trader Joe's"
+    ],
+    "transit": [
+      "Harlem Line — 33 min to Grand Central",
+      "I-287 access",
+      "Hutchinson River Pkwy"
+    ]
+  },
+  "gallery": [],
+  "nearbyNeighborhoods": [
+    "bronxville",
+    "larchmont"
+  ],
+  "featured": true,
+  "region": "Northern Westchester",
+  "seo": {
+    "title": "Scarsdale NY Real Estate — Homes for Sale",
+    "description": "Browse homes for sale in Scarsdale, NY. Top-ranked schools, village living, and Westchester County's most prestigious addresses. Expert local guidance from Alexandra Reeves."
+  }
+}

@@ -1,104 +1,104 @@
-import { notFound } from 'next/navigation';
-import Link from 'next/link';
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { type Locale } from '@/lib/i18n';
-import { getRequestSiteId, loadPageContent } from '@/lib/content';
-import { buildPageMetadata } from '@/lib/seo';
+import Link from 'next/link';
+import { Star, Award } from 'lucide-react';
 
-export const revalidate = 86400;
+export default function AboutPage() {
+  const [pageData, setPageData] = useState<any>({});
+  const [siteData, setSiteData] = useState<any>({});
+  const [locale, setLocale] = useState('en');
+  const [loading, setLoading] = useState(true);
 
-interface PageProps { params: { locale: Locale } }
+  useEffect(() => {
+    const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
+    setLocale(loc);
+    Promise.all([
+      fetch(`/api/content/file?locale=${loc}&path=pages/about.json`).then(r => r.json()),
+      fetch(`/api/content/file?locale=${loc}&path=site.json`).then(r => r.json()),
+    ]).then(([pageRes, siteRes]) => {
+      try { setPageData(JSON.parse(pageRes.content || '{}')); } catch {}
+      try { setSiteData(JSON.parse(siteRes.content || '{}')); } catch {}
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
 
-function tx(en?: string, cn?: string, locale?: Locale) { return (locale === 'zh' && cn) ? cn : (en || ''); }
-
-interface AboutData {
-  hero?: { headline?: string; headlineCn?: string; backgroundImage?: string };
-  story?: { headline?: string; headlineCn?: string; blocks?: Array<{ body?: string; bodyCn?: string; image?: string }> };
-  philosophy?: { headline?: string; headlineCn?: string; body?: string; bodyCn?: string };
-  stats?: { variant?: string; items?: Array<{ value?: string; label?: string; labelCn?: string }> };
-  team?: { headline?: string; headlineCn?: string; members?: Array<{ name?: string; title?: string; titleCn?: string; bio?: string; bioCn?: string; image?: string }> };
-  timeline?: { headline?: string; headlineCn?: string; milestones?: Array<{ year?: string; event?: string; eventCn?: string }> };
-  awards?: { headline?: string; headlineCn?: string; items?: Array<{ name?: string; year?: string; logo?: string }> };
-  cta?: { headline?: string; headlineCn?: string; ctaLabel?: string; ctaLabelCn?: string; ctaHref?: string };
-}
-
-export async function generateMetadata({ params }: PageProps) {
-  const siteId = await getRequestSiteId();
-  return buildPageMetadata({ siteId, locale: params.locale, slug: 'about',
-    title: 'About — Julia Studio',
-    description: '25 years of design excellence. Julia Studio is a premier interior design house creating timeless spaces.' });
-}
-
-export default async function AboutPage({ params }: PageProps) {
-  const { locale } = params;
-  const siteId = await getRequestSiteId();
-  const data = await loadPageContent<AboutData>('about', locale, siteId);
-  if (!data) notFound();
-  const isCn = locale === 'zh';
+  const d = pageData;
 
   return (
     <>
       {/* Hero */}
-      <section className="relative h-[50vh] overflow-hidden" style={{ background: 'var(--primary)', minHeight: 'var(--about-hero-min-h, 400px)' }}>
-        {data.hero?.backgroundImage && (
-          <>
-            <div className="absolute inset-0">
-              <Image
-                src={data.hero.backgroundImage}
-                alt=""
-                fill
-                className="object-cover"
-                style={{ opacity: 'var(--media-dim-heavy, 0.5)' }}
-                sizes="100vw"
-                priority
-              />
-            </div>
-            <div className="absolute inset-0" style={{ background: 'rgb(var(--hero-overlay-rgb, 26 26 26) / var(--overlay-light, 0.5))' }} />
-          </>
+      <section className="relative pt-20" style={{ minHeight: '50vh', background: 'var(--primary)' }}>
+        {d.hero?.image && (
+          <Image src={d.hero.image} alt={d.hero.imageAlt || ''} fill className="object-cover opacity-30" priority />
         )}
-        <div className="relative z-10 flex items-end h-full container-custom" style={{ paddingBottom: 'var(--about-hero-content-pb, 3rem)' }}>
-          <h1 className="font-serif text-4xl md:text-6xl font-semibold" style={{ color: 'var(--text-on-dark, #FAF8F5)' }}>
-            {tx(data.hero?.headline, data.hero?.headlineCn, locale) || (isCn?'关于 Julia Studio':'About Julia Studio')}
+        <div className="relative z-10 container-custom pt-20 pb-16 md:pt-28">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>About</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3">
+            {d.hero?.headline || siteData.name || 'Alexandra Reeves'}
           </h1>
+          <p className="text-lg text-white/70">{d.hero?.subline || siteData.tagline}</p>
         </div>
       </section>
 
-      {/* Story */}
-      {data.story?.blocks?.map((block, i) => (
-        <section key={i} className={`section-padding ${i % 2 === 0 ? 'bg-white' : ''}`} style={i % 2 !== 0 ? { background: 'var(--backdrop-primary)' } : {}}>
-          <div className="container-custom grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-            <div className={i % 2 === 1 ? 'lg:order-2' : ''}>
-              {i === 0 && <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-6" style={{ color: 'var(--primary)' }}>{tx(data.story?.headline, data.story?.headlineCn, locale)}</h2>}
-              <p className="text-base leading-loose" style={{ color: 'var(--text-secondary)', maxWidth: '52ch' }}>{tx(block.body, block.bodyCn, locale)}</p>
+      {/* Story blocks */}
+      {d.story?.blocks?.length > 0 && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <div className="space-y-16">
+              {d.story.blocks.map((block: any, i: number) => (
+                <div key={i} className={`grid grid-cols-1 md:grid-cols-2 gap-12 items-center ${i % 2 === 1 ? 'md:direction-rtl' : ''}`}>
+                  <div className={i % 2 === 1 ? 'md:order-2' : ''}>
+                    {block.image ? (
+                      <div className="relative aspect-[4/3] rounded-xl overflow-hidden" style={{ boxShadow: 'var(--card-shadow)' }}>
+                        <Image src={block.image} alt={block.imageAlt || ''} fill className="object-cover" sizes="50vw" />
+                      </div>
+                    ) : (
+                      <div className="aspect-[4/3] rounded-xl" style={{ background: 'var(--backdrop-primary)' }} />
+                    )}
+                  </div>
+                  <div className={i % 2 === 1 ? 'md:order-1' : ''}>
+                    <p className="text-base leading-relaxed" style={{ color: 'var(--text-primary)', lineHeight: '1.85' }}>{block.body}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className={`relative aspect-[4/3] image-frame ${i % 2 === 1 ? 'lg:order-1' : ''}`}>
-              {block.image ? <Image src={block.image} alt="" fill className="object-cover" sizes="(max-width:1024px) 100vw, 50vw" /> : <div className="w-full h-full bg-[var(--primary-50)]" />}
-            </div>
-          </div>
-        </section>
-      ))}
-
-      {/* Philosophy */}
-      {data.philosophy && (
-        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
-          <div className="container-custom max-w-2xl mx-auto text-center">
-            <div className="mb-6 h-px w-16 mx-auto" style={{ background: 'var(--secondary)' }} />
-            <h2 className="font-serif text-2xl md:text-3xl font-semibold mb-6" style={{ color: 'var(--primary)' }}>{tx(data.philosophy.headline, data.philosophy.headlineCn, locale)}</h2>
-            <p className="text-base leading-loose" style={{ color: 'var(--text-secondary)' }}>{tx(data.philosophy.body, data.philosophy.bodyCn, locale)}</p>
-            <div className="mt-6 h-px w-16 mx-auto" style={{ background: 'var(--secondary)' }} />
           </div>
         </section>
       )}
 
       {/* Stats */}
-      {data.stats?.items && (
-        <section className="py-16 bg-white border-y border-[var(--border)]">
+      {d.stats?.items?.length > 0 && (
+        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
           <div className="container-custom">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-center">
-              {data.stats.items.map((item, i) => (
-                <div key={i}>
-                  <p className="font-serif text-4xl md:text-5xl font-semibold mb-2" style={{ color: 'var(--primary)' }}>{item.value}</p>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{tx(item.label, item.labelCn, locale)}</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {d.stats.items.map((item: any, i: number) => (
+                <div key={i} className="text-center">
+                  <p className="font-serif text-4xl md:text-5xl font-bold mb-2" style={{ color: 'var(--secondary)' }}>{item.value}</p>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{item.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Credentials */}
+      {d.credentials?.items?.length > 0 && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <h2 className="font-serif text-2xl font-semibold mb-8 text-center" style={{ color: 'var(--primary)' }}>
+              {d.credentials?.headline || 'Professional Designations'}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {d.credentials.items.map((item: any, i: number) => (
+                <div key={i} className="p-5 border border-[var(--border)] rounded-xl">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="font-serif text-2xl font-bold" style={{ color: 'var(--secondary)' }}>{item.abbreviation}</span>
+                  </div>
+                  <p className="font-semibold text-sm mb-1" style={{ color: 'var(--primary)' }}>{item.name}</p>
+                  <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
                 </div>
               ))}
             </div>
@@ -107,60 +107,78 @@ export default async function AboutPage({ params }: PageProps) {
       )}
 
       {/* Team */}
-      {data.team?.members && (
-        <section className="section-padding bg-white">
-          <div className="container-custom">
-            <h2 className="font-serif text-3xl font-semibold mb-12" style={{ color: 'var(--primary)' }}>{tx(data.team.headline, data.team.headlineCn, locale)}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-              {data.team.members.map((member, i) => (
-                <div key={i}>
-                  <div className="relative aspect-[3/4] image-frame mb-5">
-                    {member.image ? <Image src={member.image} alt={member.name || ''} fill className="object-cover" sizes="(max-width:768px) 100vw, 33vw" /> : <div className="w-full h-full bg-[var(--primary-50)]" />}
-                  </div>
-                  <p className="font-serif text-lg font-semibold" style={{ color: 'var(--primary)' }}>{member.name}</p>
-                  <p className="text-sm mb-3" style={{ color: 'var(--secondary)' }}>{tx(member.title, member.titleCn, locale)}</p>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{tx(member.bio, member.bioCn, locale)}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Timeline */}
-      {data.timeline?.milestones && (
+      {d.team?.members?.length > 0 && (
         <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
           <div className="container-custom">
-            <h2 className="font-serif text-3xl font-semibold mb-12" style={{ color: 'var(--primary)' }}>{tx(data.timeline.headline, data.timeline.headlineCn, locale)}</h2>
-            <div className="relative">
-              <div className="absolute left-0 top-0 bottom-0 w-px" style={{ background: 'var(--border)' }} />
-              <div className="space-y-8 pl-8">
-                {data.timeline.milestones.map((m, i) => (
-                  <div key={i} className="relative">
-                    <div className="absolute -left-10 w-3 h-3 rounded-full border-2" style={{ top: '2px', background: 'var(--backdrop-primary)', borderColor: 'var(--secondary)' }} />
-                    <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--secondary)' }}>{m.year}</p>
-                    <p className="font-serif text-base" style={{ color: 'var(--primary)' }}>{tx(m.event, m.eventCn, locale)}</p>
+            <h2 className="font-serif text-2xl font-semibold mb-10 text-center" style={{ color: 'var(--primary)' }}>
+              {d.team?.headline || 'The Team'}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {d.team.members.map((member: any, i: number) => (
+                <div key={i} className={`${member.featured ? 'md:col-span-1' : ''} text-center`}>
+                  <div className={`relative mx-auto mb-5 rounded-full overflow-hidden ${member.featured ? 'w-40 h-40' : 'w-28 h-28'}`}
+                    style={{ boxShadow: 'var(--card-shadow)' }}>
+                    {member.photo ? (
+                      <Image src={member.photo} alt={member.name || ''} fill className="object-cover" sizes="160px" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center font-serif text-2xl font-bold text-white"
+                        style={{ background: 'var(--primary)' }}>
+                        {(member.name || 'A').charAt(0)}
+                      </div>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <h3 className="font-serif text-lg font-semibold mb-1" style={{ color: 'var(--primary)' }}>{member.name}</h3>
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>{member.title}</p>
+                  {member.bio && <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{member.bio}</p>}
+                </div>
+              ))}
             </div>
           </div>
         </section>
       )}
 
       {/* Awards */}
-      {data.awards?.items && data.awards.items.length > 0 && (
-        <section className="py-16 bg-white border-t border-[var(--border)]">
+      {d.awards?.items?.length > 0 && (
+        <section className="section-padding bg-white">
           <div className="container-custom">
-            <h2 className="font-serif text-2xl font-semibold mb-8" style={{ color: 'var(--primary)' }}>{tx(data.awards.headline, data.awards.headlineCn, locale)}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {data.awards.items.map((award, i) => (
-                <div key={i} className="border border-[var(--border)] p-5 text-center">
-                  <p className="font-serif text-sm font-medium" style={{ color: 'var(--primary)' }}>{award.name}</p>
-                  <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{award.year}</p>
+            <h2 className="font-serif text-2xl font-semibold mb-8 text-center" style={{ color: 'var(--primary)' }}>
+              {d.awards?.headline || 'Awards & Recognition'}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+              {d.awards.items.map((item: any, i: number) => (
+                <div key={i} className="flex items-start gap-4 p-4 border border-[var(--border)] rounded-lg">
+                  <Award className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--secondary)' }} />
+                  <div>
+                    <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{item.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>{item.organization} · {item.year}</p>
+                  </div>
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* Community */}
+      {d.community?.body && (
+        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
+          <div className="container-custom max-w-3xl mx-auto text-center">
+            <h2 className="font-serif text-2xl font-semibold mb-5" style={{ color: 'var(--primary)' }}>
+              {d.community?.headline || 'Community Involvement'}
+            </h2>
+            <p className="text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{d.community.body}</p>
+          </div>
+        </section>
+      )}
+
+      {/* Brokerage */}
+      {d.brokerage?.name && (
+        <section className="py-10 bg-white border-t border-[var(--border)]">
+          <div className="container-custom text-center">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-secondary)' }}>Brokerage Affiliation</p>
+            {d.brokerage.logo && <Image src={d.brokerage.logo} alt={d.brokerage.name} width={140} height={40} className="mx-auto mb-3 object-contain" />}
+            <p className="font-semibold mb-2" style={{ color: 'var(--primary)' }}>{d.brokerage.name}</p>
+            <p className="text-xs max-w-2xl mx-auto" style={{ color: 'var(--text-secondary)' }}>{d.brokerage.description}</p>
           </div>
         </section>
       )}
@@ -168,8 +186,13 @@ export default async function AboutPage({ params }: PageProps) {
       {/* CTA */}
       <section className="section-padding" style={{ background: 'var(--primary)' }}>
         <div className="container-custom text-center">
-          <p className="font-serif text-3xl mb-6" style={{ color: 'var(--text-on-dark, #FAF8F5)' }}>{tx(data.cta?.headline, data.cta?.headlineCn, locale)}</p>
-          <Link href={`/${locale}${data.cta?.ctaHref || '/contact'}`} className="btn-gold">{tx(data.cta?.ctaLabel, data.cta?.ctaLabelCn, locale) || (isCn?'预约咨询':'Book Consultation')}</Link>
+          <h2 className="font-serif text-3xl font-semibold text-white mb-4">
+            {d.cta?.headline || "Let's work together."}
+          </h2>
+          <p className="text-white/70 mb-6 max-w-md mx-auto">{d.cta?.subline}</p>
+          <Link href={`/${locale}${d.cta?.ctaHref || '/contact'}`} className="btn-gold inline-block">
+            {d.cta?.ctaLabel || 'Schedule a Consultation'}
+          </Link>
         </div>
       </section>
     </>

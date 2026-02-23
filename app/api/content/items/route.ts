@@ -5,7 +5,10 @@ import { canUseContentDb, listContentEntriesByPrefix } from '@/lib/contentDb';
 import { getRequestSiteId } from '@/lib/content';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
-const ALLOWED_DIRECTORIES = ['portfolio', 'shop-products', 'journal', 'collections'] as const;
+const ALLOWED_DIRECTORIES = [
+  'portfolio', 'shop-products', 'journal', 'collections',
+  'properties', 'neighborhoods', 'blog', 'market-reports',
+] as const;
 type AllowedDirectory = (typeof ALLOWED_DIRECTORIES)[number];
 
 export async function GET(request: NextRequest) {
