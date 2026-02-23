@@ -9,12 +9,9 @@
 
 ```bash
 # Kill port if in use
+
 lsof -ti:3050 | xargs kill -9
-
-# Clean build cache if needed
 rm -rf .next
-
-# Dev server
 npm run dev
 
 # Install
@@ -29,7 +26,8 @@ git commit -m "Update: describe your changes"
 git push
 
 
-curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_ImGwacnTH1L6WRCMgW2ykDSTHste/6E4SwnmEJg
+curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_jq6Q2HPP3DZMAuMYcfUmW61GUWxP/qyJ6tolWmu
+
 
 
 
