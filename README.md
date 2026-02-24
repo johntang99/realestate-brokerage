@@ -1,5 +1,8 @@
 # BAAM System G — REA Premium (Real Estate Agent Template)
 
+admin@pinnaclerealty.com / admin123
+
+
 > **GitHub:** https://github.com/johntang99/realestate  
 > **Supabase project:** Real estate (jbbcuczsrwizbxbnhedc)  
 > **Dev port:** 3050  
@@ -10,7 +13,7 @@
 ```bash
 # Kill port if in use
 
-lsof -ti:3050 | xargs kill -9
+lsof -ti:3060 | xargs kill -9
 rm -rf .next
 npm run dev
 
