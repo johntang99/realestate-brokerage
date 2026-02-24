@@ -44,10 +44,10 @@ const headers = {
 };
 
 async function upsertContent(path, data) {
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/content_entries`, {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/content_entries?on_conflict=site_id,locale,path`, {
     method: 'POST',
-    headers,
-    body: JSON.stringify({ site_id: SITE_ID, locale: LOCALE, path, content: data }),
+    headers: { ...headers, 'Prefer': 'resolution=merge-duplicates' },
+    body: JSON.stringify({ site_id: SITE_ID, locale: LOCALE, path, data: data }),
   });
   if (!res.ok) throw new Error(`Failed to upsert ${path}: ${await res.text()}`);
 }

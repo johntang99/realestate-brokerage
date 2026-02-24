@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS public.content_entries (
   site_id text NOT NULL,
   locale text NOT NULL DEFAULT 'en',
   path text NOT NULL,
-  content jsonb NOT NULL DEFAULT '{}',
+  content jsonb DEFAULT '{}',
+  data jsonb DEFAULT '{}',
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
   UNIQUE(site_id, locale, path)
