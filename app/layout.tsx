@@ -28,19 +28,19 @@ const notoSerifSC = Noto_Serif_SC({
 });
 
 export const metadata: Metadata = {
-  title: 'Julia Studio — 25 Years of Timeless Interior Design',
-  description: 'Julia Studio creates timeless interior spaces for homes, offices, and exhibitions. 25 years of design excellence, 1,000+ projects completed.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://studio-julia.com'),
+  title: 'Pinnacle Realty Group — Westchester County Real Estate Brokerage',
+  description: 'Pinnacle Realty Group is Westchester County\'s premier independent real estate brokerage. 18 agents, $180M+ in sales. Buying, selling, investing, and relocating.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://pinnaclerealty.com'),
   icons: {
     icon: [
-      { url: '/favicon.svg?v=2', type: 'image/svg+xml' },
-      { url: '/icon?v=2', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon.svg?v=3', type: 'image/svg+xml' },
+      { url: '/icon?v=3', type: 'image/png', sizes: '32x32' },
     ],
-    shortcut: '/favicon.svg?v=2',
-    apple: [{ url: '/icon?v=2', type: 'image/png', sizes: '180x180' }],
+    shortcut: '/favicon.svg?v=3',
+    apple: [{ url: '/icon?v=3', type: 'image/png', sizes: '180x180' }],
   },
   alternates: { canonical: './' },
-  openGraph: { type: 'website', siteName: 'Julia Studio' },
+  openGraph: { type: 'website', siteName: 'Pinnacle Realty Group' },
   robots: { index: true, follow: true },
 };
 
