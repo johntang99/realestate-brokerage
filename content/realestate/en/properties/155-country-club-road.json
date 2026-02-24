@@ -1,29 +1,34 @@
 {
-  "slug": "155-country-club-road",
-  "address": "155 Country Club Road",
-  "city": "Harrison",
-  "state": "NY",
+  "seo": {
+    "title": "155 Country Club Road, Harrison NY — $3,200,000",
+    "description": "Extraordinary 6BR/5BA estate on 2.3 acres adjacent to Westchester Country Club. Pool, tennis, 4-car garage."
+  },
   "zip": "10528",
-  "neighborhood": "rye",
-  "price": 3200000,
-  "priceDisplay": "$3,200,000",
-  "status": "for-sale",
-  "type": "single-family",
   "beds": 6,
-  "baths": 5,
+  "city": "Harrison",
+  "slug": "155-country-club-road",
   "sqft": 7800,
-  "lotSize": "2.3 acres",
-  "yearBuilt": 2002,
+  "type": "single-family",
+  "baths": 5,
+  "price": 3200000,
+  "state": "NY",
   "garage": "4-car attached",
-  "taxAmount": "$68,000/year",
-  "mlsNumber": "HGAR-5891241",
-  "schoolDistrict": "Harrison Central School District",
-  "featured": true,
-  "coverImage": "",
-  "coverImageAlt": "155 Country Club Road, Harrison NY",
   "images": [],
-  "description": "Set on 2.3 private acres adjacent to the Westchester Country Club, this extraordinary estate residence defines luxury living in Westchester County. Designed by renowned architect H3Hardy Collaboration Architecture and built to the highest specifications in 2002, the property was completely renovated in 2021 with no detail overlooked.\n\nThe 7,800 square foot residence features a double-height entrance gallery, seven fireplaces, a professional-grade chef's kitchen with dual islands, and seamless indoor-outdoor living across multiple terraces, a loggia, and resort-style pool and spa. The primary suite is a private oasis with sitting room, dual spa baths, and a 600-square-foot custom dressing room.",
+  "status": "for-sale",
+  "address": "155 Country Club Road",
+  "lotSize": "2.3 acres",
+  "featured": true,
   "features": {
+    "exterior": [
+      "Resort Pool & Spa",
+      "Pool House",
+      "Tennis Court",
+      "2.3 Acre Estate Lot",
+      "Motor Court",
+      "4-Car Garage",
+      "Multiple Terraces",
+      "Outdoor Kitchen & Fireplace"
+    ],
     "interior": [
       "7 Fireplaces",
       "Chef's Kitchen with Dual Islands",
@@ -34,16 +39,6 @@
       "Professional Gym",
       "Smart Home System",
       "Elevator"
-    ],
-    "exterior": [
-      "Resort Pool & Spa",
-      "Pool House",
-      "Tennis Court",
-      "2.3 Acre Estate Lot",
-      "Motor Court",
-      "4-Car Garage",
-      "Multiple Terraces",
-      "Outdoor Kitchen & Fireplace"
     ],
     "community": [
       "Adjacent to Westchester Country Club",
@@ -58,12 +53,17 @@
       "400-Amp Electric"
     ]
   },
+  "mlsNumber": "HGAR-5891241",
+  "taxAmount": "$68,000/year",
+  "yearBuilt": 2002,
+  "coverImage": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771900541199-photo-1560026301-88340cf16be7.jpg",
+  "description": "Set on 2.3 private acres adjacent to the Westchester Country Club, this extraordinary estate residence defines luxury living in Westchester County. Designed by renowned architect H3Hardy Collaboration Architecture and built to the highest specifications in 2002, the property was completely renovated in 2021 with no detail overlooked.\n\nThe 7,800 square foot residence features a double-height entrance gallery, seven fireplaces, a professional-grade chef's kitchen with dual islands, and seamless indoor-outdoor living across multiple terraces, a loggia, and resort-style pool and spa. The primary suite is a private oasis with sitting room, dual spa baths, and a 600-square-foot custom dressing room.",
+  "neighborhood": "rye",
+  "priceDisplay": "$3,200,000",
+  "coverImageAlt": "155 Country Club Road, Harrison NY",
+  "schoolDistrict": "Harrison Central School District",
   "relatedProperties": [
     "12-harbor-view-drive",
     "45-oak-ridge-lane"
-  ],
-  "seo": {
-    "title": "155 Country Club Road, Harrison NY — $3,200,000",
-    "description": "Extraordinary 6BR/5BA estate on 2.3 acres adjacent to Westchester Country Club. Pool, tennis, 4-car garage."
-  }
+  ]
 }

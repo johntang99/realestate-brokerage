@@ -1,17 +1,12 @@
 {
-  "slug": "white-plains",
-  "name": "White Plains",
-  "tagline": "Westchester's urban hub — walkability, transit access, and diverse housing",
-  "coverImage": "",
-  "coverImageAlt": "White Plains NY downtown",
-  "overview": "White Plains is Westchester County's economic and governmental center — a genuine city of 60,000 that offers urban amenities in a suburban county setting. For buyers and renters seeking walkability, transit convenience, and housing at more accessible price points, White Plains is often the best answer in Westchester.\n\nDowntown White Plains has been transformed over the past decade into a legitimate dining and entertainment destination. The Renaissance Square entertainment complex, the Westchester Mall, and hundreds of restaurants make White Plains a place where people choose to spend their evenings and weekends, not just their commutes.\n\nThe Metro-North Harlem Line stops at White Plains station, one of the busiest in Westchester, providing service to Grand Central Terminal in approximately 40 minutes. Numerous bus routes provide local transit connectivity.\n\nHousing ranges from luxury high-rise condos in the downtown core to single-family neighborhoods in the northern and southern sections of the city. Price points vary enormously — from under $300,000 for a studio condo to over $1 million for a larger single-family home in the top school zone areas.",
-  "marketSnapshot": {
-    "medianPrice": "$580,000",
-    "avgPricePerSqft": "$310",
-    "inventory": "65 active listings",
-    "avgDaysOnMarket": "28 days",
-    "yoyChange": "+3.8%"
+  "seo": {
+    "title": "White Plains NY Real Estate — Homes & Condos for Sale",
+    "description": "White Plains NY — urban convenience meets Westchester living. Browse homes and condos with local expert Alexandra Reeves."
   },
+  "name": "White Plains",
+  "slug": "white-plains",
+  "region": "Central Westchester",
+  "gallery": [],
   "schools": [
     {
       "name": "White Plains High School",
@@ -32,39 +27,44 @@
       "distance": "0.5 mi"
     }
   ],
+  "tagline": "Westchester's urban hub — walkability, transit access, and diverse housing",
+  "featured": false,
+  "overview": "White Plains is Westchester County's economic and governmental center — a genuine city of 60,000 that offers urban amenities in a suburban county setting. For buyers and renters seeking walkability, transit convenience, and housing at more accessible price points, White Plains is often the best answer in Westchester.\n\nDowntown White Plains has been transformed over the past decade into a legitimate dining and entertainment destination. The Renaissance Square entertainment complex, the Westchester Mall, and hundreds of restaurants make White Plains a place where people choose to spend their evenings and weekends, not just their commutes.\n\nThe Metro-North Harlem Line stops at White Plains station, one of the busiest in Westchester, providing service to Grand Central Terminal in approximately 40 minutes. Numerous bus routes provide local transit connectivity.\n\nHousing ranges from luxury high-rise condos in the downtown core to single-family neighborhoods in the northern and southern sections of the city. Price points vary enormously — from under $300,000 for a studio condo to over $1 million for a larger single-family home in the top school zone areas.",
   "lifestyle": {
-    "restaurants": [
-      "BLT Steak Westchester",
-      "La Bocca",
-      "Gus's Franklin Park",
-      "Caffe Azzurri"
-    ],
     "parks": [
       "Delfino Park",
       "Gedney Park",
       "Silver Lake Park"
-    ],
-    "shopping": [
-      "Westchester Mall",
-      "The Galleria",
-      "City Center White Plains"
     ],
     "transit": [
       "Harlem Line — 40 min to Grand Central",
       "Multiple Bus Routes",
       "I-287 Hub",
       "Bronx River Pkwy"
+    ],
+    "shopping": [
+      "Westchester Mall",
+      "The Galleria",
+      "City Center White Plains"
+    ],
+    "restaurants": [
+      "BLT Steak Westchester",
+      "La Bocca",
+      "Gus's Franklin Park",
+      "Caffe Azzurri"
     ]
   },
-  "gallery": [],
+  "coverImage": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771902748884-white-plain-licensed-image.jpeg",
+  "coverImageAlt": "White Plains NY downtown",
+  "marketSnapshot": {
+    "inventory": "65 active listings",
+    "yoyChange": "+3.8%",
+    "medianPrice": "$580,000",
+    "avgDaysOnMarket": "28 days",
+    "avgPricePerSqft": "$310"
+  },
   "nearbyNeighborhoods": [
     "scarsdale",
     "bronxville"
-  ],
-  "featured": false,
-  "region": "Central Westchester",
-  "seo": {
-    "title": "White Plains NY Real Estate — Homes & Condos for Sale",
-    "description": "White Plains NY — urban convenience meets Westchester living. Browse homes and condos with local expert Alexandra Reeves."
-  }
+  ]
 }

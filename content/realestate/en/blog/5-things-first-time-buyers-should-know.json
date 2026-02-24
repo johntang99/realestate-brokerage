@@ -1,26 +1,26 @@
 {
-  "slug": "5-things-first-time-buyers-should-know",
-  "title": "5 Things Every First-Time Buyer in Westchester Should Know Before Starting Their Search",
-  "type": "article",
-  "category": "buyer-tips",
-  "date": "2026-01-14",
-  "author": "Alexandra Reeves",
-  "featured": false,
-  "coverImage": "",
-  "coverImageAlt": "First-time home buyers in Westchester",
-  "excerpt": "After 18 years and hundreds of buyer transactions, these are the five things I wish every first-time buyer knew before their first showing.",
+  "seo": {
+    "title": "5 Things First-Time Buyers in Westchester Should Know",
+    "description": "Expert advice for first-time home buyers in Westchester County. Pre-approval, school districts, offer strategy, and more from 18-year local expert Alexandra Reeves."
+  },
   "body": "## 1. Get Pre-Approved — Not Pre-Qualified\n\nPre-qualification is a lender's informal estimate based on unverified information. Pre-approval involves actual verification of your income, assets, and credit score. In a competitive market like Westchester, submitting an offer without a pre-approval letter is essentially submitting an offer to be ignored.\n\nMore importantly, pre-approval reveals your actual buying power — which is often different from what buyers assume. I've seen buyers discover they qualify for more than expected, and I've seen the opposite. Either way, it's information you need before you start touring homes.\n\n**Action:** Contact a lender before your first showing. I can recommend several excellent local lenders who close on time and communicate clearly.\n\n## 2. School Districts Are Priced Into Everything\n\nIn Westchester County, school district boundaries often run down the middle of the same street. Two homes that appear identical — same size, same age, same condition — can differ by $200,000 or more in price based solely on which district they fall within.\n\nBefore falling in love with any property, verify the exact school district it belongs to. Don't rely on Zillow or Realtor.com — both have been known to misattribute district information. I verify every property's district before a client tours.\n\n## 3. Move-In Ready Commands a Premium — and It's Worth It\n\nFirst-time buyers often look at renovation projects as a way to get more home for their money. In Westchester, this calculation frequently doesn't work. The combination of labor costs, permit requirements, the time to manage a renovation, and the stress it creates often exceeds the savings.\n\nFor a first purchase, I generally recommend prioritizing condition and location over price. A move-in-ready home in a great location is almost always a better investment than a cheaper home requiring significant work.\n\n## 4. The Offer Isn't Just About Price\n\nIn competitive situations, sellers evaluate offers holistically. A slightly lower offer with a larger down payment, no financing contingency (for cash buyers), and a flexible closing date can beat a higher offer that looks shakier on paper.\n\nI negotiate dozens of offers a year. Understanding how to structure a competitive offer — protecting you while making the sellers confident you'll close — is where I add the most tangible value.\n\n## 5. The Right Agent Changes Everything\n\nI know this sounds self-serving, but I've watched clients work with less experienced agents and struggle — sometimes missing the right home, sometimes overpaying, sometimes buying a home with problems that a more experienced eye would have flagged.\n\nAsk any agent you're considering: how many buyer transactions did you close last year? Do you know this specific neighborhood well? Can you provide three references from recent buyer clients? The answers matter.\n\n*Ready to start your search? Let's schedule a no-pressure buyer consultation.*",
+  "date": "2026-01-14",
+  "slug": "5-things-first-time-buyers-should-know",
   "tags": [
     "buyer-tips",
     "first-time-buyers",
     "westchester",
     "real-estate-advice"
   ],
+  "type": "article",
+  "title": "5 Things Every First-Time Buyer in Westchester Should Know Before Starting Their Search",
+  "author": "Alexandra Reeves",
+  "excerpt": "After 18 years and hundreds of buyer transactions, these are the five things I wish every first-time buyer knew before their first showing.",
+  "category": "buyer-tips",
+  "featured": false,
+  "coverImage": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771902351361-photo-1500916434205-0c77489c6cf7.jpg",
   "relatedPosts": [
     "westchester-market-update-january-2026"
   ],
-  "seo": {
-    "title": "5 Things First-Time Buyers in Westchester Should Know",
-    "description": "Expert advice for first-time home buyers in Westchester County. Pre-approval, school districts, offer strategy, and more from 18-year local expert Alexandra Reeves."
-  }
+  "coverImageAlt": "First-time home buyers in Westchester"
 }

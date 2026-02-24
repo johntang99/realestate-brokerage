@@ -1,27 +1,27 @@
 {
-  "slug": "westchester-market-update-january-2026",
-  "title": "Westchester County Real Estate: January 2026 Market Update",
-  "type": "article",
-  "category": "market-updates",
-  "date": "2026-01-28",
-  "author": "Alexandra Reeves",
-  "featured": true,
-  "coverImage": "",
-  "coverImageAlt": "Westchester County real estate market data",
-  "excerpt": "After a strong 2025, Westchester County enters 2026 with record-low inventory, rising prices, and buyers competing fiercely for well-priced homes.",
+  "seo": {
+    "title": "Westchester County Real Estate Market Update — January 2026",
+    "description": "January 2026 Westchester County real estate market analysis. Inventory at 7-year lows. Median price up 5.8% YoY. Expert analysis from Alexandra Reeves."
+  },
   "body": "## The Market in One Sentence\n\nWestchester County enters 2026 the same way it left 2025: undersupplied, competitive, and relentlessly expensive.\n\n## Key Metrics — January 2026\n\nMedian sale price across Westchester County: **$875,000** — up 5.8% year-over-year. The number of active listings at month's end: **1,842** — down 12% from January 2025 and the lowest January inventory count in seven years.\n\nHomes that were well-priced and well-presented averaged **24 days on market**. Nearly 40% of transactions closed above the original asking price.\n\n## What's Driving the Market\n\n**Inventory remains the story.** New listings are not keeping pace with buyer demand. Many homeowners who locked in 3-4% mortgage rates during 2020-2021 are choosing to stay put rather than trade up into a 7% rate environment. Until rates drop meaningfully, this supply constraint is structural.\n\n**Buyers are competing hard.** For move-in-ready homes in top school districts — Scarsdale, Bronxville, Rye — multiple-offer situations are the norm rather than the exception. I've seen 8-12 offers on well-priced Scarsdale colonials in the first week of listing.\n\n**Luxury is moving.** Properties above $2 million have seen a notable pickup in activity. Remote work flexibility has created a cohort of buyers who can justify the premium for a larger home and yard, knowing they won't commute every day.\n\n## My Outlook for 2026\n\nI expect the first half of 2026 to continue the pattern of 2025: strong demand, limited supply, modest price appreciation in the 4-6% range. If the Fed delivers additional rate cuts and mortgage rates approach 6%, I anticipate a surge of both buyers AND sellers entering the market — which could finally begin to rebalance supply and demand.\n\nFor sellers: this is still one of the most favorable environments in a decade. Properly prepared and priced homes are moving quickly.\n\nFor buyers: speed and decisiveness matter. Pre-approval should be in hand before you fall in love with a house.\n\n*Questions about what this means for your specific situation? Call or text me directly.*",
+  "date": "2026-01-28",
+  "slug": "westchester-market-update-january-2026",
   "tags": [
     "market-update",
     "westchester",
     "2026",
     "real-estate-trends"
   ],
+  "type": "article",
+  "title": "Westchester County Real Estate: January 2026 Market Update",
+  "author": "Alexandra Reeves",
+  "excerpt": "After a strong 2025, Westchester County enters 2026 with record-low inventory, rising prices, and buyers competing fiercely for well-priced homes.",
+  "category": "market-updates",
+  "featured": true,
+  "coverImage": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771900510147-photo-1568605114967-8130f3a36994.jpg",
   "relatedPosts": [
     "staging-your-home-to-sell-faster",
     "5-things-first-time-buyers-should-know"
   ],
-  "seo": {
-    "title": "Westchester County Real Estate Market Update — January 2026",
-    "description": "January 2026 Westchester County real estate market analysis. Inventory at 7-year lows. Median price up 5.8% YoY. Expert analysis from Alexandra Reeves."
-  }
+  "coverImageAlt": "Westchester County real estate market data"
 }

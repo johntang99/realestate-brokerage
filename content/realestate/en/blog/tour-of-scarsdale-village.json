@@ -1,30 +1,30 @@
 {
-  "slug": "tour-of-scarsdale-village",
-  "title": "A Local's Tour of Scarsdale Village: Why Buyers Keep Choosing Westchester's Crown Jewel",
-  "type": "video",
-  "category": "neighborhood-spotlight",
-  "date": "2025-11-20",
-  "author": "Alexandra Reeves",
-  "featured": false,
-  "coverImage": "",
-  "coverImageAlt": "Scarsdale Village tour",
-  "excerpt": "Scarsdale consistently ranks among the top communities in the United States for school quality and quality of life. Here's an insider look at what makes it so special.",
+  "seo": {
+    "title": "Scarsdale Village Tour — Why Buyers Choose Westchester's Top Community",
+    "description": "Local insider look at Scarsdale, NY — top-ranked schools, village living, and one of Westchester's strongest real estate markets. From agent Alexandra Reeves."
+  },
   "body": "## Why Scarsdale?\n\nI get this question constantly from buyers considering Westchester County. Why pay the Scarsdale premium when there are other excellent communities at lower price points?\n\nThe answer is usually one of three things: the Scarsdale school district, the village walkability, or the long-term investment track record of Scarsdale real estate. Often all three.\n\n## The Scarsdale School District\n\nThe Scarsdale Union Free School District is not just one of the best in Westchester County — it's one of the best in the United States, full stop. Scarsdale High School regularly places 100% of its graduates in four-year colleges, with a remarkable percentage attending highly selective institutions. The district's academic programs, arts programs, and student support resources reflect a community that treats education as an absolute priority.\n\n## The Village Experience\n\nScarsdale Village is what suburban retail aspires to be. Independent boutiques, excellent restaurants, a year-round farmers market, and the kind of Main Street energy that most communities have lost to strip malls. Walking distance to the Metro-North station means many residents genuinely use their cars less than they expected.\n\n## The Investment Case\n\nScarsdale real estate has shown remarkable resilience through every market cycle of the past 30 years. The combination of school district quality, geographic constraints on new supply, and consistent demand from New York City professionals creates a floor under prices that buyers have repeatedly found reassuring during uncertain periods.\n\n## What Buyers Should Know\n\nThe Scarsdale market moves fast. For move-in-ready homes priced correctly, multiple-offer situations within the first week are not unusual — they're typical. If Scarsdale is your target, you need to be fully pre-approved, know your criteria cold, and be prepared to make a decision quickly when the right property appears.\n\n*Interested in exploring Scarsdale? Let's schedule a private neighborhood tour.*",
-  "videoUrl": "",
-  "videoDuration": "8:45",
-  "neighborhoodSlug": "scarsdale",
+  "date": "2025-11-20",
+  "slug": "tour-of-scarsdale-village",
   "tags": [
     "scarsdale",
     "neighborhood-spotlight",
     "westchester",
     "school-districts"
   ],
+  "type": "video",
+  "title": "A Local's Tour of Scarsdale Village: Why Buyers Keep Choosing Westchester's Crown Jewel",
+  "author": "Alexandra Reeves",
+  "excerpt": "Scarsdale consistently ranks among the top communities in the United States for school quality and quality of life. Here's an insider look at what makes it so special.",
+  "category": "neighborhood-spotlight",
+  "featured": false,
+  "videoUrl": "",
+  "coverImage": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771902963713-scarsdale-licensed-image.jpeg",
   "relatedPosts": [
     "westchester-market-update-january-2026",
     "5-things-first-time-buyers-should-know"
   ],
-  "seo": {
-    "title": "Scarsdale Village Tour — Why Buyers Choose Westchester's Top Community",
-    "description": "Local insider look at Scarsdale, NY — top-ranked schools, village living, and one of Westchester's strongest real estate markets. From agent Alexandra Reeves."
-  }
+  "coverImageAlt": "Scarsdale Village tour",
+  "videoDuration": "8:45",
+  "neighborhoodSlug": "scarsdale"
 }

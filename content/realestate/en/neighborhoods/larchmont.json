@@ -1,17 +1,12 @@
 {
-  "slug": "larchmont",
-  "name": "Larchmont",
-  "tagline": "Waterfront village charm with Long Island Sound access and top schools",
-  "coverImage": "",
-  "coverImageAlt": "Larchmont NY waterfront",
-  "overview": "Larchmont is one of those rare communities where everything feels intentionally perfect — the tree-lined streets, the waterfront Manor Park, the village center with its independent shops and restaurants, and the undeniable sense that neighbors actually know each other.\n\nThe Mamaroneck Union Free School District serves Larchmont and has earned a national reputation for academic excellence and program diversity. Larchmont Avenue is a genuine Main Street experience — no chains, all character — and the waterfront access through the Larchmont Manor Park Association is a genuine quality-of-life differentiator.\n\nThe housing stock ranges from early-20th-century Colonials and Tudors to contemporary new construction. Waterfront and water-view properties command significant premiums. The Metro-North New Haven Line connects Larchmont to Grand Central in approximately 35 minutes.\n\nThe community's walkability is exceptional for suburban Westchester. Many residents walk to the train, to restaurants, and to Manor Park without ever needing a car on weekday mornings.",
-  "marketSnapshot": {
-    "medianPrice": "$1,200,000",
-    "avgPricePerSqft": "$440",
-    "inventory": "31 active listings",
-    "avgDaysOnMarket": "22 days",
-    "yoyChange": "+4.8%"
+  "seo": {
+    "title": "Larchmont NY Real Estate — Homes for Sale",
+    "description": "Larchmont NY waterfront village living. Browse homes for sale in Larchmont with local expert Alexandra Reeves. Manor Park access, MUFSD schools."
   },
+  "name": "Larchmont",
+  "slug": "larchmont",
+  "region": "Southern Westchester",
+  "gallery": [],
   "schools": [
     {
       "name": "Mamaroneck High School",
@@ -32,38 +27,43 @@
       "distance": "0.4 mi"
     }
   ],
+  "tagline": "Waterfront village charm with Long Island Sound access and top schools",
+  "featured": false,
+  "overview": "Larchmont is one of those rare communities where everything feels intentionally perfect — the tree-lined streets, the waterfront Manor Park, the village center with its independent shops and restaurants, and the undeniable sense that neighbors actually know each other.\n\nThe Mamaroneck Union Free School District serves Larchmont and has earned a national reputation for academic excellence and program diversity. Larchmont Avenue is a genuine Main Street experience — no chains, all character — and the waterfront access through the Larchmont Manor Park Association is a genuine quality-of-life differentiator.\n\nThe housing stock ranges from early-20th-century Colonials and Tudors to contemporary new construction. Waterfront and water-view properties command significant premiums. The Metro-North New Haven Line connects Larchmont to Grand Central in approximately 35 minutes.\n\nThe community's walkability is exceptional for suburban Westchester. Many residents walk to the train, to restaurants, and to Manor Park without ever needing a car on weekday mornings.",
   "lifestyle": {
-    "restaurants": [
-      "La Parisienne",
-      "Birdsall House",
-      "Alvin & Friends",
-      "Fig & Olive"
-    ],
     "parks": [
       "Larchmont Manor Park",
       "Flint Park",
       "Premium Point"
+    ],
+    "transit": [
+      "New Haven Line — 35 min to Grand Central",
+      "I-95 Access",
+      "Hutchinson Pkwy"
     ],
     "shopping": [
       "Larchmont Avenue",
       "Village Square",
       "Larchmont Farmers Market"
     ],
-    "transit": [
-      "New Haven Line — 35 min to Grand Central",
-      "I-95 Access",
-      "Hutchinson Pkwy"
+    "restaurants": [
+      "La Parisienne",
+      "Birdsall House",
+      "Alvin & Friends",
+      "Fig & Olive"
     ]
   },
-  "gallery": [],
+  "coverImage": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771902244011-photo-1640287806866-86f49aaeb320.jpg",
+  "coverImageAlt": "Larchmont NY waterfront",
+  "marketSnapshot": {
+    "inventory": "31 active listings",
+    "yoyChange": "+4.8%",
+    "medianPrice": "$1,200,000",
+    "avgDaysOnMarket": "22 days",
+    "avgPricePerSqft": "$440"
+  },
   "nearbyNeighborhoods": [
     "mamaroneck",
     "rye"
-  ],
-  "featured": false,
-  "region": "Southern Westchester",
-  "seo": {
-    "title": "Larchmont NY Real Estate — Homes for Sale",
-    "description": "Larchmont NY waterfront village living. Browse homes for sale in Larchmont with local expert Alexandra Reeves. Manor Park access, MUFSD schools."
-  }
+  ]
 }

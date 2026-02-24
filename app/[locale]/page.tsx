@@ -33,7 +33,7 @@ interface HomeData {
   blogPreview?: { headline?: string; subline?: string; maxDisplay?: number; ctaLabel?: string; ctaHref?: string }
   valuationCta?: { headline?: string; subline?: string; backgroundImage?: string; ctaLabel?: string; ctaHref?: string }
   agentIntro?: { portrait?: string; portraitAlt?: string; headline?: string; body?: string; ctaLabel?: string; ctaHref?: string }
-  consultationCta?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string }
+  consultationCta?: { headline?: string; subline?: string; backgroundImage?: string; ctaLabel?: string; ctaHref?: string }
 }
 
 // ── Icon map ───────────────────────────────────────────────────────────────────
@@ -638,13 +638,19 @@ export default function HomePage() {
       </section>
 
       {/* 12. CONSULTATION CTA */}
-      <section className="section-padding" style={{ background: 'var(--backdrop-primary)', borderTop: '1px solid var(--border)' }}>
-        <div className="container-custom text-center">
+      <section className="relative section-padding overflow-hidden" style={{ background: 'var(--backdrop-primary)', borderTop: '1px solid var(--border)' }}>
+        {h.consultationCta?.backgroundImage && (
+          <Image src={h.consultationCta.backgroundImage} alt="" fill className="object-cover" />
+        )}
+        {h.consultationCta?.backgroundImage && (
+          <div className="absolute inset-0" style={{ background: 'rgba(27,40,56,0.68)' }} />
+        )}
+        <div className="relative z-10 container-custom text-center">
           <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Get Started</p>
-          <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-4" style={{ color: 'var(--primary)' }}>
+          <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-4" style={{ color: h.consultationCta?.backgroundImage ? '#fff' : 'var(--primary)' }}>
             {h.consultationCta?.headline || 'Ready to Make Your Move?'}
           </h2>
-          <p className="text-base mb-8 max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-base mb-8 max-w-xl mx-auto" style={{ color: h.consultationCta?.backgroundImage ? 'rgba(255,255,255,0.86)' : 'var(--text-secondary)' }}>
             {h.consultationCta?.subline || "I respond to every inquiry within 2 hours. Let's talk."}
           </p>
           <Link href={`/${locale}${h.consultationCta?.ctaHref || '/contact'}`} className="btn-gold text-sm px-10 py-4">

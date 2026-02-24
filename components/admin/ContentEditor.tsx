@@ -1043,7 +1043,7 @@ export function ContentEditor({
     if (!isHomePageFile || !formData) return [] as Array<{ path: string[]; label: string }>;
 
     const fields: Array<{ path: string[]; label: string }> = [];
-    const IMAGE_KEYS = new Set(['image', 'backgroundImage', 'beforeImage', 'afterImage', 'src']);
+    const IMAGE_KEYS = new Set(['image', 'backgroundImage', 'beforeImage', 'afterImage', 'src', 'portrait']);
     const EXCLUDED_ROOT_KEYS = new Set(['menu', 'topBar', 'topbar']);
     const DISPLAY_KEYS = [
       'title',

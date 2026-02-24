@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, Phone } from 'lucide-react';
 import type { Locale } from '@/lib/i18n';
 
@@ -28,6 +29,7 @@ interface HeaderProps {
 export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
 
   const config = headerConfig || {};
   const transparentOnHero = config.transparentOnHero !== false;
@@ -49,7 +51,10 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const isSolid = !transparentOnHero || scrolled || mobileOpen;
+  const pathWithoutLocale = (pathname || '/').replace(/^\/(en|zh)(?=\/|$)/, '') || '/';
+  const isHomeRoute = pathWithoutLocale === '/';
+  const allowTransparent = transparentOnHero && isHomeRoute;
+  const isSolid = !allowTransparent || scrolled || mobileOpen;
 
   const navLink = `text-sm font-medium transition-colors hover:opacity-70 ${isSolid ? '' : 'text-white'}`;
 

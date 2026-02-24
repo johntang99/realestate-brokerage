@@ -1,17 +1,12 @@
 {
-  "slug": "rye",
-  "name": "Rye",
-  "tagline": "Beach community with top schools, country clubs, and Westchester charm",
-  "coverImage": "",
-  "coverImageAlt": "Rye NY beach community",
-  "overview": "Rye occupies a special place in the Westchester County consciousness — it's the community that manages to feel both exclusive and genuinely welcoming. The combination of beach access, top-rated schools, a vibrant downtown, and an active country club scene makes Rye one of the most sought-after addresses in the county.\n\nRye City School District consistently earns recognition as one of the best in New York State. Rye High School's college preparation is exceptional, and the district's arts and athletics programs are standouts.\n\nRye Beach and Playland State Park provide summer recreational opportunities that most Westchester communities can only envy. The private Rye Golf Club and the Apawamis Club serve as social centers for much of the community. Rye's downtown Purchase Street is one of Westchester's most vital commercial corridors, with an excellent mix of restaurants, boutiques, and essential services.\n\nThe Metro-North New Haven Line connects Rye to Grand Central Terminal in approximately 42 minutes. The Rye housing market is competitive in all price ranges, from modest starter homes to multi-million dollar estates.",
-  "marketSnapshot": {
-    "medianPrice": "$1,300,000",
-    "avgPricePerSqft": "$420",
-    "inventory": "28 active listings",
-    "avgDaysOnMarket": "19 days",
-    "yoyChange": "+5.3%"
+  "seo": {
+    "title": "Rye NY Real Estate — Homes for Sale",
+    "description": "Rye NY beach community. Browse homes for sale in Rye with local expert Alexandra Reeves. Top schools, beach access, country clubs."
   },
+  "name": "Rye",
+  "slug": "rye",
+  "region": "Southern Westchester",
+  "gallery": [],
   "schools": [
     {
       "name": "Rye High School",
@@ -32,38 +27,43 @@
       "distance": "0.4 mi"
     }
   ],
+  "tagline": "Beach community with top schools, country clubs, and Westchester charm",
+  "featured": false,
+  "overview": "Rye occupies a special place in the Westchester County consciousness — it's the community that manages to feel both exclusive and genuinely welcoming. The combination of beach access, top-rated schools, a vibrant downtown, and an active country club scene makes Rye one of the most sought-after addresses in the county.\n\nRye City School District consistently earns recognition as one of the best in New York State. Rye High School's college preparation is exceptional, and the district's arts and athletics programs are standouts.\n\nRye Beach and Playland State Park provide summer recreational opportunities that most Westchester communities can only envy. The private Rye Golf Club and the Apawamis Club serve as social centers for much of the community. Rye's downtown Purchase Street is one of Westchester's most vital commercial corridors, with an excellent mix of restaurants, boutiques, and essential services.\n\nThe Metro-North New Haven Line connects Rye to Grand Central Terminal in approximately 42 minutes. The Rye housing market is competitive in all price ranges, from modest starter homes to multi-million dollar estates.",
   "lifestyle": {
-    "restaurants": [
-      "Port Chester dining scene",
-      "Rye Grill & Bar",
-      "Homemade",
-      "Moderne Barn"
-    ],
     "parks": [
       "Rye Town Beach",
       "Playland State Park",
       "Marshlands Conservancy"
+    ],
+    "transit": [
+      "New Haven Line — 42 min to Grand Central",
+      "I-95 Access",
+      "Playland Pkwy"
     ],
     "shopping": [
       "Purchase Street",
       "Rye Ridge Shopping Center",
       "Sound Shore Farmers Market"
     ],
-    "transit": [
-      "New Haven Line — 42 min to Grand Central",
-      "I-95 Access",
-      "Playland Pkwy"
+    "restaurants": [
+      "Port Chester dining scene",
+      "Rye Grill & Bar",
+      "Homemade",
+      "Moderne Barn"
     ]
   },
-  "gallery": [],
+  "coverImage": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771902351361-photo-1500916434205-0c77489c6cf7.jpg",
+  "coverImageAlt": "Rye NY beach community",
+  "marketSnapshot": {
+    "inventory": "28 active listings",
+    "yoyChange": "+5.3%",
+    "medianPrice": "$1,300,000",
+    "avgDaysOnMarket": "19 days",
+    "avgPricePerSqft": "$420"
+  },
   "nearbyNeighborhoods": [
     "mamaroneck",
     "larchmont"
-  ],
-  "featured": false,
-  "region": "Southern Westchester",
-  "seo": {
-    "title": "Rye NY Real Estate — Homes for Sale",
-    "description": "Rye NY beach community. Browse homes for sale in Rye with local expert Alexandra Reeves. Top schools, beach access, country clubs."
-  }
+  ]
 }
