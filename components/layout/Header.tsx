@@ -73,14 +73,17 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
 
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-3 flex-shrink-0">
-            {config.logo ? (
-              <img src={config.logo} alt={logoText} className="h-8 w-auto" />
-            ) : (
-              <span className="font-serif text-lg font-semibold tracking-wide transition-colors"
-                style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', textShadow: isSolid ? 'none' : '0 1px 8px rgba(0,0,0,0.35)' }}>
-                {logoText}
-              </span>
-            )}
+            {(() => {
+              const logoSrc = typeof config.logo === 'string' ? config.logo : (config.logo as any)?.src;
+              return logoSrc ? (
+                <img src={logoSrc} alt={logoText} className="h-8 w-auto" />
+              ) : (
+                <span className="font-serif text-lg font-semibold tracking-wide transition-colors"
+                  style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', textShadow: isSolid ? 'none' : '0 1px 8px rgba(0,0,0,0.35)' }}>
+                  {logoText}
+                </span>
+              );
+            })()}
           </Link>
 
           {/* Desktop Nav */}
