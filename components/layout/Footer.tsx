@@ -33,8 +33,17 @@ export default function Footer({ locale, footer, siteInfo }: FooterProps) {
   const tx = (en?: string, cn?: string) => (isCn && cn) ? cn : (en || '');
 
   const year = new Date().getFullYear();
-  const tagline = tx(data.tagline, data.taglineCn);
-  const copyright = data.copyright || `© ${year} Alexandra Reeves Real Estate. All rights reserved.`;
+  // Support both old tagline field and first-column content field
+  const tagline = tx(data.tagline, data.taglineCn)
+    || ((data as any).columns?.[0]?.content as string | undefined)
+    || '';
+  const brokerageName = (siteInfo as any)?.name || (siteInfo as any)?.brokerage?.name || 'Pinnacle Realty Group';
+  const copyright = (data as any).compliance?.copyrightYear
+    ? `© ${(data as any).compliance.copyrightYear} ${(data as any).compliance.brokerageName || brokerageName}. ${(data as any).compliance.copyrightSuffix || 'All rights reserved.'}`
+    : data.copyright || `© ${year} ${brokerageName}. All rights reserved.`;
+
+  // Support both socialLinks and social field names
+  const social = (siteInfo as any)?.social || (siteInfo as any)?.socialLinks || {};
 
   const licenseNumber = (siteInfo as any)?.licenseNumber as string | undefined;
   const mlsDisclaimer = (siteInfo as any)?.compliance?.mlsDisclaimer as string | undefined;
@@ -81,32 +90,32 @@ export default function Footer({ locale, footer, siteInfo }: FooterProps) {
           {/* Brand col */}
           <div className="lg:col-span-1">
             <div className="font-serif text-xl font-semibold mb-3" style={{ color: 'var(--text-on-dark)' }}>
-              {(siteInfo as any)?.name || 'Alexandra Reeves'}
+              {brokerageName}
             </div>
             {tagline && <p className="text-sm leading-relaxed mb-5" style={{ color: 'var(--on-dark-medium)' }}>{tagline}</p>}
 
             {/* Social icons */}
             <div className="flex gap-4">
-              {(siteInfo as any)?.socialLinks?.instagram && (
-                <a href={(siteInfo as any).socialLinks.instagram} target="_blank" rel="noreferrer"
+              {social?.instagram && (
+                <a href={social.instagram} target="_blank" rel="noreferrer"
                   className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
                   <Instagram className="w-4 h-4" />
                 </a>
               )}
-              {(siteInfo as any)?.socialLinks?.facebook && (
-                <a href={(siteInfo as any).socialLinks.facebook} target="_blank" rel="noreferrer"
+              {social?.facebook && (
+                <a href={social.facebook} target="_blank" rel="noreferrer"
                   className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
                   <Facebook className="w-4 h-4" />
                 </a>
               )}
-              {(siteInfo as any)?.socialLinks?.linkedin && (
-                <a href={(siteInfo as any).socialLinks.linkedin} target="_blank" rel="noreferrer"
+              {social?.linkedin && (
+                <a href={social.linkedin} target="_blank" rel="noreferrer"
                   className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
                   <Linkedin className="w-4 h-4" />
                 </a>
               )}
-              {(siteInfo as any)?.socialLinks?.youtube && (
-                <a href={(siteInfo as any).socialLinks.youtube} target="_blank" rel="noreferrer"
+              {social?.youtube && (
+                <a href={social.youtube} target="_blank" rel="noreferrer"
                   className="hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--on-dark-subtle)' }}>
                   <Youtube className="w-4 h-4" />
                 </a>
@@ -115,13 +124,13 @@ export default function Footer({ locale, footer, siteInfo }: FooterProps) {
           </div>
 
           {/* Nav columns */}
-          {columns.map((col) => (
-            <div key={col.title}>
+          {columns.filter((col) => Array.isArray((col as any).links)).map((col) => (
+            <div key={(col as any).heading || col.title}>
               <h4 className="text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: 'var(--secondary)' }}>
-                {isCn ? (col.titleCn || col.title) : col.title}
+                {isCn ? (col.titleCn || (col as any).heading || col.title) : ((col as any).heading || col.title)}
               </h4>
               <ul className="space-y-2.5">
-                {col.links.map((link) => (
+                {((col as any).links as Array<{ label: string; labelCn?: string; href: string }>).map((link) => (
                   <li key={link.href}>
                     <Link href={`/${locale}${link.href}`}
                       className="text-sm hover:text-white transition-colors"

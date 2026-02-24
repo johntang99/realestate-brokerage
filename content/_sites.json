@@ -1,11 +1,13 @@
 {
-  "reb-template": {
-    "id": "reb-template",
-    "name": "REB Premium Template",
-    "domain": "reb.local",
-    "locales": ["en"],
-    "defaultLocale": "en",
-    "enabled": true,
-    "type": "brokerage"
-  }
+  "sites": [
+    {
+      "id": "reb-template",
+      "name": "REB Premium Template",
+      "domain": "reb.local",
+      "defaultLocale": "en",
+      "supportedLocales": ["en"],
+      "enabled": true,
+      "type": "brokerage"
+    }
+  ]
 }
