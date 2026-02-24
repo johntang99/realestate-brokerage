@@ -26,8 +26,9 @@ export async function GET(request: NextRequest) {
   try {
     if (canUseContentDb()) {
       const entry = await fetchContentEntry(siteId, locale, filePath);
-      if (entry?.data) {
-        return NextResponse.json({ content: JSON.stringify(entry.data, null, 2) });
+      const entryContent = entry?.content ?? entry?.data;
+      if (entryContent) {
+        return NextResponse.json({ content: JSON.stringify(entryContent, null, 2) });
       }
     }
 

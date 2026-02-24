@@ -105,7 +105,7 @@ export async function loadContent<T>(
   if (canUseContentDb()) {
     const entry = await fetchContentEntry(siteId, locale, contentPath);
     if (entry?.data) {
-      return entry.data as T;
+      return (entry.content ?? entry.data) as T;
     }
   }
 
@@ -159,8 +159,8 @@ export async function loadTheme(siteId: string) {
   if (canUseContentDb()) {
     // Theme is site-wide, so always resolve from canonical locale row.
     const entry = await fetchThemeEntry(siteId, defaultLocale);
-    if (entry?.data) {
-      return entry.data;
+    if (entry?.content ?? entry?.data) {
+      return (entry.content ?? entry.data);
     }
   }
 
@@ -208,7 +208,7 @@ export async function loadAllItems<T>(
       locale,
       `${directory}/`
     );
-    return entries.map((entry) => entry.data as T);
+    return entries.map((entry) => (entry.content ?? entry.data) as T);
   }
 
   try {

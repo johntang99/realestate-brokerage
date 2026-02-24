@@ -3,6 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { canUseContentDb, listContentEntriesByPrefix } from '@/lib/contentDb';
 import { getRequestSiteId } from '@/lib/content';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 const ALLOWED_DIRECTORIES = [
@@ -10,6 +11,12 @@ const ALLOWED_DIRECTORIES = [
   'properties', 'neighborhoods', 'blog', 'market-reports',
   'agents', 'knowledge-center', 'new-construction',
 ] as const;
+// Directories stored in dedicated tables rather than content_entries
+const DEDICATED_TABLES: Record<string, string> = {
+  agents: 'agents',
+  'new-construction': 'new_construction',
+  events: 'events',
+};
 type AllowedDirectory = (typeof ALLOWED_DIRECTORIES)[number];
 
 export async function GET(request: NextRequest) {
@@ -33,8 +40,25 @@ export async function GET(request: NextRequest) {
     const siteId = siteIdParam || (await getRequestSiteId());
 
     if (canUseContentDb()) {
+      // Some collections (agents, new_construction) live in dedicated tables
+      const dedicatedTable = DEDICATED_TABLES[directory];
+      if (dedicatedTable) {
+        const supabase = getSupabaseServerClient();
+        if (supabase) {
+          const { data, error } = await supabase
+            .from(dedicatedTable)
+            .select('data')
+            .eq('site_id', siteId)
+            .order('created_at', { ascending: true });
+          if (!error && data) {
+            const items = data.map((row: any) => row.data).filter(Boolean);
+            return NextResponse.json({ items });
+          }
+        }
+      }
+
       const entries = await listContentEntriesByPrefix(siteId, locale, `${directory}/`);
-      const items = entries.map((entry) => entry.data);
+      const items = entries.map((entry: any) => entry.content ?? entry.data);
       return NextResponse.json({ items });
     }
 

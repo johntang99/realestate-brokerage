@@ -5,7 +5,9 @@ export interface ContentEntryRecord {
   site_id: string;
   locale: string;
   path: string;
-  data: unknown;
+  content: unknown;
+  /** @deprecated alias for content — use .content */
+  data?: unknown;
   updated_at: string;
   updated_by: string | null;
 }
@@ -175,7 +177,7 @@ export async function upsertContentEntry(params: {
         site_id: params.siteId,
         locale: params.locale,
         path: params.path,
-        data: params.data,
+        content: params.data,
         updated_by: params.updatedBy || null,
       },
       { onConflict: 'site_id,locale,path' }
