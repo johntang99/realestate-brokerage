@@ -1,0 +1,37 @@
+{
+  "slug": "88-riverside-court",
+  "address": "88 Riverside Court",
+  "city": "Dobbs Ferry",
+  "state": "NY",
+  "zip": "10522",
+  "neighborhood": "westside",
+  "status": "pending",
+  "type": "townhouse",
+  "price": 649000,
+  "priceDisplay": "$649,000",
+  "beds": 3,
+  "baths": 2,
+  "sqft": 1950,
+  "lotSize": null,
+  "yearBuilt": 2005,
+  "garage": "1-car garage",
+  "hoa": 385,
+  "schoolDistrict": "Dobbs Ferry Union Free School District",
+  "mlsNumber": "H6280013",
+  "listingAgentSlug": "sarah-rodriguez",
+  "featured": false,
+  "coverImage": "https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?w=800",
+  "gallery": [
+    { "image": "https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?w=800", "alt": "Front view" }
+  ],
+  "description": "Elegant end-unit townhouse in the sought-after Riverside Court community. Features an open floor plan, soaring ceilings, and a private deck overlooking a wooded backdrop. Minutes to Dobbs Ferry Metro-North and the waterfront village.",
+  "features": {
+    "interior": ["Open Floor Plan", "10ft Ceilings", "Gas Fireplace", "Primary Suite"],
+    "exterior": ["Private Deck", "Wooded Views"],
+    "systems": ["Central A/C", "Gas Heat", "In-Unit W/D"]
+  },
+  "seo": {
+    "title": "88 Riverside Court, Dobbs Ferry NY | $649,000",
+    "description": "3BR/2BA end-unit townhouse in Dobbs Ferry. Open floor plan, private deck, Metro-North nearby. Listed by Pinnacle Realty Group."
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "slug": "marcus-johnson",
+  "status": "active",
+  "displayOrder": 2,
+  "role": "agent",
+  "name": "Marcus Johnson",
+  "title": "Senior Real Estate Agent",
+  "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600",
+  "bio": "Marcus has been a licensed agent for 9 years and specializes in helping first-time buyers navigate the competitive Westchester market. Known for his patience, thoroughness, and deep knowledge of the buying process, Marcus has helped over 140 families find their perfect home. He holds a Buyer's Agent Certification and is fluent in English and Mandarin Chinese.",
+  "phone": "(845) 555-0192",
+  "email": "marcus@pinnaclerealty.com",
+  "social": {
+    "instagram": "",
+    "linkedin": "https://linkedin.com/in/marcusjohnson-re",
+    "facebook": ""
+  },
+  "licenseNumber": "10401200XXX",
+  "licenseState": "NY",
+  "specialties": ["First-Time Buyers", "Buyers", "Relocation"],
+  "languages": ["English", "Mandarin Chinese"],
+  "yearsExperience": 9,
+  "transactionCount": 142,
+  "volumeLabel": "$38M+",
+  "avgDaysOnMarket": 22,
+  "saleToListRatio": "101%",
+  "neighborhoods": ["Downtown", "Eastside"],
+  "awards": [],
+  "testimonials": [
+    {
+      "id": "t-mj-1",
+      "reviewer": "Wei & Lin Huang",
+      "reviewDate": "2025-10",
+      "rating": 5,
+      "text": "As first-time buyers new to the US, we were completely overwhelmed. Marcus walked us through every single step, translated everything, and found us the perfect home within our budget.",
+      "transactionType": "buyer",
+      "verified": true
+    }
+  ],
+  "featured": true
+}

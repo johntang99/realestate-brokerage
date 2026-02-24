@@ -1,10 +1,10 @@
 {
-  "name": "baam-system-g-rea",
+  "name": "baam-system-h-reb",
   "version": "1.0.0",
-  "description": "BAAM System G — Real Estate Agent Premium Template",
+  "description": "BAAM System H — Real Estate Brokerage Premium Template",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3050",
+    "dev": "next dev -p 3060",
     "dev:default": "next dev",
     "build": "next build",
     "start": "next start",

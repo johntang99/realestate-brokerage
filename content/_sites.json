@@ -1,13 +1,11 @@
 {
-  "sites": [
-    {
-      "id": "realestate",
-      "name": "REA Premium Template",
-      "domain": "rea.local",
-      "locales": ["en"],
-      "defaultLocale": "en",
-      "enabled": true,
-      "description": "BAAM System G — Real Estate Agent premium template"
-    }
-  ]
+  "reb-template": {
+    "id": "reb-template",
+    "name": "REB Premium Template",
+    "domain": "reb.local",
+    "locales": ["en"],
+    "defaultLocale": "en",
+    "enabled": true,
+    "type": "brokerage"
+  }
 }

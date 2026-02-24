@@ -3,97 +3,78 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Bed, Bath, Maximize2, Star, ChevronLeft, ChevronRight, Search, Home, DollarSign, Key, Building2, TrendingUp, Truck } from 'lucide-react';
+import { ArrowRight, Star, Search, Bed, Bath, Maximize2, MapPin, Phone } from 'lucide-react';
+import { GoalEntryPaths } from '@/components/sections/GoalEntryPaths';
+import { AgentCard, type AgentData } from '@/components/ui/AgentCard';
 
-// ── Types ──────────────────────────────────────────────────────────────────────
-
+// ── Types ─────────────────────────────────────────────────────────────────────
 interface Slide { image?: string; alt?: string }
 interface StatItem { value?: string; label?: string; prefix?: string; suffix?: string }
-interface ServiceItem { icon?: string; title?: string; description?: string; href?: string }
 interface Property {
   slug: string; address?: string; city?: string; state?: string;
   price?: number; priceDisplay?: string; status?: string; type?: string;
   beds?: number; baths?: number; sqft?: number; coverImage?: string; featured?: boolean;
+  listingAgentSlug?: string;
   soldDetails?: { soldPrice?: number; soldDate?: string };
 }
 interface Neighborhood { slug: string; name?: string; tagline?: string; coverImage?: string; marketSnapshot?: { medianPrice?: string } }
-interface Testimonial { id?: string; quote?: string; author?: string; title?: string; rating?: number }
-interface BlogPost { slug: string; title?: string; category?: string; date?: string; coverImage?: string; excerpt?: string; type?: string }
-interface SiteData { name?: string; stats?: Record<string, string>; phone?: string }
+interface Testimonial { id?: string; quote?: string; text?: string; reviewer?: string; author?: string; title?: string; rating?: number; agentSlug?: string }
+interface KnowledgePost { slug: string; title?: string; category?: string; publishDate?: string; heroImage?: string; excerpt?: string; readTime?: string }
+interface SiteData { name?: string; stats?: Record<string,string>; phone?: string }
 
 interface HomeData {
-  hero?: { variant?: string; overlayMode?: 'focus-text' | 'soft-full'; slides?: Slide[]; headline?: string; subline?: string; ctaPrimary?: { label?: string; href?: string }; ctaSecondary?: { label?: string; href?: string }; overlayOpacity?: number }
-  quickSearch?: { headline?: string; submitLabel?: string }
+  hero?: { variant?: string; slides?: Slide[]; headline?: string; subline?: string; ctaPrimary?: { label?: string; href?: string }; ctaSecondary?: { label?: string; href?: string }; overlayOpacity?: number }
+  goalPaths?: { headline?: string; items?: Array<{ label: string; subline?: string; href: string; icon: string }> }
   statsBar?: { variant?: string; items?: StatItem[] }
-  featuredListings?: { headline?: string; subline?: string; propertySlugs?: string[]; maxDisplay?: number; ctaLabel?: string; ctaHref?: string }
-  servicesOverview?: { headline?: string; subline?: string; items?: ServiceItem[] }
-  neighborhoodSpotlight?: { headline?: string; subline?: string; neighborhoodSlugs?: string[]; ctaLabel?: string; ctaHref?: string }
-  testimonialPreview?: { headline?: string; testimonialIds?: string[]; ctaLabel?: string; ctaHref?: string }
-  recentSold?: { headline?: string; subline?: string; maxDisplay?: number; ctaLabel?: string; ctaHref?: string }
-  blogPreview?: { headline?: string; subline?: string; maxDisplay?: number; ctaLabel?: string; ctaHref?: string }
-  valuationCta?: { headline?: string; subline?: string; backgroundImage?: string; ctaLabel?: string; ctaHref?: string }
-  agentIntro?: { portrait?: string; portraitAlt?: string; headline?: string; body?: string; ctaLabel?: string; ctaHref?: string }
-  consultationCta?: { headline?: string; subline?: string; backgroundImage?: string; ctaLabel?: string; ctaHref?: string }
+  intro?: { headline?: string; body?: string; ctaLabel?: string; ctaHref?: string; image?: string }
+  whyChooseUs?: { headline?: string; items?: Array<{ icon?: string; heading?: string; description?: string }> }
+  teamPreview?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string; agentSlugs?: string[] }
+  testimonialStrip?: { headline?: string; testimonialIds?: string[] }
+  neighborhoodSpotlight?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string; neighborhoodSlugs?: string[] }
+  marketReportTeaser?: { headline?: string; subline?: string; keyStat?: string; ctaLabel?: string; ctaHref?: string }
+  knowledgeCenterPreview?: { headline?: string; ctaLabel?: string; ctaHref?: string; postSlugs?: string[] }
+  consultationCta?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string; backgroundImage?: string }
+  contactForm?: { headline?: string; subline?: string }
+  featuredListings?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string; maxDisplay?: number; propertySlugs?: string[] }
 }
 
-// ── Icon map ───────────────────────────────────────────────────────────────────
-const ICONS: Record<string, React.ElementType> = {
-  Home, DollarSign, Key, Building2, TrendingUp, Truck,
-};
-
-// ── Status badge ───────────────────────────────────────────────────────────────
-const STATUS_BADGE: Record<string, string> = {
-  'for-sale': 'status-badge-active', pending: 'status-badge-pending',
-  sold: 'status-badge-sold', 'for-lease': 'status-badge-lease',
-};
-const STATUS_LABEL: Record<string, string> = {
-  'for-sale': 'For Sale', pending: 'Pending', sold: 'Sold', 'for-lease': 'For Lease',
-};
+// ── Status helpers ─────────────────────────────────────────────────────────────
+const STATUS_BADGE: Record<string,string> = { 'active':'bg-[var(--status-active)]', 'pending':'bg-[var(--status-pending)]', 'sold':'bg-[var(--status-sold)]', 'for-lease':'bg-[var(--status-lease)]', 'coming-soon':'bg-[var(--status-coming-soon)]' };
+const STATUS_LABEL: Record<string,string> = { 'active':'For Sale', 'pending':'Pending', 'sold':'Sold', 'for-lease':'For Lease', 'coming-soon':'Coming Soon' };
 
 // ── Property Card ──────────────────────────────────────────────────────────────
-function PropertyCard({ p, locale, showSold }: { p: Property; locale: string; showSold?: boolean }) {
-  const price = showSold && p.soldDetails?.soldPrice
-    ? `$${p.soldDetails.soldPrice.toLocaleString()}`
-    : p.priceDisplay || (p.price ? `$${p.price.toLocaleString()}` : '');
-
+function PropertyCard({ p, locale }: { p: Property; locale: string }) {
   return (
-    <Link href={`/${locale}/properties/${p.slug}`} className="group block property-card flex-shrink-0" style={{ minWidth: '280px' }}>
-      <div className="relative aspect-[4/3] overflow-hidden" style={{ borderRadius: 'var(--card-radius) var(--card-radius) 0 0' }}>
+    <Link href={`/${locale}/properties/${p.slug}`} className="group block bg-white border border-[var(--border)] hover:border-[var(--secondary)] transition-all"
+      style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
+      <div className="relative aspect-[4/3] overflow-hidden" style={{ borderRadius: 'var(--effect-card-radius) var(--effect-card-radius) 0 0' }}>
         {p.coverImage
-          ? <Image src={p.coverImage} alt={p.address || ''} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="300px" />
-          : <div className="w-full h-full" style={{ background: 'var(--backdrop-primary)' }} />}
+          ? <Image src={p.coverImage} alt={p.address || ''} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="(max-width:768px) 100vw, 33vw" />
+          : <div className="w-full h-full" style={{ background: 'var(--backdrop-mid)' }} />}
         <div className="absolute top-3 left-3">
-          <span className={`status-badge ${showSold ? 'status-badge-sold' : (STATUS_BADGE[p.status || ''] || '')}`}>
-            {showSold ? 'SOLD' : (STATUS_LABEL[p.status || ''] || p.status)}
+          <span className={`px-2 py-1 text-xs font-semibold text-white rounded ${STATUS_BADGE[p.status||'']||'bg-gray-500'}`}
+            style={{ borderRadius: 'var(--effect-badge-radius)' }}>
+            {STATUS_LABEL[p.status||''] || p.status}
           </span>
         </div>
       </div>
       <div className="p-4">
-        <p className="price-display text-lg mb-1">{price}</p>
-        <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>{p.address}</p>
+        <p className="font-semibold text-lg mb-0.5" style={{ color: 'var(--secondary)', fontFamily: 'var(--font-heading)' }}>
+          {p.priceDisplay || (p.price ? `$${p.price.toLocaleString()}` : '')}
+        </p>
+        <p className="text-sm font-medium truncate" style={{ color: 'var(--primary)' }}>{p.address}</p>
         <p className="text-xs mb-2 truncate" style={{ color: 'var(--text-secondary)' }}>{p.city}, {p.state}</p>
         <div className="flex gap-3 text-xs" style={{ color: 'var(--text-secondary)' }}>
-          {p.beds ? <span className="flex items-center gap-0.5"><Bed className="w-3 h-3" />{p.beds}</span> : null}
-          {p.baths ? <span className="flex items-center gap-0.5"><Bath className="w-3 h-3" />{p.baths}</span> : null}
-          {p.sqft ? <span className="flex items-center gap-0.5"><Maximize2 className="w-3 h-3" />{p.sqft.toLocaleString()}</span> : null}
+          {p.beds && <span className="flex items-center gap-1"><Bed className="w-3 h-3" />{p.beds} bd</span>}
+          {p.baths && <span className="flex items-center gap-1"><Bath className="w-3 h-3" />{p.baths} ba</span>}
+          {p.sqft && <span className="flex items-center gap-1"><Maximize2 className="w-3 h-3" />{p.sqft.toLocaleString()} sf</span>}
         </div>
       </div>
     </Link>
   );
 }
 
-// ── Star rating ───────────────────────────────────────────────────────────────
-function Stars({ count }: { count?: number }) {
-  return (
-    <div className="flex gap-0.5 mb-3">
-      {[1, 2, 3, 4, 5].map(i => (
-        <Star key={i} className={`w-4 h-4 ${i <= (count || 5) ? 'star-filled fill-current' : 'star-empty'}`} />
-      ))}
-    </div>
-  );
-}
-
-// ── Animated count ─────────────────────────────────────────────────────────────
+// ── Animated stat ──────────────────────────────────────────────────────────────
 function AnimatedStat({ item }: { item: StatItem }) {
   const [displayed, setDisplayed] = useState(0);
   const [started, setStarted] = useState(false);
@@ -101,42 +82,35 @@ function AnimatedStat({ item }: { item: StatItem }) {
   const target = parseInt(item.value?.replace(/\D/g, '') || '0', 10);
 
   useEffect(() => {
-    const obs = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !started) { setStarted(true); }
-    }, { threshold: 0.3 });
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting && !started) setStarted(true); }, { threshold: 0.3 });
     if (ref.current) obs.observe(ref.current);
     return () => obs.disconnect();
   }, [started]);
 
   useEffect(() => {
     if (!started || target === 0) return;
-    const duration = 1800;
-    const steps = 60;
-    const increment = target / steps;
-    let current = 0;
-    const timer = setInterval(() => {
-      current = Math.min(current + increment, target);
-      setDisplayed(Math.round(current));
-      if (current >= target) clearInterval(timer);
-    }, duration / steps);
-    return () => clearInterval(timer);
+    const steps = 60; const inc = target / steps;
+    let cur = 0;
+    const t = setInterval(() => { cur = Math.min(cur + inc, target); setDisplayed(Math.round(cur)); if (cur >= target) clearInterval(t); }, 1800 / steps);
+    return () => clearInterval(t);
   }, [started, target]);
 
   return (
-    <div ref={ref} className="text-center px-4">
-      <p className="stat-number text-4xl md:text-5xl mb-2">
+    <div ref={ref} className="text-center px-4 py-2">
+      <p className="font-semibold text-4xl md:text-5xl mb-2" style={{ fontFamily: 'var(--font-heading)', color: 'var(--secondary)' }}>
         {item.prefix}{displayed.toLocaleString()}{item.suffix}
       </p>
-      <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{item.label}</p>
+      <p className="text-sm" style={{ color: 'var(--text-on-dark-muted)' }}>{item.label}</p>
     </div>
   );
 }
 
 // ── Hero Slideshow ─────────────────────────────────────────────────────────────
-function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, overlayOpacity, locale, variant }: {
+function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, locale, overlayOpacity }: {
   slides: Slide[]; headline?: string; subline?: string;
-  ctaPrimary?: { label?: string; href?: string }; ctaSecondary?: { label?: string; href?: string };
-  overlayOpacity?: number; locale: string; variant?: string;
+  ctaPrimary?: { label?: string; href?: string };
+  ctaSecondary?: { label?: string; href?: string };
+  locale: string; overlayOpacity?: number;
 }) {
   const [active, setActive] = useState(0);
   useEffect(() => {
@@ -146,149 +120,126 @@ function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, ov
   }, [slides.length]);
 
   return (
-    <section className="relative h-screen min-h-[600px] overflow-hidden flex items-end">
+    <section className="relative h-screen min-h-[640px] overflow-hidden flex items-end">
       {slides.map((slide, i) => (
-        <div key={i} className={`absolute inset-0 transition-opacity duration-1000 ${i === active ? 'opacity-100' : 'opacity-0'}`}>
+        <div key={i} className={`absolute inset-0 transition-opacity duration-1200 ${i === active ? 'opacity-100' : 'opacity-0'}`}>
           {slide.image
-            ? <Image src={slide.image} alt={slide.alt || ''} fill className="object-cover opacity-100" priority={i === 0} sizes="100vw" />
+            ? <Image src={slide.image} alt={slide.alt || ''} fill className="object-cover" priority={i === 0} sizes="100vw" />
             : <div className="w-full h-full" style={{ background: 'var(--primary)' }} />}
         </div>
       ))}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: variant === 'gallery-background'
-            ? 'linear-gradient(to top right, rgba(26,26,26,0.26) 0%, rgba(26,26,26,0.08) 42%, rgba(26,26,26,0.02) 72%, transparent 100%)'
-            : `linear-gradient(to top right, rgba(27,40,56,${Math.min((overlayOpacity ?? 0.2) + 0.12, 0.34)}) 0%, rgba(27,40,56,${Math.min((overlayOpacity ?? 0.2) * 0.45, 0.11)}) 42%, rgba(27,40,56,0.02) 72%, transparent 100%)`,
-        }}
-      />
-
-      {/* Slide indicators */}
+      {/* Directional gradient — bright photo, readable text */}
+      <div className="absolute inset-0" style={{
+        background: `linear-gradient(to top right, rgba(26,39,68,${overlayOpacity ?? 0.28}) 0%, rgba(26,39,68,0.12) 42%, rgba(26,39,68,0.03) 72%, transparent 100%)`,
+      }} />
+      {/* Slide dots */}
       {slides.length > 1 && (
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
           {slides.map((_, i) => (
             <button key={i} onClick={() => setActive(i)}
-              className={`w-2 h-2 rounded-full transition-all ${i === active ? 'bg-white w-6' : 'bg-white/40'}`} />
+              className={`h-2 rounded-full transition-all duration-300 ${i === active ? 'bg-white w-6' : 'bg-white/40 w-2'}`} />
           ))}
         </div>
       )}
-
-      {/* Content */}
-      <div className="relative z-10 container-custom pb-24 md:pb-32 w-full">
-        <div
-          className={variant === 'gallery-background' ? 'max-w-2xl rounded-sm px-6 py-6 md:px-8 md:py-7' : 'max-w-3xl'}
-          style={variant === 'gallery-background'
-            ? {
-                background: 'rgba(26,26,26,0.10)',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.22)',
-              }
-            : undefined}
-        >
-          <h1 className="font-serif text-4xl md:text-6xl font-semibold text-white mb-4 leading-tight"
-            style={{ textShadow: '0 2px 10px rgba(0,0,0,0.35)' }}>
-            {headline || 'Find Your Perfect Home'}
+      {/* Content panel */}
+      <div className="relative z-10 w-full pb-24 md:pb-32 pl-4 sm:pl-8 md:pl-12 lg:pl-16">
+        <div className="max-w-2xl rounded-sm px-6 py-6 md:px-8 md:py-8" style={{ background: 'rgba(26,39,68,0.12)', boxShadow: '0 10px 30px rgba(0,0,0,0.18)' }}>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Pinnacle Realty Group</p>
+          <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-4 leading-tight"
+            style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 10px rgba(0,0,0,0.35)' }}>
+            {headline || 'Find Your Home in Westchester County'}
           </h1>
-          <p className="text-lg md:text-xl text-white/85 mb-8 max-w-xl"
-            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.28)' }}>
+          <p className="text-lg text-white/85 mb-7 max-w-xl" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.28)' }}>
             {subline}
           </p>
           <div className="flex flex-wrap gap-3">
             {ctaPrimary?.href && (
               <Link href={`/${locale}${ctaPrimary.href}`} className="btn-gold text-sm px-7 py-3">
-                {ctaPrimary.label || 'Schedule Consultation'}
+                {ctaPrimary.label || 'Search Properties'}
               </Link>
             )}
             {ctaSecondary?.href && (
               <Link href={`/${locale}${ctaSecondary.href}`}
                 className="border-2 border-white text-white hover:bg-white/15 transition-colors text-sm px-7 py-3 font-semibold"
-                style={{ borderRadius: 'max(var(--radius-small,2px),3px)' }}>
-                {ctaSecondary.label || 'View Properties'}
+                style={{ borderRadius: 'var(--effect-button-radius)' }}>
+                {ctaSecondary.label || 'Free Consultation'}
               </Link>
             )}
           </div>
         </div>
       </div>
-
       {/* Scroll indicator */}
-      <div className="absolute bottom-6 right-8 z-20 flex flex-col items-center gap-1">
-        <div className="w-px h-12 bg-white/40" />
-        <span className="text-white/50 text-xs rotate-90 tracking-widest">SCROLL</span>
+      <div className="absolute bottom-8 right-8 z-20 flex flex-col items-center gap-1.5">
+        <div className="w-px h-10 bg-white/40" />
+        <span className="text-white/50 text-[10px] rotate-90 tracking-widest">SCROLL</span>
       </div>
     </section>
   );
 }
 
-// ── Quick Search Bar ───────────────────────────────────────────────────────────
-function QuickSearch({ locale, headline }: { locale: string; headline?: string }) {
-  const [location, setLocation] = useState('');
-  const [type, setType] = useState('');
-  const [price, setPrice] = useState('');
-  const [beds, setBeds] = useState('');
+// ── Contact Form ───────────────────────────────────────────────────────────────
+function InlineContactForm({ locale, headline, subline }: { locale: string; headline?: string; subline?: string }) {
+  const [form, setForm] = useState({ firstName:'', lastName:'', email:'', phone:'', category:'', message:'' });
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
 
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    if (type) params.set('type', type);
-    if (price) params.set('price', price);
-    if (beds) params.set('beds', beds);
-    window.location.href = `/${locale}/properties?${params.toString()}`;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, locale }),
+      });
+      setDone(true);
+    } catch {}
+    setSubmitting(false);
   };
 
-  return (
-    <div className="relative z-20 -mt-8">
-      <div className="container-custom">
-        <div className="bg-white shadow-2xl p-5 md:p-6" style={{ borderRadius: 'var(--card-radius)' }}>
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--text-secondary)' }}>
-            {headline || 'Search Properties'}
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <select value={type} onChange={e => setType(e.target.value)}
-              className="calc-input col-span-2 md:col-span-1">
-              <option value="">All Types</option>
-              <option value="single-family">Single Family</option>
-              <option value="condo">Condo</option>
-              <option value="townhouse">Townhouse</option>
-              <option value="commercial">Commercial</option>
-              <option value="multi-family">Multi-Family</option>
-            </select>
-            <select value={price} onChange={e => setPrice(e.target.value)} className="calc-input">
-              <option value="">Any Price</option>
-              <option value="0-500000">Under $500K</option>
-              <option value="500000-1000000">$500K–$1M</option>
-              <option value="1000000-2000000">$1M–$2M</option>
-              <option value="2000000-3500000">$2M–$3.5M</option>
-              <option value="3500000+">$3.5M+</option>
-            </select>
-            <select value={beds} onChange={e => setBeds(e.target.value)} className="calc-input">
-              <option value="">Any Beds</option>
-              <option value="1">1+ Bed</option>
-              <option value="2">2+ Beds</option>
-              <option value="3">3+ Beds</option>
-              <option value="4">4+ Beds</option>
-              <option value="5+">5+ Beds</option>
-            </select>
-            <input value={location} onChange={e => setLocation(e.target.value)}
-              placeholder="Neighborhood or city…"
-              className="calc-input col-span-2 md:col-span-1"
-              onKeyDown={e => e.key === 'Enter' && handleSearch()} />
-            <button onClick={handleSearch}
-              className="btn-gold flex items-center justify-center gap-2 col-span-2 md:col-span-1">
-              <Search className="w-4 h-4" /> Search
-            </button>
-          </div>
-        </div>
-      </div>
+  if (done) return (
+    <div className="text-center py-8">
+      <p className="text-lg font-semibold" style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)' }}>Thank you!</p>
+      <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>We'll be in touch within 2 business hours.</p>
     </div>
+  );
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input required value={form.firstName} onChange={e => setForm(f => ({...f, firstName: e.target.value}))} placeholder="First Name" className="calc-input" />
+        <input required value={form.lastName} onChange={e => setForm(f => ({...f, lastName: e.target.value}))} placeholder="Last Name" className="calc-input" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input required type="email" value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))} placeholder="Email Address" className="calc-input" />
+        <input value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))} placeholder="Phone (optional)" className="calc-input" />
+      </div>
+      <select value={form.category} onChange={e => setForm(f => ({...f, category: e.target.value}))} className="calc-input w-full">
+        <option value="">How can we help?</option>
+        <option value="buy">I want to buy</option>
+        <option value="sell">I want to sell</option>
+        <option value="invest">I'm an investor</option>
+        <option value="relocate">I'm relocating</option>
+        <option value="join">I'm interested in joining your team</option>
+        <option value="other">Other</option>
+      </select>
+      <textarea value={form.message} onChange={e => setForm(f => ({...f, message: e.target.value}))} placeholder="Message (optional)" className="calc-input w-full min-h-[100px]" />
+      <button type="submit" disabled={submitting} className="btn-gold w-full py-3.5 font-semibold">
+        {submitting ? 'Sending…' : 'Send Message'}
+      </button>
+    </form>
   );
 }
 
-// ── Main page ──────────────────────────────────────────────────────────────────
+// ── Main Page ──────────────────────────────────────────────────────────────────
 export default function HomePage() {
-  const [homeData, setHomeData] = useState<HomeData>({});
-  const [siteData, setSiteData] = useState<SiteData>({});
+  const [h, setH] = useState<HomeData>({});
+  const [site, setSite] = useState<SiteData>({});
+  const [agents, setAgents] = useState<AgentData[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [neighborhoods, setNeighborhoods] = useState<Neighborhood[]>([]);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, setPosts] = useState<KnowledgePost[]>([]);
   const [locale, setLocale] = useState('en');
   const [loading, setLoading] = useState(true);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
@@ -299,122 +250,140 @@ export default function HomePage() {
     Promise.all([
       fetch(`/api/content/file?locale=${loc}&path=pages/home.json`).then(r => r.json()),
       fetch(`/api/content/file?locale=${loc}&path=site.json`).then(r => r.json()),
+      fetch(`/api/content/items?locale=${loc}&directory=agents`).then(r => r.json()),
       fetch(`/api/content/items?locale=${loc}&directory=properties`).then(r => r.json()),
       fetch(`/api/content/items?locale=${loc}&directory=neighborhoods`).then(r => r.json()),
       fetch(`/api/content/file?locale=${loc}&path=testimonials.json`).then(r => r.json()),
-      fetch(`/api/content/items?locale=${loc}&directory=blog`).then(r => r.json()),
-    ]).then(([homeRes, siteRes, propsRes, nbRes, testRes, blogRes]) => {
-      try { setHomeData(JSON.parse(homeRes.content || '{}')); } catch {}
-      try { setSiteData(JSON.parse(siteRes.content || '{}')); } catch {}
+      fetch(`/api/content/items?locale=${loc}&directory=knowledge-center`).then(r => r.json()),
+    ]).then(([homeRes, siteRes, agentsRes, propsRes, nbRes, testRes, postsRes]) => {
+      try { setH(JSON.parse(homeRes.content || '{}')); } catch {}
+      try { setSite(JSON.parse(siteRes.content || '{}')); } catch {}
+      const rawAgents = Array.isArray(agentsRes.items) ? agentsRes.items as AgentData[] : [];
+      setAgents(rawAgents.sort((a: any, b: any) => (a.displayOrder || 99) - (b.displayOrder || 99)));
       setProperties(Array.isArray(propsRes.items) ? propsRes.items as Property[] : []);
       setNeighborhoods(Array.isArray(nbRes.items) ? nbRes.items as Neighborhood[] : []);
-      try {
-        const t = JSON.parse(testRes.content || '{}');
-        setTestimonials(Array.isArray(t.items) ? t.items : []);
-      } catch {}
-      const blogItems = Array.isArray(blogRes.items) ? blogRes.items as BlogPost[] : [];
-      setPosts(blogItems.sort((a, b) => (b.date || '').localeCompare(a.date || '')));
+      try { const t = JSON.parse(testRes.content || '{}'); setTestimonials(Array.isArray(t.items) ? t.items : []); } catch {}
+      const rawPosts = Array.isArray(postsRes.items) ? postsRes.items as KnowledgePost[] : [];
+      setPosts(rawPosts.sort((a, b) => (b.publishDate || '').localeCompare(a.publishDate || '')));
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
-  // Auto-rotate testimonial
   useEffect(() => {
     if (testimonials.length <= 1) return;
-    const t = setInterval(() => setActiveTestimonial(i => (i + 1) % Math.min(testimonials.length, 3)), 6000);
+    const t = setInterval(() => setActiveTestimonial(i => (i + 1) % Math.min(testimonials.length, 5)), 6000);
     return () => clearInterval(t);
   }, [testimonials.length]);
 
-  const h = homeData;
   const slides = h.hero?.slides?.filter(s => s.image) || [];
-  const featuredProps = properties.filter(p => p.featured && p.status !== 'sold').slice(0, h.featuredListings?.maxDisplay || 6);
-  const spotlightNbs = (h.neighborhoodSpotlight?.neighborhoodSlugs || []).map(s => neighborhoods.find(n => n.slug === s)).filter(Boolean) as Neighborhood[];
-  const displayNbs = spotlightNbs.length > 0 ? spotlightNbs : neighborhoods.slice(0, 3);
-  const previewTests = (h.testimonialPreview?.testimonialIds || []).map(id => testimonials.find(t => t.id === id)).filter(Boolean) as Testimonial[];
-  const displayTests = previewTests.length > 0 ? previewTests : testimonials.filter(t => (t as any).featured).slice(0, 3);
-  const soldProps = properties.filter(p => p.status === 'sold').slice(0, h.recentSold?.maxDisplay || 4);
-  const recentPosts = posts.slice(0, h.blogPreview?.maxDisplay || 3);
   const stats: StatItem[] = h.statsBar?.items || [
-    { value: '150', label: 'In Career Sales', prefix: '$', suffix: 'M+' },
-    { value: '500', label: 'Families Helped', suffix: '+' },
-    { value: '18', label: 'Years of Experience' },
+    { value: '180', label: 'In Total Sales', prefix: '$', suffix: 'M+' },
+    { value: '620', label: 'Transactions Closed', suffix: '+' },
+    { value: '12', label: 'Years in Business' },
+    { value: '18', label: 'Expert Agents' },
     { value: '200', label: 'Five-Star Reviews', suffix: '+' },
   ];
-  const services: ServiceItem[] = h.servicesOverview?.items || [
-    { icon: 'Home', title: 'Buying', description: 'Expert guidance from search to closing.', href: '/services#buying' },
-    { icon: 'DollarSign', title: 'Selling', description: 'Strategic pricing and premium marketing.', href: '/services#selling' },
-    { icon: 'Key', title: 'Leasing', description: 'Rental placement for landlords and tenants.', href: '/services#leasing' },
-    { icon: 'Building2', title: 'Commercial', description: 'Office, retail, and investment transactions.', href: '/services#commercial' },
-    { icon: 'TrendingUp', title: 'Investment', description: 'Portfolio analysis and ROI modeling.', href: '/services#investment' },
-    { icon: 'Truck', title: 'Relocation', description: 'Seamless transitions to Westchester County.', href: '/services#relocation' },
-  ];
+  const featuredProps = (() => {
+    const slugs = h.featuredListings?.propertySlugs || [];
+    const pinned = slugs.map(s => properties.find(p => p.slug === s)).filter(Boolean) as Property[];
+    if (pinned.length > 0) return pinned.slice(0, h.featuredListings?.maxDisplay || 6);
+    return properties.filter(p => p.featured && p.status === 'active').slice(0, h.featuredListings?.maxDisplay || 6);
+  })();
+  const spotlightNbs = (() => {
+    const slugs = h.neighborhoodSpotlight?.neighborhoodSlugs || [];
+    const pinned = slugs.map(s => neighborhoods.find(n => n.slug === s)).filter(Boolean) as Neighborhood[];
+    return (pinned.length > 0 ? pinned : neighborhoods).slice(0, 3);
+  })();
+  const previewAgents = (() => {
+    const slugs = h.teamPreview?.agentSlugs || [];
+    const pinned = slugs.map(s => agents.find(a => a.slug === s)).filter(Boolean) as AgentData[];
+    return (pinned.length > 0 ? pinned : agents.filter(a => a.featured)).slice(0, 4);
+  })();
+  const stripTests = testimonials.filter(t => !t.agentSlug).slice(0, 5);
+  const previewPosts = (() => {
+    const slugs = h.knowledgeCenterPreview?.postSlugs || [];
+    const pinned = slugs.map(s => posts.find(p => p.slug === s)).filter(Boolean) as KnowledgePost[];
+    return (pinned.length > 0 ? pinned : posts.filter(p => (p as any).featured)).slice(0, 3);
+  })();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--backdrop-primary)' }}>
-        <div className="text-center">
-          <div className="w-10 h-10 border-2 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--secondary)', borderTopColor: 'transparent' }} />
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading…</p>
-        </div>
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--backdrop-light)' }}>
+      <div className="text-center">
+        <div className="w-10 h-10 border-2 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--secondary)', borderTopColor: 'transparent' }} />
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading…</p>
       </div>
-    );
-  }
+    </div>
+  );
 
   return (
     <>
-      {/* 1. HERO SLIDESHOW */}
+      {/* 1. HERO */}
       {slides.length > 0 ? (
-        <HeroSlideshow
-          slides={slides}
-          headline={h.hero?.headline}
-          subline={h.hero?.subline}
-          ctaPrimary={h.hero?.ctaPrimary}
-          ctaSecondary={h.hero?.ctaSecondary}
-          overlayOpacity={h.hero?.overlayOpacity}
-          variant={h.hero?.variant}
-          locale={locale}
-        />
+        <HeroSlideshow slides={slides} headline={h.hero?.headline} subline={h.hero?.subline}
+          ctaPrimary={h.hero?.ctaPrimary} ctaSecondary={h.hero?.ctaSecondary}
+          locale={locale} overlayOpacity={h.hero?.overlayOpacity} />
       ) : (
         <section className="relative min-h-[70vh] flex items-end" style={{ background: 'var(--primary)' }}>
-          <div className="relative z-10 container-custom pb-20 w-full">
-            <h1 className="font-serif text-4xl md:text-6xl font-semibold text-white mb-4 max-w-3xl leading-tight">
-              {h.hero?.headline || 'Find Your Perfect Home in Westchester County'}
+          <div className="relative z-10 w-full pb-20 pl-8 md:pl-16">
+            <h1 className="font-serif text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+              {h.hero?.headline || 'Find Your Home in Westchester County'}
             </h1>
-            <p className="text-lg text-white/80 mb-8 max-w-xl">{h.hero?.subline}</p>
-            <div className="flex flex-wrap gap-3">
-              <Link href={`/${locale}${h.hero?.ctaPrimary?.href || '/contact'}`} className="btn-gold px-7 py-3">
-                {h.hero?.ctaPrimary?.label || 'Schedule Consultation'}
-              </Link>
-              <Link href={`/${locale}${h.hero?.ctaSecondary?.href || '/properties'}`}
-                className="border-2 border-white text-white hover:bg-white/15 transition-colors px-7 py-3 font-semibold text-sm"
-                style={{ borderRadius: 'max(var(--radius-small,2px),3px)' }}>
-                {h.hero?.ctaSecondary?.label || 'View Properties'}
-              </Link>
+            <p className="text-lg text-white/80 mb-7 max-w-xl">{h.hero?.subline}</p>
+            <div className="flex gap-3">
+              <Link href={`/${locale}/properties`} className="btn-gold px-7 py-3">Search Properties</Link>
+              <Link href={`/${locale}/contact`} className="border-2 border-white text-white px-7 py-3 hover:bg-white/10 transition-colors" style={{ borderRadius: 'var(--effect-button-radius)' }}>Free Consultation</Link>
             </div>
           </div>
         </section>
       )}
 
-      {/* 2. QUICK SEARCH */}
-      <QuickSearch locale={locale} headline={h.quickSearch?.headline} />
+      {/* 2. GOAL ENTRY PATHS */}
+      <GoalEntryPaths headline={h.goalPaths?.headline || 'How Can We Help You?'} items={h.goalPaths?.items} locale={locale} />
 
       {/* 3. STATS BAR */}
-      <section className="section-padding bg-white">
+      <section className="py-14" style={{ background: 'var(--backdrop-dark)' }}>
         <div className="container-custom">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-[var(--border)]">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 divide-x divide-white/10">
             {stats.map((item, i) => <AnimatedStat key={i} item={item} />)}
           </div>
         </div>
       </section>
 
-      {/* 4. FEATURED LISTINGS */}
+      {/* 4. BROKERAGE INTRO */}
+      {h.intro && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-4" style={{ color: 'var(--secondary)' }}>Our Story</p>
+                <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-6" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                  {h.intro.headline || 'An Independent Brokerage Built on Expertise'}
+                </h2>
+                <p className="text-base leading-relaxed mb-7" style={{ color: 'var(--text-secondary)', lineHeight: '1.85' }}>{h.intro.body}</p>
+                {h.intro.ctaHref && (
+                  <Link href={`/${locale}${h.intro.ctaHref}`} className="inline-flex items-center gap-2 font-semibold group" style={{ color: 'var(--secondary)' }}>
+                    {h.intro.ctaLabel || 'Our Story'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                )}
+              </div>
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden" style={{ boxShadow: 'var(--photo-shadow)' }}>
+                {h.intro.image
+                  ? <Image src={h.intro.image} alt="Pinnacle Realty Group" fill className="object-cover" sizes="50vw" />
+                  : <div className="w-full h-full" style={{ background: 'var(--backdrop-mid)' }} />}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 5. FEATURED LISTINGS */}
       {featuredProps.length > 0 && (
-        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
+        <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
           <div className="container-custom">
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Listings</p>
-                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ color: 'var(--primary)' }}>
+                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
                   {h.featuredListings?.headline || 'Featured Properties'}
                 </h2>
                 {h.featuredListings?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.featuredListings.subline}</p>}
@@ -427,54 +396,104 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredProps.map(p => <PropertyCard key={p.slug} p={p} locale={locale} />)}
             </div>
-            <div className="text-center mt-8 md:hidden">
-              <Link href={`/${locale}${h.featuredListings?.ctaHref || '/properties'}`} className="btn-gold inline-block">
-                {h.featuredListings?.ctaLabel || 'View All Properties'}
-              </Link>
+          </div>
+        </section>
+      )}
+
+      {/* 6. WHY CHOOSE US */}
+      {h.whyChooseUs?.items && h.whyChooseUs.items.length > 0 && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <div className="text-center mb-12">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Why Pinnacle</p>
+              <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                {h.whyChooseUs.headline || 'Why Choose Pinnacle Realty Group'}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {h.whyChooseUs.items.map((item, i) => (
+                <div key={i} className="p-7 border border-[var(--border)] rounded-xl" style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: 'var(--backdrop-mid)' }}>
+                    <MapPin className="w-5 h-5" style={{ color: 'var(--secondary)' }} />
+                  </div>
+                  <h3 className="font-serif text-lg font-semibold mb-2" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>{item.heading}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
+                </div>
+              ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* 5. SERVICES OVERVIEW */}
-      <section className="section-padding bg-white">
-        <div className="container-custom">
-          <div className="text-center mb-12">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Services</p>
-            <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ color: 'var(--primary)' }}>
-              {h.servicesOverview?.headline || 'How I Can Help'}
-            </h2>
-            {h.servicesOverview?.subline && <p className="text-sm mt-3 max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>{h.servicesOverview.subline}</p>}
+      {/* 7. TEAM PREVIEW */}
+      {previewAgents.length > 0 && (
+        <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
+          <div className="container-custom">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Our Agents</p>
+                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                  {h.teamPreview?.headline || 'Meet Our Agents'}
+                </h2>
+                {h.teamPreview?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.teamPreview.subline}</p>}
+              </div>
+              <Link href={`/${locale}${h.teamPreview?.ctaHref || '/team'}`}
+                className="hidden md:flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
+                {h.teamPreview?.ctaLabel || 'Meet the Full Team'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {previewAgents.map(agent => <AgentCard key={agent.slug} agent={agent} locale={locale} variant="detailed" />)}
+            </div>
+            <div className="text-center mt-8 md:hidden">
+              <Link href={`/${locale}/team`} className="btn-gold inline-block">{h.teamPreview?.ctaLabel || 'Meet the Full Team'}</Link>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {services.map((svc, i) => {
-              const Icon = ICONS[svc.icon || ''] || Home;
-              return (
-                <Link key={i} href={`/${locale}${svc.href || '/services'}`}
-                  className="group p-6 border border-[var(--border)] rounded-xl hover:border-[var(--secondary)] hover:shadow-md transition-all bg-white">
-                  <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
-                    style={{ background: 'var(--backdrop-primary)' }}>
-                    <Icon className="w-5 h-5" style={{ color: 'var(--secondary)' }} />
-                  </div>
-                  <h3 className="font-serif text-lg font-semibold mb-2 group-hover:text-[var(--secondary)] transition-colors" style={{ color: 'var(--primary)' }}>
-                    {svc.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{svc.description}</p>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* 6. NEIGHBORHOOD SPOTLIGHT */}
-      {displayNbs.length > 0 && (
-        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
+      {/* 8. TESTIMONIAL STRIP */}
+      {stripTests.length > 0 && (
+        <section className="py-20 overflow-hidden" style={{ background: 'var(--primary)' }}>
+          <div className="container-custom max-w-4xl mx-auto">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-8 text-center" style={{ color: 'var(--secondary)' }}>
+              {h.testimonialStrip?.headline || 'What Our Clients Say'}
+            </p>
+            <div className="relative min-h-[200px]">
+              {stripTests.map((t, i) => (
+                <div key={i} className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-700 px-4 ${i === activeTestimonial % stripTests.length ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                  <div className="flex gap-1 mb-5">
+                    {[1,2,3,4,5].map(s => <Star key={s} className={`w-4 h-4 ${s <= (t.rating||5) ? 'fill-current' : ''}`} style={{ color: 'var(--gold-star)' }} />)}
+                  </div>
+                  <blockquote className="font-serif text-xl md:text-2xl font-medium text-white text-center leading-relaxed mb-6 max-w-3xl"
+                    style={{ fontFamily: 'var(--font-heading)', borderLeft: '3px solid var(--secondary)', paddingLeft: '1.5rem', textAlign: 'left' }}>
+                    "{t.text || t.quote}"
+                  </blockquote>
+                  <p className="font-semibold text-white text-sm">{t.reviewer || t.author}</p>
+                </div>
+              ))}
+            </div>
+            {stripTests.length > 1 && (
+              <div className="flex justify-center gap-2 mt-8">
+                {stripTests.map((_, i) => (
+                  <button key={i} onClick={() => setActiveTestimonial(i)}
+                    className={`h-2 rounded-full transition-all duration-300 ${i === activeTestimonial % stripTests.length ? 'w-6' : 'w-2 bg-white/30'}`}
+                    style={{ background: i === activeTestimonial % stripTests.length ? 'var(--secondary)' : undefined }} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* 9. NEIGHBORHOOD SPOTLIGHT */}
+      {spotlightNbs.length > 0 && (
+        <section className="section-padding bg-white">
           <div className="container-custom">
             <div className="flex items-end justify-between mb-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Local Expertise</p>
-                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ color: 'var(--primary)' }}>
+                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
                   {h.neighborhoodSpotlight?.headline || 'Explore Neighborhoods'}
                 </h2>
                 {h.neighborhoodSpotlight?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.neighborhoodSpotlight.subline}</p>}
@@ -485,20 +504,22 @@ export default function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {displayNbs.map(n => (
-                <Link key={n.slug} href={`/${locale}/neighborhoods/${n.slug}`} className="group property-card">
-                  <div className="relative aspect-[3/2] overflow-hidden" style={{ borderRadius: 'var(--card-radius) var(--card-radius) 0 0' }}>
-                    {n.coverImage
-                      ? <Image src={n.coverImage} alt={n.name || ''} fill className="object-cover transition-transform duration-600 group-hover:scale-105" sizes="33vw" />
-                      : <div className="w-full h-full" style={{ background: 'var(--primary)', opacity: 0.3 }} />}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'rgba(27,40,56,0.2)' }} />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-serif text-lg font-semibold mb-1" style={{ color: 'var(--primary)' }}>{n.name}</h3>
-                    <p className="text-sm mb-2 line-clamp-2" style={{ color: 'var(--text-secondary)' }}>{n.tagline}</p>
-                    {n.marketSnapshot?.medianPrice && (
-                      <p className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>Median: {n.marketSnapshot.medianPrice}</p>
-                    )}
+              {spotlightNbs.map(nb => (
+                <Link key={nb.slug} href={`/${locale}/neighborhoods/${nb.slug}`}
+                  className="group relative overflow-hidden rounded-xl"
+                  style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    {nb.coverImage
+                      ? <Image src={nb.coverImage} alt={nb.name || ''} fill className="object-cover transition-transform duration-600 group-hover:scale-105" sizes="33vw" />
+                      : <div className="w-full h-full" style={{ background: 'var(--backdrop-mid)' }} />}
+                    <div className="absolute inset-0 transition-opacity duration-300" style={{ background: 'linear-gradient(to top, rgba(26,39,68,0.65) 0%, rgba(26,39,68,0.2) 50%, transparent 100%)' }} />
+                    <div className="absolute bottom-0 left-0 right-0 p-5">
+                      <h3 className="font-serif text-xl font-semibold text-white mb-1" style={{ fontFamily: 'var(--font-heading)' }}>{nb.name}</h3>
+                      <p className="text-white/80 text-sm mb-1 truncate">{nb.tagline}</p>
+                      {nb.marketSnapshot?.medianPrice && (
+                        <p className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>Median: {nb.marketSnapshot.medianPrice}</p>
+                      )}
+                    </div>
                   </div>
                 </Link>
               ))}
@@ -507,99 +528,83 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 7. TESTIMONIAL PREVIEW */}
-      {displayTests.length > 0 && (
-        <section className="section-padding" style={{ background: 'var(--primary)' }}>
-          <div className="container-custom max-w-3xl mx-auto text-center">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-6" style={{ color: 'var(--secondary)' }}>
-              {h.testimonialPreview?.headline || 'Client Testimonials'}
-            </p>
-            <div className="relative min-h-[180px]">
-              {displayTests.map((t, i) => (
-                <div key={i} className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-700 ${i === activeTestimonial % displayTests.length ? 'opacity-100' : 'opacity-0'}`}>
-                  <Stars count={t.rating} />
-                  <blockquote className="font-serif text-xl md:text-2xl font-medium text-white leading-relaxed mb-6"
-                    style={{ borderLeft: '3px solid var(--secondary)', paddingLeft: '1.5rem', textAlign: 'left' }}>
-                    "{t.quote}"
-                  </blockquote>
-                  <p className="text-sm font-semibold text-white">{t.author}</p>
-                  <p className="text-xs mt-1" style={{ color: 'var(--secondary)' }}>{t.title}</p>
-                </div>
-              ))}
-            </div>
-            {/* Dots */}
-            {displayTests.length > 1 && (
-              <div className="flex justify-center gap-2 mt-8">
-                {displayTests.map((_, i) => (
-                  <button key={i} onClick={() => setActiveTestimonial(i)}
-                    className={`w-2 h-2 rounded-full transition-all ${i === activeTestimonial % displayTests.length ? 'bg-[var(--secondary)] w-6' : 'bg-white/30'}`} />
-                ))}
+      {/* 10. MARKET REPORT TEASER */}
+      {h.marketReportTeaser && (
+        <section className="py-16" style={{ background: 'var(--backdrop-dark)' }}>
+          <div className="container-custom">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>
+                  {h.marketReportTeaser.headline || 'Market Report'}
+                </p>
+                <h2 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+                  {h.marketReportTeaser.subline || 'Westchester County — Latest Update'}
+                </h2>
+                {h.marketReportTeaser.keyStat && (
+                  <p className="text-lg font-semibold mb-4" style={{ color: 'var(--secondary)' }}>{h.marketReportTeaser.keyStat}</p>
+                )}
               </div>
-            )}
-            <Link href={`/${locale}${h.testimonialPreview?.ctaHref || '/testimonials'}`}
-              className="inline-flex items-center gap-2 text-sm font-semibold mt-8 group" style={{ color: 'var(--secondary)' }}>
-              {h.testimonialPreview?.ctaLabel || 'Read All Reviews'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
+              <Link href={`/${locale}${h.marketReportTeaser.ctaHref || '/market-reports'}`}
+                className="btn-gold flex-shrink-0 px-8 py-3.5">
+                {h.marketReportTeaser.ctaLabel || 'Read Full Report'}
+              </Link>
+            </div>
           </div>
         </section>
       )}
 
-      {/* 8. RECENT SOLD */}
-      {soldProps.length > 0 && (
+      {/* 11. IDX SEARCH CTA */}
+      <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
+        <div className="container-custom text-center">
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>MLS Search</p>
+          <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+            Search All Available Homes
+          </h2>
+          <p className="text-base mb-7 max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
+            Browse the complete MLS database for Westchester County and surrounding areas.
+          </p>
+          <Link href={`/${locale}/properties`} className="btn-gold inline-flex items-center gap-2 px-8 py-4 text-base font-semibold">
+            <Search className="w-4 h-4" /> Browse All Properties
+          </Link>
+          <p className="text-xs mt-3" style={{ color: 'var(--text-secondary)' }}>
+            {properties.length > 0 ? `${properties.length} listings currently available` : 'Updated regularly from MLS'}
+          </p>
+        </div>
+      </section>
+
+      {/* 12. KNOWLEDGE CENTER PREVIEW */}
+      {previewPosts.length > 0 && (
         <section className="section-padding bg-white">
           <div className="container-custom">
             <div className="flex items-end justify-between mb-8">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Track Record</p>
-                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ color: 'var(--primary)' }}>
-                  {h.recentSold?.headline || 'Recently Sold'}
-                </h2>
-                {h.recentSold?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.recentSold.subline}</p>}
-              </div>
-              <Link href={`/${locale}${h.recentSold?.ctaHref || '/sold'}`}
-                className="hidden md:flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
-                {h.recentSold?.ctaLabel || 'View Portfolio'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {soldProps.map(p => <PropertyCard key={p.slug} p={p} locale={locale} showSold />)}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 9. BLOG PREVIEW */}
-      {recentPosts.length > 0 && (
-        <section className="section-padding" style={{ background: 'var(--backdrop-primary)' }}>
-          <div className="container-custom">
-            <div className="flex items-end justify-between mb-8">
-              <div>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Insights</p>
-                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ color: 'var(--primary)' }}>
-                  {h.blogPreview?.headline || 'Real Estate Insights'}
+                <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                  {h.knowledgeCenterPreview?.headline || 'From Our Knowledge Center'}
                 </h2>
               </div>
-              <Link href={`/${locale}${h.blogPreview?.ctaHref || '/blog'}`}
+              <Link href={`/${locale}${h.knowledgeCenterPreview?.ctaHref || '/knowledge-center'}`}
                 className="hidden md:flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
-                {h.blogPreview?.ctaLabel || 'All Posts'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {h.knowledgeCenterPreview?.ctaLabel || 'All Posts'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {recentPosts.map(post => (
-                <Link key={post.slug} href={`/${locale}/blog/${post.slug}`} className="group property-card">
-                  <div className="relative aspect-[4/3] overflow-hidden" style={{ borderRadius: 'var(--card-radius) var(--card-radius) 0 0' }}>
-                    {post.coverImage
-                      ? <Image src={post.coverImage} alt={post.title || ''} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="33vw" />
-                      : <div className="w-full h-full" style={{ background: 'var(--primary)', opacity: 0.15 }} />}
+              {previewPosts.map(post => (
+                <Link key={post.slug} href={`/${locale}/knowledge-center/${post.slug}`} className="group block border border-[var(--border)] rounded-xl overflow-hidden hover:border-[var(--secondary)] transition-colors"
+                  style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    {post.heroImage
+                      ? <Image src={post.heroImage} alt={post.title || ''} fill className="object-cover transition-transform duration-500 group-hover:scale-105" sizes="33vw" />
+                      : <div className="w-full h-full" style={{ background: 'var(--backdrop-mid)' }} />}
                   </div>
                   <div className="p-5">
                     <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: 'var(--secondary)' }}>
                       {post.category?.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                     </span>
-                    <h3 className="font-serif text-base font-semibold mt-2 mb-2 leading-snug group-hover:opacity-70 transition-opacity" style={{ color: 'var(--primary)' }}>
+                    <h3 className="font-serif text-base font-semibold mt-2 mb-2 leading-snug group-hover:opacity-70 transition-opacity" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
                       {post.title}
                     </h3>
-                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{post.date}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{post.readTime} · {post.publishDate}</p>
                   </div>
                 </Link>
               ))}
@@ -608,80 +613,54 @@ export default function HomePage() {
         </section>
       )}
 
-      {/* 10. VALUATION CTA */}
+      {/* 13. CONSULTATION CTA */}
       <section className="relative min-h-[56vh] md:min-h-[62vh] overflow-hidden flex items-end">
-        {h.valuationCta?.backgroundImage && (
-          <Image src={h.valuationCta.backgroundImage} alt="" fill className="object-cover opacity-100" />
+        {h.consultationCta?.backgroundImage && (
+          <Image src={h.consultationCta.backgroundImage} alt="" fill className="object-cover opacity-100" />
         )}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(to top left, rgba(10,14,22,0.2) 0%, rgba(10,14,22,0.12) 36%, rgba(10,14,22,0.06) 68%, rgba(10,14,22,0.02) 100%)',
-          }}
-        />
-        <div className="relative z-10 w-full pb-12 md:pb-16 pr-4 sm:pr-8 md:pr-12 lg:pr-20 flex justify-end text-left">
+        <div className="absolute inset-0" style={{
+          background: 'linear-gradient(to top left, rgba(20,30,48,0.22) 0%, rgba(20,30,48,0.12) 36%, rgba(20,30,48,0.06) 68%, rgba(20,30,48,0.02) 100%)',
+        }} />
+        <div className="relative z-10 w-full pb-12 md:pb-16 pr-4 sm:pr-8 md:pr-12 lg:pr-20 flex justify-end text-left"
+          style={{ background: !h.consultationCta?.backgroundImage ? 'var(--primary)' : undefined }}>
           <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>For Sellers</p>
-            <h2 className="font-serif text-3xl md:text-5xl font-semibold text-white mb-3">
-              {h.valuationCta?.headline || 'Thinking of Selling?'}
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Get Started</p>
+            <h2 className="font-serif text-3xl md:text-5xl font-semibold text-white mb-4 leading-tight"
+              style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
+              {h.consultationCta?.headline || 'Ready to Take the Next Step?'}
             </h2>
-            <p className="text-lg text-white/85 mb-8">
-              {h.valuationCta?.subline || 'Get Your Free Home Valuation — no obligation, no pressure.'}
+            <p className="text-lg text-white/85 mb-8" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.25)' }}>
+              {h.consultationCta?.subline || 'Our team is ready to help. Schedule your free consultation today.'}
             </p>
-            <Link href={`/${locale}${h.valuationCta?.ctaHref || '/home-valuation'}`} className="btn-gold text-sm px-8 py-3.5">
-              {h.valuationCta?.ctaLabel || 'Get My Free Estimate'}
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 11. AGENT INTRO */}
-      <section className="section-padding bg-white">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
-            <div className="relative aspect-[3/4] rounded-xl overflow-hidden" style={{ boxShadow: 'var(--card-shadow)' }}>
-              {h.agentIntro?.portrait
-                ? <Image src={h.agentIntro.portrait} alt={h.agentIntro.portraitAlt || 'Alexandra Reeves'} fill className="object-cover" sizes="50vw" />
-                : <div className="w-full h-full flex items-center justify-center font-serif text-6xl font-bold text-white/30"
-                    style={{ background: 'var(--primary)' }}>AR</div>}
-            </div>
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>About</p>
-              <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-5" style={{ color: 'var(--primary)' }}>
-                {h.agentIntro?.headline || `Meet ${siteData.name || 'Alexandra Reeves'}`}
-              </h2>
-              <p className="text-base leading-relaxed mb-6" style={{ color: 'var(--text-secondary)' }}>
-                {h.agentIntro?.body}
-              </p>
-              <Link href={`/${locale}${h.agentIntro?.ctaHref || '/about'}`}
-                className="inline-flex items-center gap-2 font-semibold group" style={{ color: 'var(--secondary)' }}>
-                {h.agentIntro?.ctaLabel || 'My Story'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="flex flex-wrap gap-3">
+              <Link href={`/${locale}${h.consultationCta?.ctaHref || '/contact'}`} className="btn-gold text-sm px-8 py-3.5">
+                {h.consultationCta?.ctaLabel || 'Schedule Consultation'}
               </Link>
+              {site.phone && (
+                <a href={`tel:${site.phone?.replace(/\D/g,'')}`}
+                  className="flex items-center gap-2 border-2 border-white text-white hover:bg-white/15 transition-colors text-sm px-7 py-3 font-semibold"
+                  style={{ borderRadius: 'var(--effect-button-radius)' }}>
+                  <Phone className="w-4 h-4" /> {site.phone}
+                </a>
+              )}
             </div>
           </div>
         </div>
       </section>
 
-      {/* 12. CONSULTATION CTA */}
-      <section className="relative section-padding overflow-hidden" style={{ background: 'var(--backdrop-primary)', borderTop: '1px solid var(--border)' }}>
-        {h.consultationCta?.backgroundImage && (
-          <Image src={h.consultationCta.backgroundImage} alt="" fill className="object-cover" />
-        )}
-        {h.consultationCta?.backgroundImage && (
-          <div className="absolute inset-0" style={{ background: 'rgba(27,40,56,0.68)' }} />
-        )}
-        <div className="relative z-10 container-custom text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Get Started</p>
-          <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-4" style={{ color: h.consultationCta?.backgroundImage ? '#fff' : 'var(--primary)' }}>
-            {h.consultationCta?.headline || 'Ready to Make Your Move?'}
-          </h2>
-          <p className="text-base mb-8 max-w-xl mx-auto" style={{ color: h.consultationCta?.backgroundImage ? 'rgba(255,255,255,0.86)' : 'var(--text-secondary)' }}>
-            {h.consultationCta?.subline || "I respond to every inquiry within 2 hours. Let's talk."}
-          </p>
-          <Link href={`/${locale}${h.consultationCta?.ctaHref || '/contact'}`} className="btn-gold text-sm px-10 py-4">
-            {h.consultationCta?.ctaLabel || 'Schedule a Consultation'}
-          </Link>
+      {/* 14. INLINE CONTACT FORM */}
+      <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
+        <div className="container-custom max-w-2xl mx-auto">
+          <div className="text-center mb-8">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Contact Us</p>
+            <h2 className="font-serif text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+              {h.contactForm?.headline || 'Get in Touch'}
+            </h2>
+            {h.contactForm?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.contactForm.subline}</p>}
+          </div>
+          <div className="bg-white p-7 rounded-2xl border border-[var(--border)]" style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
+            <InlineContactForm locale={locale} />
+          </div>
         </div>
       </section>
     </>

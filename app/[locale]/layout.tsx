@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
+import { Cormorant_Garamond, Inter, DM_Sans } from 'next/font/google';
 import { defaultLocale, locales, type Locale } from '@/lib/i18n';
 import { getDefaultSite, getSiteById } from '@/lib/sites';
 import { getRequestSiteId, loadContent, loadFooter, loadSeo, loadTheme, loadSiteInfo } from '@/lib/content';
@@ -7,6 +8,25 @@ import type { SeoConfig, SiteInfo } from '@/lib/types';
 import Header, { type JuliaHeaderConfig } from '@/components/layout/Header';
 import Footer, { type JuliaFooterData } from '@/components/layout/Footer';
 import { getBaseUrlFromHost } from '@/lib/seo';
+
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-heading',
+  display: 'swap',
+});
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-body',
+  display: 'swap',
+});
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-ui',
+  display: 'swap',
+});
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -23,16 +43,16 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   return {
     metadataBase: baseUrl,
     title: {
-      default: seo?.title || 'Alexandra Reeves — Westchester County Real Estate',
-      template: seo?.titleTemplate || '%s | Alexandra Reeves Real Estate',
+      default: seo?.title || 'Pinnacle Realty Group — Westchester County Real Estate Brokerage',
+      template: seo?.titleTemplate || '%s | Pinnacle Realty Group',
     },
-    description: seo?.description || 'Alexandra Reeves is Westchester County\'s premier real estate agent. 18 years of expertise, $150M+ in career sales.',
+    description: seo?.description || 'Pinnacle Realty Group is Westchester County\'s premier independent real estate brokerage. 18 agents, $180M+ in sales, deep local expertise.',
     alternates: {
       canonical: new URL(`/${locale}`, baseUrl).toString(),
     },
     openGraph: {
       type: 'website',
-      siteName: 'Alexandra Reeves Real Estate',
+      siteName: 'Pinnacle Realty Group',
       images: seo?.ogImage ? [{ url: seo.ogImage }] : undefined,
     },
     icons: {
@@ -108,14 +128,26 @@ export default async function LocaleLayout({
     --btn-gold-text: #1A1A1A;
     --on-dark-medium: rgba(255,255,255,0.65);
     --on-dark-subtle: rgba(255,255,255,0.4);
-    --backdrop-primary-rgb: 250 249 247;
-    --hero-overlay-rgb: 27 40 56;
+    --backdrop-primary-rgb: 248 246 242;
+    --hero-overlay-rgb: 26 39 68;
+    --backdrop-mid: ${c.backdropMid || '#EDF0F4'};
+    --backdrop-dark: ${c.backdropDark || '#141E30'};
+    --accent: ${c.accent || '#2E6B4F'};
+    --accent-alt: ${c.accentAlt || '#8B1A1A'};
+    --status-coming-soon: ${c.statusComingSoon || '#1A2744'};
+    --effect-card-radius: ${fx.cardRadius || '12px'};
+    --effect-button-radius: ${fx.buttonRadius || '6px'};
+    --effect-badge-radius: ${fx.badgeRadius || '4px'};
+    --effect-transition-base: ${fx.transitionBase || '200ms ease'};
+    --effect-card-shadow: ${fx.cardShadow || '0 2px 12px rgba(26,39,68,0.08)'};
+    --effect-card-shadow-hover: ${fx.cardShadowHover || '0 8px 32px rgba(26,39,68,0.16)'};
+    --photo-shadow: ${fx.photoShadow || '0 4px 24px rgba(26,39,68,0.14)'};
   }`;
 
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: cssVars }} />
-      <div className="min-h-screen flex flex-col" style={{ background: 'var(--backdrop-primary, #FAF9F7)' }}>
+      <div className={`min-h-screen flex flex-col ${cormorant.variable} ${inter.variable} ${dmSans.variable}`} style={{ background: 'var(--backdrop-primary, #F8F6F2)' }}>
         <Header
           locale={locale as Locale}
           siteId={site.id}

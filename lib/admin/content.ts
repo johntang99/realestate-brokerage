@@ -21,8 +21,15 @@ const COLLECTION_PREFIXES = [
   'properties/',
   'neighborhoods/',
   'market-reports/',
+  'agents/',
+  'knowledge-center/',
+  'new-construction/',
 ];
-const COLLECTION_DIRS = ['portfolio', 'shop-products', 'journal', 'collections', 'testimonials', 'properties', 'neighborhoods', 'market-reports'];
+const COLLECTION_DIRS = [
+  'portfolio', 'shop-products', 'journal', 'collections', 'testimonials',
+  'properties', 'neighborhoods', 'market-reports',
+  'agents', 'knowledge-center', 'new-construction',
+];
 
 function getTitleFromData(data: unknown): string {
   if (!data || typeof data !== 'object') return '';

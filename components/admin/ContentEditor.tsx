@@ -44,7 +44,7 @@ interface ContentEditorProps {
   selectedSiteId: string;
   selectedLocale: string;
   initialFilePath?: string;
-  fileFilter?: 'all' | 'blog' | 'siteSettings' | 'portfolio' | 'shopProducts' | 'journal' | 'collections' | 'testimonials' | 'properties' | 'neighborhoods' | 'market-reports';
+  fileFilter?: 'all' | 'blog' | 'siteSettings' | 'portfolio' | 'shopProducts' | 'journal' | 'collections' | 'testimonials' | 'properties' | 'neighborhoods' | 'market-reports' | 'agents' | 'knowledge-center' | 'new-construction' | 'events' | 'guides';
   titleOverride?: string;
   basePath?: string;
 }
@@ -168,6 +168,11 @@ export function ContentEditor({
     properties: 'properties/',
     neighborhoods: 'neighborhoods/',
     'market-reports': 'market-reports/',
+    agents: 'agents/',
+    'knowledge-center': 'knowledge-center/',
+    'new-construction': 'new-construction/',
+    events: 'events',
+    guides: 'guides',
   };
   const TARGET_DIR_BY_FILTER: Record<string, string> = {
     blog: 'blog',
@@ -179,6 +184,11 @@ export function ContentEditor({
     properties: 'properties',
     neighborhoods: 'neighborhoods',
     'market-reports': 'market-reports',
+    agents: 'agents',
+    'knowledge-center': 'knowledge-center',
+    'new-construction': 'new-construction',
+    events: 'events',
+    guides: 'guides',
   };
   const isCollectionFilter = fileFilter && fileFilter in COLLECTION_PREFIXES;
   const filesTitle =
@@ -192,6 +202,11 @@ export function ContentEditor({
     : fileFilter === 'properties' ? 'Properties'
     : fileFilter === 'neighborhoods' ? 'Neighborhoods'
     : fileFilter === 'market-reports' ? 'Market Reports'
+    : fileFilter === 'agents' ? 'Agents'
+    : fileFilter === 'knowledge-center' ? 'Knowledge Center'
+    : fileFilter === 'new-construction' ? 'New Construction'
+    : fileFilter === 'events' ? 'Events'
+    : fileFilter === 'guides' ? 'Guides'
     : 'Files';
 
   const site = useMemo(
@@ -1008,7 +1023,10 @@ export function ContentEditor({
         activeFile.path.startsWith('collections/') ||
         activeFile.path.startsWith('properties/') ||
         activeFile.path.startsWith('neighborhoods/') ||
-        activeFile.path.startsWith('market-reports/')
+        activeFile.path.startsWith('market-reports/') ||
+        activeFile.path.startsWith('agents/') ||
+        activeFile.path.startsWith('knowledge-center/') ||
+        activeFile.path.startsWith('new-construction/')
       )
   );
   const isHeaderFile = activeFile?.path === 'header.json';

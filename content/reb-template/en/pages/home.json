@@ -1,0 +1,100 @@
+{
+  "hero": {
+    "variant": "gallery-background",
+    "overlayOpacity": 0.45,
+    "slides": [
+      { "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1400", "alt": "Luxury home in Scarsdale" },
+      { "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1400", "alt": "Waterfront home in Larchmont" },
+      { "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1400", "alt": "Estate home in Bronxville" }
+    ],
+    "headline": "Find Your Home in Westchester County",
+    "subline": "12 years of local expertise. $180M+ in sales. 18 dedicated agents. Your trusted brokerage from search to closing.",
+    "ctaPrimary": { "label": "Search Properties", "href": "/properties" },
+    "ctaSecondary": { "label": "Free Consultation", "href": "/contact" }
+  },
+  "goalPaths": {
+    "headline": "How Can We Help You?",
+    "items": [
+      { "label": "I Want to Buy", "subline": "Find your perfect home with expert guidance", "href": "/buying", "icon": "Home" },
+      { "label": "I Want to Sell", "subline": "Strategic pricing and premium marketing", "href": "/selling", "icon": "DollarSign" },
+      { "label": "I'm Relocating", "subline": "Deep local knowledge for your move", "href": "/relocating", "icon": "MapPin" },
+      { "label": "I'm an Investor", "subline": "Data-driven investment strategy", "href": "/investing", "icon": "TrendingUp" },
+      { "label": "I Want to Join", "subline": "Build your career with the best", "href": "/join", "icon": "Users" }
+    ]
+  },
+  "statsBar": {
+    "variant": "animated-count",
+    "items": [
+      { "value": "180", "label": "In Career Sales", "prefix": "$", "suffix": "M+" },
+      { "value": "620", "label": "Transactions Closed", "suffix": "+" },
+      { "value": "12", "label": "Years in Business" },
+      { "value": "18", "label": "Expert Agents" },
+      { "value": "200", "label": "Five-Star Reviews", "suffix": "+" }
+    ]
+  },
+  "intro": {
+    "headline": "An Independent Brokerage Built on Expertise",
+    "body": "Pinnacle Realty Group was founded 12 years ago with a simple belief: that clients deserve better than a franchise template and a rotating door of agents. We built a team of dedicated specialists — people who live in Westchester, know every street, and treat every transaction with the attention it deserves.",
+    "ctaLabel": "Our Story",
+    "ctaHref": "/about",
+    "image": "https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?w=800"
+  },
+  "whyChooseUs": {
+    "headline": "Why Choose Pinnacle",
+    "items": [
+      { "icon": "MapPin", "heading": "Deep Local Knowledge", "description": "18 agents who live and work in Westchester — not transferred here from another market." },
+      { "icon": "TrendingUp", "heading": "Results That Speak", "description": "103% average sale-to-list ratio. 24-day average days on market. Numbers that matter." },
+      { "icon": "Users", "heading": "A Team Behind Every Transaction", "description": "When you work with a Pinnacle agent, the full resources of the brokerage are behind you." }
+    ]
+  },
+  "teamPreview": {
+    "headline": "Meet Our Agents",
+    "subline": "18 dedicated specialists across every area of Westchester County.",
+    "ctaLabel": "Meet the Full Team",
+    "ctaHref": "/team",
+    "agentSlugs": ["jane-smith", "marcus-johnson", "sarah-rodriguez"]
+  },
+  "testimonialStrip": {
+    "headline": "What Our Clients Say",
+    "testimonialIds": ["t-001", "t-002", "t-005"]
+  },
+  "neighborhoodSpotlight": {
+    "headline": "Explore Westchester Neighborhoods",
+    "subline": "Local knowledge that no algorithm can replicate.",
+    "ctaLabel": "All Neighborhoods",
+    "ctaHref": "/neighborhoods",
+    "neighborhoodSlugs": ["scarsdale", "larchmont", "bronxville"]
+  },
+  "marketReportTeaser": {
+    "headline": "Market Report",
+    "subline": "Westchester County — February 2026",
+    "keyStat": "Median price up 6.2% year-over-year",
+    "ctaLabel": "Read Full Report",
+    "ctaHref": "/market-reports/february-2026"
+  },
+  "knowledgeCenterPreview": {
+    "headline": "From Our Knowledge Center",
+    "ctaLabel": "Visit the Knowledge Center",
+    "ctaHref": "/knowledge-center",
+    "postSlugs": ["westchester-market-report-2026", "first-time-buyer-guide-westchester", "relocating-to-westchester"]
+  },
+  "consultationCta": {
+    "headline": "Ready to Take the Next Step?",
+    "subline": "Our team is ready to help. Schedule your free consultation today.",
+    "ctaLabel": "Schedule Consultation",
+    "ctaHref": "/contact",
+    "backgroundImage": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1400"
+  },
+  "contactForm": {
+    "headline": "Get in Touch",
+    "subline": "Send us a message and we'll respond within 2 hours."
+  },
+  "featuredListings": {
+    "headline": "Featured Properties",
+    "subline": "Handpicked listings across Westchester's finest communities.",
+    "ctaLabel": "View All Properties",
+    "ctaHref": "/properties",
+    "maxDisplay": 6,
+    "propertySlugs": ["45-oak-ridge-lane", "77-highland-terrace", "12-harbor-view-drive"]
+  }
+}

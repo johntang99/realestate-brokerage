@@ -1,0 +1,40 @@
+{
+  "slug": "sarah-rodriguez",
+  "status": "active",
+  "displayOrder": 3,
+  "role": "agent",
+  "name": "Sarah Rodriguez",
+  "title": "Real Estate Agent & Investment Specialist",
+  "photo": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600",
+  "bio": "Sarah brings a background in finance and 7 years of real estate experience to every transaction. She specializes in investment properties, multifamily acquisitions, and seller representation in the upper market tier. Her analytical approach and financial modeling skills set her apart — investors trust her to find deals that actually pencil out.",
+  "phone": "(845) 555-0193",
+  "email": "sarah@pinnaclerealty.com",
+  "social": {
+    "instagram": "https://instagram.com/sarah_re_westchester",
+    "linkedin": "https://linkedin.com/in/sarahrodriguez-re",
+    "facebook": ""
+  },
+  "licenseNumber": "10501200XXX",
+  "licenseState": "NY",
+  "specialties": ["Investment", "Sellers", "Multifamily", "1031 Exchange"],
+  "languages": ["English", "Spanish"],
+  "yearsExperience": 7,
+  "transactionCount": 98,
+  "volumeLabel": "$42M+",
+  "avgDaysOnMarket": 28,
+  "saleToListRatio": "102%",
+  "neighborhoods": ["Westside", "Northfield"],
+  "awards": ["Investment Specialist Certification 2023"],
+  "testimonials": [
+    {
+      "id": "t-sr-1",
+      "reviewer": "Tom & Angela Voss",
+      "reviewDate": "2025-08",
+      "rating": 5,
+      "text": "Sarah found us a duplex with a 7.2% cap rate that we almost passed on. She ran the numbers with us, showed us the upside, and now it's our best performing asset.",
+      "transactionType": "buyer",
+      "verified": true
+    }
+  ],
+  "featured": false
+}

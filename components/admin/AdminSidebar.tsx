@@ -12,35 +12,62 @@ import {
   SlidersHorizontal,
   Users,
   BookOpen,
+  Hammer,
+  Calendar,
+  Download,
+  UserCircle,
 } from 'lucide-react';
 import { getSession } from '@/lib/admin/auth';
 import { isSuperAdmin } from '@/lib/admin/permissions';
 
-const navigation = [
+const brokerAdminNav = [
   { name: 'Sites', href: '/admin/sites', icon: Building2 },
   { name: 'Site Settings', href: '/admin/site-settings', icon: SlidersHorizontal },
   { name: 'Content', href: '/admin/content', icon: FileText },
+  { name: 'Agents', href: '/admin/agents', icon: Users },
   { name: 'Properties', href: '/admin/properties', icon: Home },
   { name: 'Neighborhoods', href: '/admin/neighborhoods', icon: Map },
-  { name: 'Blog', href: '/admin/blog', icon: BookOpen },
+  { name: 'Knowledge Center', href: '/admin/knowledge-center', icon: BookOpen },
   { name: 'Market Reports', href: '/admin/market-reports', icon: BarChart2 },
   { name: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare },
+  { name: 'New Construction', href: '/admin/new-construction', icon: Hammer },
+  { name: 'Events', href: '/admin/events', icon: Calendar },
+  { name: 'Guides', href: '/admin/guides', icon: Download },
   { name: 'Media', href: '/admin/media', icon: Image },
   { name: 'Variants', href: '/admin/variants', icon: Layers },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ];
 
+const staffNav = brokerAdminNav.filter((item) =>
+  ['Content', 'Knowledge Center', 'Market Reports', 'Testimonials', 'Events', 'Guides', 'Media'].includes(item.name)
+);
+
+const agentNav = [
+  { name: 'My Profile', href: '/admin/agent-profile', icon: UserCircle },
+];
+
 export async function AdminSidebar() {
   const session = await getSession();
-  const isAdmin = session?.user ? isSuperAdmin(session.user) : false;
-  const items = isAdmin ? navigation : navigation.filter((item) => item.name !== 'Users');
+  const role = session?.user?.role || 'viewer';
+
+  let items = brokerAdminNav;
+  if (role === 'agent') {
+    items = agentNav;
+  } else if (role === 'staff') {
+    items = staffNav;
+  } else if (session?.user && !isSuperAdmin(session.user)) {
+    items = brokerAdminNav.filter((item) => item.name !== 'Users');
+  }
+
   return (
     <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
       <div className="flex items-center h-16 px-6 border-b border-gray-200">
-        <span className="text-lg font-semibold">Admin Dashboard</span>
+        <span className="text-lg font-semibold" style={{ color: '#1A2744' }}>
+          {role === 'agent' ? 'Agent Portal' : 'Admin Dashboard'}
+        </span>
       </div>
-      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+      <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-1">
         {items.map((item) => (
           <Link
             key={item.href}
@@ -52,6 +79,13 @@ export async function AdminSidebar() {
           </Link>
         ))}
       </nav>
+      {role === 'agent' && (
+        <div className="px-4 py-4 border-t border-gray-100">
+          <p className="text-xs text-gray-400 text-center">
+            Pinnacle Realty Group<br />Agent Portal
+          </p>
+        </div>
+      )}
     </aside>
   );
 }

@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "buyers-guide",
+    "title": "Complete Buyer's Guide to Westchester County",
+    "description": "Everything you need to know about buying a home in Westchester — from pre-approval to closing day. 24 pages of expert guidance.",
+    "category": "buyers",
+    "pdfUrl": "/guides/buyers-guide.pdf",
+    "coverImage": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400",
+    "active": true
+  },
+  {
+    "slug": "sellers-guide",
+    "title": "Seller's Complete Guide",
+    "description": "Our step-by-step guide to selling your Westchester home for maximum value. Includes pricing strategy, staging checklist, and marketing timeline.",
+    "category": "sellers",
+    "pdfUrl": "/guides/sellers-guide.pdf",
+    "coverImage": "https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?w=400",
+    "active": true
+  },
+  {
+    "slug": "relocation-guide",
+    "title": "Complete Relocation Guide to Westchester County",
+    "description": "Moving to Westchester? This comprehensive guide covers neighborhoods, schools, commute times, cost of living, and everything you need to make the right choice.",
+    "category": "relocation",
+    "pdfUrl": "/guides/relocation-guide.pdf",
+    "coverImage": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400",
+    "active": true
+  },
+  {
+    "slug": "investor-report",
+    "title": "Westchester Investment Market Report",
+    "description": "Current cap rates, rental yield data by neighborhood, market trends, and off-market deal criteria for Westchester County investors.",
+    "category": "investors",
+    "pdfUrl": "/guides/investor-report.pdf",
+    "coverImage": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400",
+    "active": true
+  },
+  {
+    "slug": "first-time-buyer",
+    "title": "First-Time Buyer Guide",
+    "description": "Specifically designed for first-time buyers in Westchester. Covers the entire process, common mistakes to avoid, and how to compete in a fast-moving market.",
+    "category": "buyers",
+    "pdfUrl": "/guides/first-time-buyer.pdf",
+    "coverImage": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
+    "active": true
+  }
+]

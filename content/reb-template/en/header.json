@@ -1,0 +1,35 @@
+{
+  "logo": {
+    "src": "",
+    "alt": "Pinnacle Realty Group",
+    "width": 160,
+    "height": 48
+  },
+  "logoText": "Pinnacle Realty Group",
+  "phone": "(845) 555-0190",
+  "ctaLabel": "Schedule Consultation",
+  "ctaHref": "/contact",
+  "scrollThreshold": 80,
+  "stickyCtaPhone": true,
+  "stickyCtaButton": true,
+  "transparentOnHero": true,
+  "navigation": [
+    { "label": "Properties", "href": "/properties" },
+    { "label": "Neighborhoods", "href": "/neighborhoods" },
+    {
+      "label": "Buy & Sell",
+      "href": "#",
+      "children": [
+        { "label": "Buying", "href": "/buying" },
+        { "label": "Selling", "href": "/selling" },
+        { "label": "Home Valuation", "href": "/home-valuation" },
+        { "label": "New Construction", "href": "/new-construction" }
+      ]
+    },
+    { "label": "Investing", "href": "/investing" },
+    { "label": "Relocating", "href": "/relocating" },
+    { "label": "Our Team", "href": "/team" },
+    { "label": "About", "href": "/about" },
+    { "label": "Knowledge Center", "href": "/knowledge-center" }
+  ]
+}

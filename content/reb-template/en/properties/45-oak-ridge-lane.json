@@ -1,0 +1,39 @@
+{
+  "slug": "45-oak-ridge-lane",
+  "address": "45 Oak Ridge Lane",
+  "city": "Scarsdale",
+  "state": "NY",
+  "zip": "10583",
+  "neighborhood": "northfield",
+  "status": "active",
+  "type": "single-family",
+  "price": 1295000,
+  "priceDisplay": "$1,295,000",
+  "beds": 5,
+  "baths": 4,
+  "sqft": 4200,
+  "lotSize": "0.42 acres",
+  "yearBuilt": 2018,
+  "garage": "2-car attached",
+  "hoa": null,
+  "schoolDistrict": "Scarsdale Union Free School District",
+  "mlsNumber": "H6280011",
+  "listingAgentSlug": "jane-smith",
+  "featured": true,
+  "coverImage": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800",
+  "gallery": [
+    { "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800", "alt": "Front exterior" },
+    { "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800", "alt": "Living room" },
+    { "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800", "alt": "Kitchen" }
+  ],
+  "description": "Stunning colonial set on nearly half an acre in the heart of Scarsdale. Completely renovated in 2022, this exceptional home features a chef's kitchen with Thermador appliances, wide-plank white oak floors throughout, and a primary suite that rivals any luxury hotel. The professionally landscaped grounds include a heated in-ground pool, bluestone patio, and mature specimen trees offering complete privacy.",
+  "features": {
+    "interior": ["Chef's Kitchen", "Primary Suite", "Home Office", "Gas Fireplace", "Wine Cellar", "Mudroom"],
+    "exterior": ["In-Ground Pool", "Bluestone Patio", "3-Season Porch", "Privacy Landscaping"],
+    "systems": ["Whole-House Generator", "Central Vacuum", "Smart Home System", "3-Zone HVAC"]
+  },
+  "seo": {
+    "title": "45 Oak Ridge Lane, Scarsdale NY | $1,295,000",
+    "description": "Stunning 5BR/4BA colonial in Scarsdale. Renovated 2022, chef's kitchen, in-ground pool, Scarsdale schools. Listed by Pinnacle Realty Group."
+  }
+}

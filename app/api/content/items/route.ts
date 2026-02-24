@@ -8,6 +8,7 @@ const CONTENT_DIR = path.join(process.cwd(), 'content');
 const ALLOWED_DIRECTORIES = [
   'portfolio', 'shop-products', 'journal', 'collections',
   'properties', 'neighborhoods', 'blog', 'market-reports',
+  'agents', 'knowledge-center', 'new-construction',
 ] as const;
 type AllowedDirectory = (typeof ALLOWED_DIRECTORIES)[number];
 

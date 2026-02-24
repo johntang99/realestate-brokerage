@@ -568,10 +568,45 @@ html {
   text-transform: uppercase;
   color: #fff;
 }
-.status-badge-active  { background: var(--status-active, #059669); }
-.status-badge-pending { background: var(--status-pending, #D97706); }
-.status-badge-sold    { background: var(--status-sold, #C53030); }
-.status-badge-lease   { background: var(--status-lease, #3B82F6); }
+.status-badge-active  { background: var(--status-active, #2E6B4F); }
+.status-badge-pending { background: var(--status-pending, #C17F24); }
+.status-badge-sold    { background: var(--status-sold, #8B1A1A); }
+.status-badge-lease   { background: var(--status-lease, #2563EB); }
+.status-badge-coming-soon { background: var(--status-coming-soon, #1A2744); }
+
+/* REB Agent Card */
+.agent-card {
+  transition: transform var(--effect-transition-base, 200ms ease), box-shadow var(--effect-transition-base, 200ms ease), border-color var(--effect-transition-base, 200ms ease);
+}
+.agent-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--effect-card-shadow-hover, 0 8px 32px rgba(26,39,68,0.16));
+}
+
+/* REB Gold line decorator */
+.gold-line::before {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: var(--secondary, #C9A96E);
+  margin-bottom: 1rem;
+}
+.gold-line-center::before { margin-left: auto; margin-right: auto; }
+
+/* REB Editorial body */
+.editorial-body {
+  font-family: var(--font-body);
+  line-height: 1.8;
+  font-size: 1.0625rem;
+  color: var(--text-primary, #1A1A2E);
+}
+
+/* REB Section alternating */
+.section-light  { background: var(--backdrop-light, #F8F6F2); }
+.section-mid    { background: var(--backdrop-mid, #EDF0F4); }
+.section-dark   { background: var(--backdrop-dark, #141E30); color: var(--text-on-dark, #fff); }
+.section-primary { background: var(--primary, #1A2744); color: var(--text-on-dark, #fff); }
 
 /* Gold stars */
 .star-filled  { color: var(--gold-star, #F59E0B); }

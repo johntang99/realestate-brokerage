@@ -316,7 +316,7 @@ export function BookingsManager({ sites, selectedSiteId }: BookingsManagerProps)
               nowIndicator
               height="100%"
               events={calendarEvents}
-              eventMouseEnter={(info) => {
+              eventMouseEnter={(info: any) => {
                 const native = info.jsEvent as MouseEvent;
                 setHoverCard({
                   x: native.clientX,

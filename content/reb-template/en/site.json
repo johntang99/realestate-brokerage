@@ -1,0 +1,60 @@
+{
+  "id": "reb-template",
+  "name": "Pinnacle Realty Group",
+  "tagline": "Your Local Real Estate Authority",
+  "subtagline": "Serving Westchester County with deep market expertise, trusted agents, and results that speak.",
+  "phone": "(845) 555-0190",
+  "smsPhone": "(845) 555-0190",
+  "email": "hello@pinnaclerealty.com",
+  "address": {
+    "street": "123 Main Street, Suite 200",
+    "city": "Middletown",
+    "state": "NY",
+    "zip": "10940",
+    "full": "123 Main Street, Suite 200, Middletown, NY 10940",
+    "mapsUrl": "https://maps.google.com/?q=123+Main+Street+Middletown+NY+10940",
+    "mapsEmbedUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d-74.4!3d41.44!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDHCsDI2JzI0LjAiTiA3NMKwMjQnMDAuMCJX!5e0!3m2!1sen!2sus!4v1234567890",
+    "lat": 41.44,
+    "lng": -74.4
+  },
+  "license": {
+    "brokerageType": "Licensed Real Estate Broker",
+    "licenseNumber": "10991200XXX",
+    "licenseState": "NY",
+    "principalBrokerName": "Jane Smith",
+    "principalBrokerLicense": "10301200XXX",
+    "principalBrokerTitle": "Principal Broker & Founder"
+  },
+  "social": {
+    "facebook": "https://facebook.com/pinnaclerealtygroup",
+    "instagram": "https://instagram.com/pinnaclerealtygroup",
+    "linkedin": "https://linkedin.com/company/pinnaclerealtygroup",
+    "youtube": "",
+    "twitter": "",
+    "tiktok": ""
+  },
+  "stats": {
+    "totalVolume": "$180M+",
+    "totalTransactions": "620+",
+    "yearsInBusiness": "12",
+    "agentCount": "18",
+    "fiveStarReviews": "200+",
+    "avgDaysOnMarket": "24",
+    "saleToListRatio": "103%"
+  },
+  "officeHours": {
+    "weekdays": "Mon–Fri: 9:00 AM – 6:00 PM",
+    "saturday": "Sat: 10:00 AM – 4:00 PM",
+    "sunday": "Sun: By appointment"
+  },
+  "chatWidget": {
+    "enabled": false,
+    "provider": "tidio",
+    "tidioKey": ""
+  },
+  "compliance": {
+    "equalHousingText": "Pinnacle Realty Group is an Equal Housing Opportunity broker.",
+    "mlsDisclaimer": "All listing information is from sources deemed reliable but not guaranteed. Information is provided for consumers' personal, non-commercial use.",
+    "fairHousingStatement": "We are pledged to the letter and spirit of U.S. policy for the achievement of equal housing opportunity throughout the Nation."
+  }
+}

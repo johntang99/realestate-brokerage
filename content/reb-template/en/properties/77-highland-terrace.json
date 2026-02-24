@@ -1,0 +1,37 @@
+{
+  "slug": "77-highland-terrace",
+  "address": "77 Highland Terrace",
+  "city": "Bronxville",
+  "state": "NY",
+  "zip": "10708",
+  "neighborhood": "northfield",
+  "status": "active",
+  "type": "single-family",
+  "price": 2150000,
+  "priceDisplay": "$2,150,000",
+  "beds": 6,
+  "baths": 5,
+  "sqft": 5800,
+  "lotSize": "0.68 acres",
+  "yearBuilt": 1928,
+  "garage": "2-car detached",
+  "hoa": null,
+  "schoolDistrict": "Bronxville Union Free School District",
+  "mlsNumber": "H6280015",
+  "listingAgentSlug": "jane-smith",
+  "featured": true,
+  "coverImage": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800",
+  "gallery": [
+    { "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800", "alt": "Exterior" }
+  ],
+  "description": "A landmark Tudor estate on the most coveted street in Bronxville. Thoughtfully updated while preserving all original architectural details — leaded glass windows, ornate plasterwork, original stone fireplace mantels. Six bedrooms, five full baths, a library, formal dining room, and a stunning great room addition completed in 2019.",
+  "features": {
+    "interior": ["Tudor Architecture", "Original Details", "Library", "Formal Dining", "Great Room Addition", "Multiple Fireplaces"],
+    "exterior": ["Stone Walls", "Mature Gardens", "Bluestone Terrace", "Two-Car Garage"],
+    "systems": ["New HVAC 2021", "Updated Electrical", "Generator"]
+  },
+  "seo": {
+    "title": "77 Highland Terrace, Bronxville NY | $2,150,000",
+    "description": "Landmark Tudor estate in Bronxville. 6BR/5BA, 5,800 SF, stunning updated interior preserving original 1928 details. Listed by Pinnacle Realty Group."
+  }
+}

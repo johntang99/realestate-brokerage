@@ -1,8 +1,8 @@
 {
   "domains": [
     {
-      "siteId": "rea-template",
-      "domain": "rea.local",
+      "siteId": "reb-template",
+      "domain": "reb.local",
       "environment": "dev",
       "enabled": true
     }

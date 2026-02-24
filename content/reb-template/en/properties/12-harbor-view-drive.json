@@ -1,0 +1,37 @@
+{
+  "slug": "12-harbor-view-drive",
+  "address": "12 Harbor View Drive",
+  "city": "Larchmont",
+  "state": "NY",
+  "zip": "10538",
+  "neighborhood": "downtown",
+  "status": "active",
+  "type": "single-family",
+  "price": 875000,
+  "priceDisplay": "$875,000",
+  "beds": 4,
+  "baths": 3,
+  "sqft": 2800,
+  "lotSize": "0.28 acres",
+  "yearBuilt": 1965,
+  "garage": "1-car attached",
+  "hoa": null,
+  "schoolDistrict": "Mamaroneck Union Free School District",
+  "mlsNumber": "H6280012",
+  "listingAgentSlug": "marcus-johnson",
+  "featured": true,
+  "coverImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800",
+  "gallery": [
+    { "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800", "alt": "Front exterior" }
+  ],
+  "description": "Charming colonial steps from Larchmont Manor Park and Long Island Sound. Updated kitchen, hardwood floors throughout, and a finished lower level perfect for a family room or home office. Walk to Larchmont Village shops, restaurants, and the Metro-North station for a 35-minute commute to Grand Central.",
+  "features": {
+    "interior": ["Updated Kitchen", "Hardwood Floors", "Finished Basement", "Fireplace"],
+    "exterior": ["Private Yard", "Patio", "Walk to Village"],
+    "systems": ["Central A/C", "Gas Heat"]
+  },
+  "seo": {
+    "title": "12 Harbor View Drive, Larchmont NY | $875,000",
+    "description": "4BR/3BA colonial in Larchmont. Steps to Long Island Sound, updated kitchen, walk to Metro-North. Listed by Pinnacle Realty Group."
+  }
+}

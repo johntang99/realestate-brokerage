@@ -1,7 +1,0 @@
-{
-  "hero": { "variant": "minimal-text", "headline": "Explore Westchester Neighborhoods", "subline": "Local expertise that no algorithm can replicate. Discover the community that's right for you." },
-  "featured": { "neighborhoodSlug": "scarsdale" },
-  "grid": { "variant": "neighborhood-cards", "itemsPerPage": 12 },
-  "map": { "enabled": false },
-  "cta": { "variant": "centered", "headline": "Not sure which neighborhood fits you best?", "subline": "I'll match you with the perfect area based on your lifestyle, schools, commute, and budget.", "ctaLabel": "Let's Talk", "ctaHref": "/contact" }
-}

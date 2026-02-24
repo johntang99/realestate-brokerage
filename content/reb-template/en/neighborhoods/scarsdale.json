@@ -1,0 +1,27 @@
+{
+  "slug": "scarsdale",
+  "name": "Scarsdale",
+  "tagline": "Where Award-Winning Schools Meet Luxury Living",
+  "region": "Central Westchester",
+  "featured": true,
+  "coverImage": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800",
+  "overview": "Scarsdale is consistently ranked among the best places to live in New York State — and for good reason. This picturesque village combines world-class public schools, walkable downtown villages, and meticulously maintained homes on generous lots. The Metro-North Harlem Line delivers residents to Grand Central in under 35 minutes, making Scarsdale the pinnacle of Westchester family living.",
+  "marketSnapshot": {
+    "medianPrice": "$1,650,000",
+    "avgDaysOnMarket": "21",
+    "inventoryCount": "34",
+    "pricePerSqft": "$520",
+    "yoyChange": "+4.2%"
+  },
+  "lifestyle": ["Top-Rated Schools", "Village Shopping", "Easy NYC Commute", "Parks & Recreation", "Community Events"],
+  "schools": [
+    { "name": "Scarsdale High School", "type": "Public", "grades": "9-12", "rating": "10/10" },
+    { "name": "Edgemont Jr/Sr High School", "type": "Public", "grades": "7-12", "rating": "9/10" },
+    { "name": "Greenacres Elementary", "type": "Public", "grades": "K-5", "rating": "10/10" }
+  ],
+  "gallery": [],
+  "seo": {
+    "title": "Scarsdale NY Real Estate | Pinnacle Realty Group",
+    "description": "Search homes for sale in Scarsdale, NY. Award-winning schools, luxury properties, NYC commuter-friendly. Median price $1.65M. Expert local guidance."
+  }
+}

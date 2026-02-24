@@ -1,0 +1,27 @@
+{
+  "slug": "larchmont",
+  "name": "Larchmont",
+  "tagline": "Village Charm on Long Island Sound",
+  "region": "Southern Westchester",
+  "featured": true,
+  "coverImage": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800",
+  "overview": "Larchmont is Southern Westchester's most beloved waterfront village. Tree-lined streets, a charming walkable downtown packed with independent restaurants and boutiques, and direct access to Long Island Sound make this one of the most desirable communities in the region. The Metro-North New Haven Line connects to Grand Central in about 35 minutes.",
+  "marketSnapshot": {
+    "medianPrice": "$925,000",
+    "avgDaysOnMarket": "26",
+    "inventoryCount": "22",
+    "pricePerSqft": "$420",
+    "yoyChange": "+3.1%"
+  },
+  "lifestyle": ["Waterfront Access", "Walkable Village", "Top Schools", "NYC Commuter", "Harbor Views"],
+  "schools": [
+    { "name": "Mamaroneck High School", "type": "Public", "grades": "9-12", "rating": "9/10" },
+    { "name": "Hommocks Middle School", "type": "Public", "grades": "6-8", "rating": "9/10" },
+    { "name": "Murray Avenue Elementary", "type": "Public", "grades": "K-5", "rating": "9/10" }
+  ],
+  "gallery": [],
+  "seo": {
+    "title": "Larchmont NY Real Estate | Pinnacle Realty Group",
+    "description": "Search homes for sale in Larchmont, NY. Waterfront village, top schools, walkable downtown, 35 min to NYC. Expert local real estate guidance."
+  }
+}

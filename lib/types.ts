@@ -677,7 +677,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'super_admin' | 'site_admin' | 'editor' | 'viewer';
+  role: 'super_admin' | 'site_admin' | 'editor' | 'viewer' | 'broker_admin' | 'agent' | 'staff';
   sites: string[];
   avatar?: string;
   createdAt: string;

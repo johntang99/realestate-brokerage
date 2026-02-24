@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "slug": "first-time-buyer-seminar-march-2026",
+      "name": "First-Time Buyer Seminar",
+      "date": "2026-03-15",
+      "time": "10:00 AM – 12:00 PM",
+      "location": "Pinnacle Realty Group Office — 123 Main Street, Middletown NY",
+      "description": "Join us for a free two-hour seminar covering everything first-time buyers need to know: pre-approval, the offer process, inspections, closing costs, and what to expect in today's Westchester market. Light breakfast provided.",
+      "image": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
+      "externalLink": "",
+      "active": true
+    },
+    {
+      "slug": "westchester-investment-forum-april-2026",
+      "name": "Westchester Real Estate Investment Forum",
+      "date": "2026-04-08",
+      "time": "6:00 PM – 8:30 PM",
+      "location": "Pinnacle Realty Group Office — 123 Main Street, Middletown NY",
+      "description": "An evening for serious investors exploring Westchester County's multifamily, commercial, and single-family investment market. Sarah Rodriguez will present current cap rate data, rental yield analysis, and off-market opportunities. RSVP required — limited seating.",
+      "image": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=800",
+      "externalLink": "",
+      "active": true
+    },
+    {
+      "slug": "spring-market-open-house-weekend",
+      "name": "Spring Market Open House Weekend",
+      "date": "2026-04-19",
+      "time": "All day",
+      "location": "Multiple locations across Westchester County",
+      "description": "Our annual open house weekend featuring all active Pinnacle Realty Group listings. Visit multiple properties in a single weekend, meet our agents, and get a firsthand look at this spring's inventory.",
+      "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800",
+      "externalLink": "",
+      "active": true
+    }
+  ]
+}
