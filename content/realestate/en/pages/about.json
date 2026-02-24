@@ -1,11 +1,166 @@
 {
-  "hero": { "variant": "single-image", "image": "", "imageAlt": "Alexandra Reeves", "headline": "Alexandra Reeves", "subline": "Licensed Real Estate Salesperson | Compass | Westchester County, NY" },
-  "story": { "variant": "text-image-alternating", "blocks": [{"body":"I didn't plan to become a real estate agent — I fell into it after helping a close friend navigate an incredibly complicated purchase in Scarsdale 18 years ago. What I discovered was a profession that combined everything I love: people, strategy, local community, and the satisfaction of helping families find their place in the world. Since then, I've closed over 500 transactions and $150M in career sales — but the number that matters most to me is the 500 families who trusted me with their biggest financial decision.","image":"","imageAlt":"Alexandra at a showing"},{"body":"I grew up in Westchester County and raised my own family here. That's not just background — it's expertise. I know which streets flood in spring, which school districts have exceptional arts programs, which neighborhoods are quietly appreciating, and which local lenders will actually get your deal to close on time. That knowledge only comes from living here, and it's the single most valuable thing I bring to every transaction.","image":"","imageAlt":"Alexandra in the community"},{"body":"My philosophy is simple: I treat every client the way I'd want to be treated. I pick up the phone. I tell you the truth about pricing, even when it's not what you want to hear. I stay in your corner through every obstacle, and I don't celebrate until you do. That commitment to genuine service is why over 80% of my business comes from referrals and repeat clients.","image":"","imageAlt":"Alexandra with clients"}] },
-  "stats": { "variant": "quiet-numbers", "items": [{"value":"$150M+","label":"In Career Sales"},{"value":"500+","label":"Families Helped"},{"value":"18","label":"Years of Experience"},{"value":"101.3%","label":"Avg Sale-to-List Ratio"}] },
-  "credentials": { "variant": "badge-grid", "headline": "Professional Designations", "items": [{"name":"Graduate, REALTOR® Institute","abbreviation":"GRI","description":"Advanced real estate education across law, finance, and professional standards"},{"name":"Certified Residential Specialist","abbreviation":"CRS","description":"Top 3% of REALTORS® nationwide — the highest credential in residential sales"},{"name":"Accredited Buyer's Representative","abbreviation":"ABR","description":"Specialized training in buyer representation and negotiation"},{"name":"Seniors Real Estate Specialist","abbreviation":"SRES","description":"Expertise serving clients 50+ through major housing transitions"},{"name":"Certified Luxury Home Marketing Specialist","abbreviation":"CLHMS","description":"Recognized expertise in luxury residential properties"}] },
-  "team": { "variant": "editorial", "headline": "The Team", "members": [{"name":"Alexandra Reeves","title":"Licensed Real Estate Salesperson","photo":"","bio":"18 years of Westchester County expertise. Lead agent and founder of the Alexandra Reeves Real Estate team.","specialization":"Residential Sales, Luxury Properties","email":"alex@alexandrareeves.com","phone":"+1 (914) 555-0178","featured":true},{"name":"Marcus Chen","title":"Buyer's Agent","photo":"","bio":"Specializes in first-time buyers and relocation clients. Former architect with exceptional eye for property potential.","specialization":"Buyer Representation, New Construction"},{"name":"Diana Rosario","title":"Listing Coordinator","photo":"","bio":"Manages all listing preparations, professional photography scheduling, and marketing materials production.","specialization":"Listing Operations, Marketing"}] },
-  "awards": { "variant": "timeline", "headline": "Awards & Recognition", "items": [{"name":"Top 1% of Westchester County Agents","organization":"Hudson Gateway Association of REALTORS®","year":2025},{"name":"Chairman's Club Award","organization":"Compass","year":2024},{"name":"Chairman's Club Award","organization":"Compass","year":2023},{"name":"Five Star Real Estate Agent","organization":"Westchester Magazine","year":2023},{"name":"Top 1% of Westchester County Agents","organization":"Hudson Gateway Association of REALTORS®","year":2022},{"name":"Circle of Excellence — Gold","organization":"Compass New York","year":2021}] },
-  "community": { "variant": "text-image", "headline": "Community Involvement", "body": "Westchester County has given my family so much, and giving back is a responsibility I take seriously. I serve on the board of the Westchester Land Trust, volunteer with Habitat for Humanity's local chapter, and sponsor the annual Scarsdale Youth Soccer League. Real estate isn't just transactions — it's the fabric of our community, and I'm proud to help weave it together.", "image": "", "imageAlt": "Community involvement" },
-  "brokerage": { "logo": "", "name": "Compass", "description": "Alexandra Reeves is a licensed real estate salesperson affiliated with Compass, a licensed real estate broker and abides by Equal Housing Opportunity laws. All material presented herein is intended for informational purposes only." },
-  "cta": { "variant": "centered", "headline": "Let's work together.", "subline": "Whether you're ready to move or just starting to explore, I'd love to have a conversation.", "ctaLabel": "Schedule a Consultation", "ctaHref": "/contact" }
+  "cta": {
+    "ctaHref": "/contact",
+    "subline": "Whether you're ready to move or just starting to explore, I'd love to have a conversation.",
+    "variant": "centered",
+    "ctaLabel": "Schedule a Consultation",
+    "headline": "Let's work together."
+  },
+  "hero": {
+    "image": "",
+    "subline": "Licensed Real Estate Salesperson | Compass | Westchester County, NY",
+    "variant": "single-image",
+    "headline": "Alexandra Reeves",
+    "imageAlt": "Alexandra Reeves"
+  },
+  "team": {
+    "members": [
+      {
+        "bio": "18 years of Westchester County expertise. Lead agent and founder of the Alexandra Reeves Real Estate team.",
+        "name": "Alexandra Reeves",
+        "email": "alex@alexandrareeves.com",
+        "phone": "+1 (914) 555-0178",
+        "photo": "",
+        "title": "Licensed Real Estate Salesperson",
+        "featured": true,
+        "specialization": "Residential Sales, Luxury Properties"
+      },
+      {
+        "bio": "Specializes in first-time buyers and relocation clients. Former architect with exceptional eye for property potential.",
+        "name": "Marcus Chen",
+        "photo": "",
+        "title": "Buyer's Agent",
+        "specialization": "Buyer Representation, New Construction"
+      },
+      {
+        "bio": "Manages all listing preparations, professional photography scheduling, and marketing materials production.",
+        "name": "Diana Rosario",
+        "photo": "",
+        "title": "Listing Coordinator",
+        "specialization": "Listing Operations, Marketing"
+      }
+    ],
+    "variant": "editorial",
+    "headline": "The Team"
+  },
+  "stats": {
+    "items": [
+      {
+        "label": "In Career Sales",
+        "value": "$150M+"
+      },
+      {
+        "label": "Families Helped",
+        "value": "500+"
+      },
+      {
+        "label": "Years of Experience",
+        "value": "18"
+      },
+      {
+        "label": "Avg Sale-to-List Ratio",
+        "value": "101.3%"
+      }
+    ],
+    "variant": "quiet-numbers"
+  },
+  "story": {
+    "blocks": [
+      {
+        "body": "I didn't plan to become a real estate agent — I fell into it after helping a close friend navigate an incredibly complicated purchase in Scarsdale 18 years ago. What I discovered was a profession that combined everything I love: people, strategy, local community, and the satisfaction of helping families find their place in the world. Since then, I've closed over 500 transactions and $150M in career sales — but the number that matters most to me is the 500 families who trusted me with their biggest financial decision.",
+        "image": "https://jbbcuczsrwizbxbnhedc.supabase.co/storage/v1/object/public/media/realestate/general/1771908774902-alex-reeves-2.png",
+        "imageAlt": "Alexandra at a showing"
+      },
+      {
+        "body": "I grew up in Westchester County and raised my own family here. That's not just background — it's expertise. I know which streets flood in spring, which school districts have exceptional arts programs, which neighborhoods are quietly appreciating, and which local lenders will actually get your deal to close on time. That knowledge only comes from living here, and it's the single most valuable thing I bring to every transaction.",
+        "image": "",
+        "imageAlt": "Alexandra in the community"
+      },
+      {
+        "body": "My philosophy is simple: I treat every client the way I'd want to be treated. I pick up the phone. I tell you the truth about pricing, even when it's not what you want to hear. I stay in your corner through every obstacle, and I don't celebrate until you do. That commitment to genuine service is why over 80% of my business comes from referrals and repeat clients.",
+        "image": "",
+        "imageAlt": "Alexandra with clients"
+      }
+    ],
+    "variant": "text-image-alternating"
+  },
+  "awards": {
+    "items": [
+      {
+        "name": "Top 1% of Westchester County Agents",
+        "year": 2025,
+        "organization": "Hudson Gateway Association of REALTORS®"
+      },
+      {
+        "name": "Chairman's Club Award",
+        "year": 2024,
+        "organization": "Compass"
+      },
+      {
+        "name": "Chairman's Club Award",
+        "year": 2023,
+        "organization": "Compass"
+      },
+      {
+        "name": "Five Star Real Estate Agent",
+        "year": 2023,
+        "organization": "Westchester Magazine"
+      },
+      {
+        "name": "Top 1% of Westchester County Agents",
+        "year": 2022,
+        "organization": "Hudson Gateway Association of REALTORS®"
+      },
+      {
+        "name": "Circle of Excellence — Gold",
+        "year": 2021,
+        "organization": "Compass New York"
+      }
+    ],
+    "variant": "timeline",
+    "headline": "Awards & Recognition"
+  },
+  "brokerage": {
+    "logo": "",
+    "name": "Compass",
+    "description": "Alexandra Reeves is a licensed real estate salesperson affiliated with Compass, a licensed real estate broker and abides by Equal Housing Opportunity laws. All material presented herein is intended for informational purposes only."
+  },
+  "community": {
+    "body": "Westchester County has given my family so much, and giving back is a responsibility I take seriously. I serve on the board of the Westchester Land Trust, volunteer with Habitat for Humanity's local chapter, and sponsor the annual Scarsdale Youth Soccer League. Real estate isn't just transactions — it's the fabric of our community, and I'm proud to help weave it together.",
+    "image": "",
+    "variant": "text-image",
+    "headline": "Community Involvement",
+    "imageAlt": "Community involvement"
+  },
+  "credentials": {
+    "items": [
+      {
+        "name": "Graduate, REALTOR® Institute",
+        "description": "Advanced real estate education across law, finance, and professional standards",
+        "abbreviation": "GRI"
+      },
+      {
+        "name": "Certified Residential Specialist",
+        "description": "Top 3% of REALTORS® nationwide — the highest credential in residential sales",
+        "abbreviation": "CRS"
+      },
+      {
+        "name": "Accredited Buyer's Representative",
+        "description": "Specialized training in buyer representation and negotiation",
+        "abbreviation": "ABR"
+      },
+      {
+        "name": "Seniors Real Estate Specialist",
+        "description": "Expertise serving clients 50+ through major housing transitions",
+        "abbreviation": "SRES"
+      },
+      {
+        "name": "Certified Luxury Home Marketing Specialist",
+        "description": "Recognized expertise in luxury residential properties",
+        "abbreviation": "CLHMS"
+      }
+    ],
+    "variant": "badge-grid",
+    "headline": "Professional Designations"
+  }
 }

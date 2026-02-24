@@ -29,6 +29,7 @@ import { CaseStudiesPanel } from '@/components/admin/panels/CaseStudiesPanel';
 import { ServicesListPanel } from '@/components/admin/panels/ServicesListPanel';
 import { FeaturedPostPanel } from '@/components/admin/panels/FeaturedPostPanel';
 import { PostsPanel } from '@/components/admin/panels/PostsPanel';
+import { AboutPagePanel } from '@/components/admin/panels/AboutPagePanel';
 
 interface ContentFileItem {
   id: string;
@@ -1013,6 +1014,7 @@ export function ContentEditor({
   const isHeaderFile = activeFile?.path === 'header.json';
   const isThemeFile = activeFile?.path === 'theme.json';
   const isHomePageFile = activeFile?.path === 'pages/home.json';
+  const isAboutPageFile = activeFile?.path === 'pages/about.json';
   const isServicesPageFile = activeFile?.path === 'pages/services.json';
   const allowCreateOrDuplicate = fileFilter !== 'siteSettings';
   const variantSections = formData
@@ -1649,7 +1651,15 @@ export function ContentEditor({
                 />
               )}
 
-              {formData?.hero && (
+              {isAboutPageFile && formData && (
+                <AboutPagePanel
+                  formData={formData}
+                  updateFormValue={updateFormValue}
+                  openImagePicker={openImagePicker}
+                />
+              )}
+
+              {formData?.hero && !isAboutPageFile && (
                 <HeroPanel
                   formData={formData}
                   isHomePageFile={isHomePageFile}
@@ -1685,7 +1695,7 @@ export function ContentEditor({
                 />
               )}
 
-              {formData?.cta && (
+              {formData?.cta && !isAboutPageFile && (
                 <CtaPanel
                   formData={formData}
                   updateFormValue={updateFormValue}

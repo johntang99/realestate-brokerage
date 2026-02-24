@@ -63,8 +63,10 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
       <header
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          background: isSolid ? 'white' : 'transparent',
-          boxShadow: isSolid ? '0 1px 20px rgba(0,0,0,0.08)' : 'none',
+          background: isSolid ? 'white' : 'rgba(15, 23, 42, 0.18)',
+          boxShadow: isSolid ? '0 1px 20px rgba(0,0,0,0.08)' : '0 1px 10px rgba(0,0,0,0.10)',
+          backdropFilter: isSolid ? 'none' : 'blur(6px) saturate(120%)',
+          borderBottom: isSolid ? '1px solid rgba(0,0,0,0.06)' : '1px solid rgba(255,255,255,0.16)',
         }}
       >
         <div className="container-custom flex items-center justify-between h-16 md:h-18">
@@ -75,7 +77,7 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
               <img src={config.logo} alt={logoText} className="h-8 w-auto" />
             ) : (
               <span className="font-serif text-lg font-semibold tracking-wide transition-colors"
-                style={{ color: isSolid ? 'var(--primary)' : 'white' }}>
+                style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', textShadow: isSolid ? 'none' : '0 1px 8px rgba(0,0,0,0.35)' }}>
                 {logoText}
               </span>
             )}
@@ -86,7 +88,7 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
             {navItems.map(item => (
               <Link key={item.href} href={`/${locale}${item.href}`}
                 className={navLink}
-                style={{ color: isSolid ? 'var(--primary)' : 'white' }}>
+                style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', textShadow: isSolid ? 'none' : '0 1px 8px rgba(0,0,0,0.35)' }}>
                 {locale === 'zh' ? (item.labelCn || item.label) : item.label}
               </Link>
             ))}
@@ -97,7 +99,7 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
             {config.showPhone && phone && (
               <a href={`tel:${phone.replace(/\D/g, '')}`}
                 className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:opacity-70"
-                style={{ color: isSolid ? 'var(--primary)' : 'white' }}>
+                style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', textShadow: isSolid ? 'none' : '0 1px 8px rgba(0,0,0,0.35)' }}>
                 <Phone className="w-3.5 h-3.5" />{phone}
               </a>
             )}
@@ -116,7 +118,7 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
           >
             {mobileOpen
               ? <X className="w-6 h-6" style={{ color: 'white' }} />
-              : <Menu className="w-6 h-6" style={{ color: isSolid ? 'var(--primary)' : 'white' }} />}
+              : <Menu className="w-6 h-6" style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', filter: isSolid ? 'none' : 'drop-shadow(0 1px 6px rgba(0,0,0,0.35))' }} />}
           </button>
         </div>
       </header>

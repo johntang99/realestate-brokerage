@@ -22,7 +22,7 @@ interface BlogPost { slug: string; title?: string; category?: string; date?: str
 interface SiteData { name?: string; stats?: Record<string, string>; phone?: string }
 
 interface HomeData {
-  hero?: { variant?: string; slides?: Slide[]; headline?: string; subline?: string; ctaPrimary?: { label?: string; href?: string }; ctaSecondary?: { label?: string; href?: string }; overlayOpacity?: number }
+  hero?: { variant?: string; overlayMode?: 'focus-text' | 'soft-full'; slides?: Slide[]; headline?: string; subline?: string; ctaPrimary?: { label?: string; href?: string }; ctaSecondary?: { label?: string; href?: string }; overlayOpacity?: number }
   quickSearch?: { headline?: string; submitLabel?: string }
   statsBar?: { variant?: string; items?: StatItem[] }
   featuredListings?: { headline?: string; subline?: string; propertySlugs?: string[]; maxDisplay?: number; ctaLabel?: string; ctaHref?: string }
@@ -133,10 +133,10 @@ function AnimatedStat({ item }: { item: StatItem }) {
 }
 
 // ── Hero Slideshow ─────────────────────────────────────────────────────────────
-function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, overlayOpacity, locale }: {
+function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, overlayOpacity, locale, variant }: {
   slides: Slide[]; headline?: string; subline?: string;
   ctaPrimary?: { label?: string; href?: string }; ctaSecondary?: { label?: string; href?: string };
-  overlayOpacity?: number; locale: string;
+  overlayOpacity?: number; locale: string; variant?: string;
 }) {
   const [active, setActive] = useState(0);
   useEffect(() => {
@@ -150,11 +150,18 @@ function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, ov
       {slides.map((slide, i) => (
         <div key={i} className={`absolute inset-0 transition-opacity duration-1000 ${i === active ? 'opacity-100' : 'opacity-0'}`}>
           {slide.image
-            ? <Image src={slide.image} alt={slide.alt || ''} fill className="object-cover" priority={i === 0} sizes="100vw" />
+            ? <Image src={slide.image} alt={slide.alt || ''} fill className="object-cover opacity-100" priority={i === 0} sizes="100vw" />
             : <div className="w-full h-full" style={{ background: 'var(--primary)' }} />}
         </div>
       ))}
-      <div className="absolute inset-0" style={{ background: `rgba(27,40,56,${overlayOpacity ?? 0.45})` }} />
+      <div
+        className="absolute inset-0"
+        style={{
+          background: variant === 'gallery-background'
+            ? 'linear-gradient(to top right, rgba(26,26,26,0.26) 0%, rgba(26,26,26,0.08) 42%, rgba(26,26,26,0.02) 72%, transparent 100%)'
+            : `linear-gradient(to top right, rgba(27,40,56,${Math.min((overlayOpacity ?? 0.2) + 0.12, 0.34)}) 0%, rgba(27,40,56,${Math.min((overlayOpacity ?? 0.2) * 0.45, 0.11)}) 42%, rgba(27,40,56,0.02) 72%, transparent 100%)`,
+        }}
+      />
 
       {/* Slide indicators */}
       {slides.length > 1 && (
@@ -168,27 +175,37 @@ function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, ov
 
       {/* Content */}
       <div className="relative z-10 container-custom pb-24 md:pb-32 w-full">
-        <h1 className="font-serif text-4xl md:text-6xl font-semibold text-white mb-4 max-w-3xl leading-tight"
-          style={{ textShadow: '0 2px 12px rgba(0,0,0,0.4)' }}>
-          {headline || 'Find Your Perfect Home'}
-        </h1>
-        <p className="text-lg md:text-xl text-white/85 mb-8 max-w-xl"
-          style={{ textShadow: '0 1px 6px rgba(0,0,0,0.3)' }}>
-          {subline}
-        </p>
-        <div className="flex flex-wrap gap-3">
-          {ctaPrimary?.href && (
-            <Link href={`/${locale}${ctaPrimary.href}`} className="btn-gold text-sm px-7 py-3">
-              {ctaPrimary.label || 'Schedule Consultation'}
-            </Link>
-          )}
-          {ctaSecondary?.href && (
-            <Link href={`/${locale}${ctaSecondary.href}`}
-              className="border-2 border-white text-white hover:bg-white/15 transition-colors text-sm px-7 py-3 font-semibold"
-              style={{ borderRadius: 'max(var(--radius-small,2px),3px)' }}>
-              {ctaSecondary.label || 'View Properties'}
-            </Link>
-          )}
+        <div
+          className={variant === 'gallery-background' ? 'max-w-2xl rounded-sm px-6 py-6 md:px-8 md:py-7' : 'max-w-3xl'}
+          style={variant === 'gallery-background'
+            ? {
+                background: 'rgba(26,26,26,0.10)',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.22)',
+              }
+            : undefined}
+        >
+          <h1 className="font-serif text-4xl md:text-6xl font-semibold text-white mb-4 leading-tight"
+            style={{ textShadow: '0 2px 10px rgba(0,0,0,0.35)' }}>
+            {headline || 'Find Your Perfect Home'}
+          </h1>
+          <p className="text-lg md:text-xl text-white/85 mb-8 max-w-xl"
+            style={{ textShadow: '0 1px 8px rgba(0,0,0,0.28)' }}>
+            {subline}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {ctaPrimary?.href && (
+              <Link href={`/${locale}${ctaPrimary.href}`} className="btn-gold text-sm px-7 py-3">
+                {ctaPrimary.label || 'Schedule Consultation'}
+              </Link>
+            )}
+            {ctaSecondary?.href && (
+              <Link href={`/${locale}${ctaSecondary.href}`}
+                className="border-2 border-white text-white hover:bg-white/15 transition-colors text-sm px-7 py-3 font-semibold"
+                style={{ borderRadius: 'max(var(--radius-small,2px),3px)' }}>
+                {ctaSecondary.label || 'View Properties'}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 
@@ -354,6 +371,7 @@ export default function HomePage() {
           ctaPrimary={h.hero?.ctaPrimary}
           ctaSecondary={h.hero?.ctaSecondary}
           overlayOpacity={h.hero?.overlayOpacity}
+          variant={h.hero?.variant}
           locale={locale}
         />
       ) : (
@@ -591,22 +609,30 @@ export default function HomePage() {
       )}
 
       {/* 10. VALUATION CTA */}
-      <section className="relative py-20 overflow-hidden">
+      <section className="relative min-h-[56vh] md:min-h-[62vh] overflow-hidden flex items-end">
         {h.valuationCta?.backgroundImage && (
-          <Image src={h.valuationCta.backgroundImage} alt="" fill className="object-cover" />
+          <Image src={h.valuationCta.backgroundImage} alt="" fill className="object-cover opacity-100" />
         )}
-        <div className="absolute inset-0" style={{ background: 'rgba(27,40,56,0.85)' }} />
-        <div className="relative z-10 container-custom text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>For Sellers</p>
-          <h2 className="font-serif text-3xl md:text-4xl font-semibold text-white mb-3">
-            {h.valuationCta?.headline || 'Thinking of Selling?'}
-          </h2>
-          <p className="text-lg text-white/80 mb-8 max-w-xl mx-auto">
-            {h.valuationCta?.subline || 'Get Your Free Home Valuation — no obligation, no pressure.'}
-          </p>
-          <Link href={`/${locale}${h.valuationCta?.ctaHref || '/home-valuation'}`} className="btn-gold text-sm px-8 py-3.5">
-            {h.valuationCta?.ctaLabel || 'Get My Free Estimate'}
-          </Link>
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to top left, rgba(10,14,22,0.2) 0%, rgba(10,14,22,0.12) 36%, rgba(10,14,22,0.06) 68%, rgba(10,14,22,0.02) 100%)',
+          }}
+        />
+        <div className="relative z-10 w-full pb-12 md:pb-16 pr-4 sm:pr-8 md:pr-12 lg:pr-20 flex justify-end text-left">
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>For Sellers</p>
+            <h2 className="font-serif text-3xl md:text-5xl font-semibold text-white mb-3">
+              {h.valuationCta?.headline || 'Thinking of Selling?'}
+            </h2>
+            <p className="text-lg text-white/85 mb-8">
+              {h.valuationCta?.subline || 'Get Your Free Home Valuation — no obligation, no pressure.'}
+            </p>
+            <Link href={`/${locale}${h.valuationCta?.ctaHref || '/home-valuation'}`} className="btn-gold text-sm px-8 py-3.5">
+              {h.valuationCta?.ctaLabel || 'Get My Free Estimate'}
+            </Link>
+          </div>
         </div>
       </section>
 
