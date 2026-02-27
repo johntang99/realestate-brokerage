@@ -1,8 +1,8 @@
 {
   "columns": [
     {
-      "heading": "Pinnacle Realty Group",
-      "content": "Your trusted real estate partner in Westchester County. Buying, selling, investing, and relocating — we guide you every step of the way.",
+      "heading": "Panorama NY, Inc",
+      "content": "Your trusted real estate partner in Orange County, NY. Buying, selling, investing, and relocating — we guide you every step of the way.",
       "showSocials": true,
       "showLogo": true
     },
@@ -40,12 +40,12 @@
     }
   ],
   "compliance": {
-    "brokerageName": "Pinnacle Realty Group",
+    "brokerageName": "Panorama NY, Inc",
     "licenseNumber": "10991200XXX",
-    "principalBroker": "Jane Smith",
+    "principalBroker": "Panorama NY Leadership Team",
     "principalBrokerLicense": "10301200XXX",
     "state": "New York",
-    "equalHousingText": "Pinnacle Realty Group is an Equal Housing Opportunity broker. All information deemed reliable but not guaranteed.",
+    "equalHousingText": "Panorama NY, Inc is an Equal Housing Opportunity broker. All information deemed reliable but not guaranteed.",
     "mlsDisclaimer": "Listing information is from sources deemed reliable but not guaranteed and is provided exclusively for consumers' personal, non-commercial use.",
     "fairHousingStatement": "We are pledged to the letter and spirit of U.S. policy for the achievement of equal housing opportunity throughout the Nation.",
     "showEqualHousingLogo": true,

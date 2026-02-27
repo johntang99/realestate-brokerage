@@ -1,11 +1,11 @@
 import { UsersManager } from '@/components/admin/UsersManager';
 import { getSites } from '@/lib/sites';
 import { getSession } from '@/lib/admin/auth';
-import { isSuperAdmin } from '@/lib/admin/permissions';
+import { canManageUsers } from '@/lib/admin/permissions';
 
 export default async function AdminUsersPage() {
   const session = await getSession();
-  if (!session || !isSuperAdmin(session.user)) {
+  if (!session || !canManageUsers(session.user)) {
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-600">
         You do not have access to manage users.

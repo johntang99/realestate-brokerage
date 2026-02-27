@@ -5,6 +5,18 @@
       "domain": "reb.local",
       "environment": "dev",
       "enabled": true
+    },
+    {
+      "siteId": "reb-template",
+      "domain": "www.panorama-nyrealty.com",
+      "environment": "prod",
+      "enabled": true
+    },
+    {
+      "siteId": "reb-template",
+      "domain": "panorama-nyrealty.com",
+      "environment": "prod",
+      "enabled": true
     }
   ]
 }

@@ -5,7 +5,7 @@ import { getSessionFromRequest } from '@/lib/admin/auth';
 import { canUseSitesDb, upsertSiteDb } from '@/lib/sitesDb';
 import type { SiteConfig } from '@/lib/types';
 import { getAdminUserCountDb } from '@/lib/admin/usersDb';
-import { isSuperAdmin } from '@/lib/admin/permissions';
+import { canImportSites } from '@/lib/admin/permissions';
 import { writeAuditLog } from '@/lib/admin/audit';
 import { upsertSiteDomainDb } from '@/lib/siteDomainsDb';
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     if (existingCount > 0) {
       return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
     }
-  } else if (!isSuperAdmin(session.user)) {
+  } else if (!canImportSites(session.user)) {
     return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
   }
 

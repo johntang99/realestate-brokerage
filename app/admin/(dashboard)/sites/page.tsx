@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { getSites } from '@/lib/sites';
 import { ImportSitesButton } from '@/components/admin/ImportSitesButton';
 import { getSession } from '@/lib/admin/auth';
-import { filterSitesForUser, isSuperAdmin } from '@/lib/admin/permissions';
+import { canImportSites, filterSitesForUser, isSuperAdmin } from '@/lib/admin/permissions';
 
 export default async function AdminSitesPage() {
   const session = await getSession();
@@ -19,7 +19,7 @@ export default async function AdminSitesPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {session?.user && isSuperAdmin(session.user) && <ImportSitesButton />}
+          {session?.user && canImportSites(session.user) && <ImportSitesButton />}
           {session?.user && isSuperAdmin(session.user) && (
             <Link
               href="/admin/sites/new"

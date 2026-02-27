@@ -43,16 +43,16 @@ export async function generateMetadata({ params }: { params: { locale: string } 
   return {
     metadataBase: baseUrl,
     title: {
-      default: seo?.title || 'Pinnacle Realty Group — Westchester County Real Estate Brokerage',
-      template: seo?.titleTemplate || '%s | Pinnacle Realty Group',
+      default: seo?.title || 'Panorama NY, Inc — Orange County NY Real Estate Brokerage',
+      template: seo?.titleTemplate || '%s | Panorama NY, Inc',
     },
-    description: seo?.description || 'Pinnacle Realty Group is Westchester County\'s premier independent real estate brokerage. 18 agents, $180M+ in sales, deep local expertise.',
+    description: seo?.description || 'Panorama NY, Inc is a trusted Orange County, NY real estate brokerage for buying, selling, investing, and relocating.',
     alternates: {
       canonical: new URL(`/${locale}`, baseUrl).toString(),
     },
     openGraph: {
       type: 'website',
-      siteName: 'Pinnacle Realty Group',
+      siteName: 'Panorama NY, Inc',
       images: seo?.ogImage ? [{ url: seo.ogImage }] : undefined,
     },
     icons: {

@@ -7,8 +7,8 @@
       { "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1400", "alt": "Waterfront home in Larchmont" },
       { "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1400", "alt": "Estate home in Bronxville" }
     ],
-    "headline": "Find Your Home in Westchester County",
-    "subline": "12 years of local expertise. $180M+ in sales. 18 dedicated agents. Your trusted brokerage from search to closing.",
+    "headline": "Real Estate Guidance You Can Trust in Orange County, NY",
+    "subline": "Clear strategy for buying, selling, relocating, and investing - with a local team that puts your goals first.",
     "ctaPrimary": { "label": "Search Properties", "href": "/properties" },
     "ctaSecondary": { "label": "Free Consultation", "href": "/contact" }
   },
@@ -19,7 +19,7 @@
       { "label": "I Want to Sell", "subline": "Strategic pricing and premium marketing", "href": "/selling", "icon": "DollarSign" },
       { "label": "I'm Relocating", "subline": "Deep local knowledge for your move", "href": "/relocating", "icon": "MapPin" },
       { "label": "I'm an Investor", "subline": "Data-driven investment strategy", "href": "/investing", "icon": "TrendingUp" },
-      { "label": "I Want to Join", "subline": "Build your career with the best", "href": "/join", "icon": "Users" }
+      { "label": "I Want to Join the Team", "subline": "Explore opportunities to grow with Panorama NY", "href": "/join", "icon": "Users" }
     ]
   },
   "statsBar": {
@@ -33,23 +33,23 @@
     ]
   },
   "intro": {
-    "headline": "An Independent Brokerage Built on Expertise",
-    "body": "Pinnacle Realty Group was founded 12 years ago with a simple belief: that clients deserve better than a franchise template and a rotating door of agents. We built a team of dedicated specialists — people who live in Westchester, know every street, and treat every transaction with the attention it deserves.",
+    "headline": "A Brokerage Built Around Client Trust",
+    "body": "Panorama NY, Inc is built around one core promise: to earn your trust with honest advice, strong local knowledge, and hands-on support from first conversation to closing.",
     "ctaLabel": "Our Story",
     "ctaHref": "/about",
     "image": "https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?w=800"
   },
   "whyChooseUs": {
-    "headline": "Why Choose Pinnacle",
+    "headline": "Why Choose Panorama NY",
     "items": [
-      { "icon": "MapPin", "heading": "Deep Local Knowledge", "description": "18 agents who live and work in Westchester — not transferred here from another market." },
-      { "icon": "TrendingUp", "heading": "Results That Speak", "description": "103% average sale-to-list ratio. 24-day average days on market. Numbers that matter." },
-      { "icon": "Users", "heading": "A Team Behind Every Transaction", "description": "When you work with a Pinnacle agent, the full resources of the brokerage are behind you." }
+      { "icon": "MapPin", "heading": "Orange County Market Expertise", "description": "Neighborhood-level insight across Orange County, NY to help you make better decisions." },
+      { "icon": "TrendingUp", "heading": "Clear Strategy and Execution", "description": "Pricing, negotiation, and marketing plans tailored to your goals and timeline." },
+      { "icon": "Users", "heading": "Personalized Client Experience", "description": "Responsive communication and practical guidance for one of life's biggest transactions." }
     ]
   },
   "teamPreview": {
     "headline": "Meet Our Agents",
-    "subline": "18 dedicated specialists across every area of Westchester County.",
+    "subline": "Meet the Panorama NY team serving Orange County, NY.",
     "ctaLabel": "Meet the Full Team",
     "ctaHref": "/team",
     "agentSlugs": ["jane-smith", "marcus-johnson", "sarah-rodriguez"]
@@ -59,16 +59,16 @@
     "testimonialIds": ["t-001", "t-002", "t-005"]
   },
   "neighborhoodSpotlight": {
-    "headline": "Explore Westchester Neighborhoods",
-    "subline": "Local knowledge that no algorithm can replicate.",
+    "headline": "Explore Orange County Neighborhoods",
+    "subline": "Area insights for buyers, sellers, relocators, and investors.",
     "ctaLabel": "All Neighborhoods",
     "ctaHref": "/neighborhoods",
     "neighborhoodSlugs": ["scarsdale", "larchmont", "bronxville"]
   },
   "marketReportTeaser": {
     "headline": "Market Report",
-    "subline": "Westchester County — February 2026",
-    "keyStat": "Median price up 6.2% year-over-year",
+    "subline": "Orange County, NY — Latest Update",
+    "keyStat": "Local trends and pricing signals for smarter decisions",
     "ctaLabel": "Read Full Report",
     "ctaHref": "/market-reports/february-2026"
   },
@@ -80,8 +80,8 @@
   },
   "consultationCta": {
     "headline": "Ready to Take the Next Step?",
-    "subline": "Our team is ready to help. Schedule your free consultation today.",
-    "ctaLabel": "Schedule Consultation",
+    "subline": "Ready to buy, sell, relocate, or invest? Let's talk about your next move.",
+    "ctaLabel": "Request Consultation",
     "ctaHref": "/contact",
     "backgroundImage": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1400"
   },

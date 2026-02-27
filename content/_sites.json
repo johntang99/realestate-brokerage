@@ -2,10 +2,10 @@
   "sites": [
     {
       "id": "reb-template",
-      "name": "REB Premium Template",
-      "domain": "reb.local",
+      "name": "Panorama NY, Inc",
+      "domain": "www.panorama-nyrealty.com",
       "defaultLocale": "en",
-      "supportedLocales": ["en"],
+      "supportedLocales": ["en", "zh"],
       "enabled": true,
       "type": "brokerage"
     }

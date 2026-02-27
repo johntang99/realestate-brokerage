@@ -18,7 +18,7 @@ import {
   UserCircle,
 } from 'lucide-react';
 import { getSession } from '@/lib/admin/auth';
-import { isSuperAdmin } from '@/lib/admin/permissions';
+import { canManageUsers, isSuperAdmin } from '@/lib/admin/permissions';
 
 const brokerAdminNav = [
   { name: 'Sites', href: '/admin/sites', icon: Building2 },
@@ -56,7 +56,7 @@ export async function AdminSidebar() {
     items = agentNav;
   } else if (role === 'staff') {
     items = staffNav;
-  } else if (session?.user && !isSuperAdmin(session.user)) {
+  } else if (session?.user && !canManageUsers(session.user)) {
     items = brokerAdminNav.filter((item) => item.name !== 'Users');
   }
 

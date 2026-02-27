@@ -6,23 +6,33 @@ export interface AdminUserRow {
   email: string;
   name: string;
   role: User['role'];
-  sites: string[];
-  avatar: string | null;
+  // DB may have `sites` (array) or legacy `site_id` (single string)
+  sites?: string[] | null;
+  site_id?: string | null;
+  avatar?: string | null;
   password_hash: string;
   created_at: string;
-  last_login_at: string;
+  // DB may have `last_login_at` or legacy `updated_at`
+  last_login_at?: string | null;
+  updated_at?: string | null;
+  is_active?: boolean;
 }
 
 function mapAdminUser(row: AdminUserRow): User {
+  const sites = Array.isArray(row.sites)
+    ? row.sites
+    : row.site_id
+      ? [row.site_id]
+      : [];
   return {
     id: row.id,
     email: row.email,
-    name: row.name,
+    name: row.name || '',
     role: row.role,
-    sites: row.sites || [],
+    sites,
     avatar: row.avatar || undefined,
     createdAt: row.created_at,
-    lastLoginAt: row.last_login_at,
+    lastLoginAt: row.last_login_at || row.updated_at || row.created_at,
   };
 }
 
@@ -36,7 +46,7 @@ export async function listAdminUsersDb(): Promise<User[]> {
 
   const { data, error } = await supabase
     .from('admin_users')
-    .select('id,email,name,role,sites,avatar,created_at,last_login_at');
+    .select('*');
   if (error) {
     console.error('Supabase listAdminUsersDb error:', error);
     return [];
@@ -119,7 +129,8 @@ export async function createAdminUserDb(params: {
       email: params.email,
       name: params.name,
       role: params.role,
-      sites: params.sites,
+      sites: params.sites,          // column may not exist yet — handled by migration
+      site_id: params.sites?.[0] || null,  // legacy fallback
       password_hash: params.passwordHash,
     })
     .select('*')
@@ -152,10 +163,7 @@ export async function upsertAdminUserDb(params: {
       .update({
         name: params.name,
         role: params.role,
-        sites: params.sites,
-        avatar: params.avatar ?? null,
         password_hash: params.passwordHash,
-        last_login_at: params.lastLoginAt || existing.last_login_at,
       })
       .eq('id', existing.id)
       .select('*')
@@ -168,7 +176,6 @@ export async function upsertAdminUserDb(params: {
   }
 
   const createdAt = params.createdAt || new Date().toISOString();
-  const lastLoginAt = params.lastLoginAt || createdAt;
   const { data, error } = await supabase
     .from('admin_users')
     .insert({
@@ -176,11 +183,9 @@ export async function upsertAdminUserDb(params: {
       email: params.email,
       name: params.name,
       role: params.role,
-      sites: params.sites,
-      avatar: params.avatar ?? null,
+      site_id: params.sites?.[0] || null,
       password_hash: params.passwordHash,
       created_at: createdAt,
-      last_login_at: lastLoginAt,
     })
     .select('*')
     .maybeSingle();
@@ -199,12 +204,14 @@ export async function updateAdminUserDb(
   if (!supabase) return null;
 
   const payload: Partial<AdminUserRow> = {
-    email: updates.email,
-    name: updates.name,
-    role: updates.role,
-    sites: updates.sites,
-    avatar: updates.avatar ?? null,
-    last_login_at: updates.lastLoginAt,
+    ...(updates.email !== undefined ? { email: updates.email } : {}),
+    ...(updates.name !== undefined ? { name: updates.name } : {}),
+    ...(updates.role !== undefined ? { role: updates.role } : {}),
+    // `sites` is a non-standard column — only set if column exists
+    // fall back to site_id (single) for older schemas
+    ...(updates.sites !== undefined
+      ? { site_id: updates.sites?.[0] || null }
+      : {}),
   };
 
   const { data, error } = await supabase
@@ -249,7 +256,7 @@ export async function updateLastLoginDb(userId: string) {
 
   const { error } = await supabase
     .from('admin_users')
-    .update({ last_login_at: new Date().toISOString() })
+    .update({ updated_at: new Date().toISOString() })
     .eq('id', userId);
   if (error) {
     console.error('Supabase updateLastLoginDb error:', error);

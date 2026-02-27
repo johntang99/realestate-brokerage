@@ -13,6 +13,13 @@ type UserDraft = Pick<User, 'name' | 'email' | 'role' | 'sites'> & {
   newPassword?: string;
 };
 
+function normalizeRole(role: User['role'] | null | undefined) {
+  return String(role || '')
+    .trim()
+    .toLowerCase()
+    .replace(/-/g, '_');
+}
+
 export function UsersManager({ sites }: UsersManagerProps) {
   const [users, setUsers] = useState<User[]>([]);
   const [drafts, setDrafts] = useState<Record<string, UserDraft>>({});
@@ -76,7 +83,12 @@ export function UsersManager({ sites }: UsersManagerProps) {
 
   const siteOptions = useMemo(() => sites.map((site) => site.id), [sites]);
 
-  if (currentUserRole && currentUserRole !== 'super_admin') {
+  const canManageUsers =
+    normalizeRole(currentUserRole) === 'super_admin' ||
+    normalizeRole(currentUserRole) === 'broker_admin' ||
+    normalizeRole(currentUserRole) === 'site_admin';
+
+  if (currentUserRole && !canManageUsers) {
     return (
       <div className="rounded-lg border border-gray-200 bg-white p-6 text-sm text-gray-600">
         You do not have access to manage users.

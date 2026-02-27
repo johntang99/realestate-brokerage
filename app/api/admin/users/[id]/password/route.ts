@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionFromRequest, setPassword } from '@/lib/admin/auth';
-import { isSuperAdmin } from '@/lib/admin/permissions';
+import { canManageUsers } from '@/lib/admin/permissions';
 
 interface RouteParams {
   params: {
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   if (!session) {
     return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
   }
-  if (!isSuperAdmin(session.user)) {
+  if (!canManageUsers(session.user)) {
     return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
   }
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 import { getSessionFromRequest } from '@/lib/admin/auth';
-import { fetchContentEntry, upsertContentEntry } from '@/lib/contentDb';
+import { canUseContentDb, fetchContentEntry, upsertContentEntry } from '@/lib/contentDb';
 import { canWriteContent, requireSiteAccess } from '@/lib/admin/permissions';
 import { locales } from '@/lib/i18n';
 import { writeAuditLog } from '@/lib/admin/audit';
@@ -132,6 +132,12 @@ export async function POST(request: NextRequest) {
   if (!session) {
     return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
   }
+  if (!canUseContentDb()) {
+    return NextResponse.json(
+      { message: 'DB mode is not enabled (missing SUPABASE_SERVICE_ROLE_KEY).' },
+      { status: 400 }
+    );
+  }
 
   const payload = await request.json();
   const siteId = payload.siteId as string | undefined;
@@ -190,14 +196,15 @@ export async function POST(request: NextRequest) {
     const key = `${candidate.locale}::${candidate.path}`;
     const existing = existingByKey.get(key);
 
-    if (!existing?.data) {
+    const existingData = existing?.content ?? existing?.data;
+    if (!existingData) {
       toCreate += 1;
       wouldImport += 1;
       toCreatePaths.push(`${candidate.locale}:${candidate.path}`);
       continue;
     }
 
-    if (deepEqual(existing.data, candidate.data)) {
+    if (deepEqual(existingData, candidate.data)) {
       unchanged += 1;
       if (mode === 'missing') {
         skipped += 1;
@@ -205,7 +212,7 @@ export async function POST(request: NextRequest) {
       continue;
     }
 
-    const dbUpdatedAtMs = existing.updated_at ? new Date(existing.updated_at).getTime() : 0;
+    const dbUpdatedAtMs = existing?.updated_at ? new Date(existing.updated_at).getTime() : 0;
     if (
       mode === 'overwrite' &&
       Number.isFinite(dbUpdatedAtMs) &&
@@ -214,7 +221,7 @@ export async function POST(request: NextRequest) {
       conflicts.push({
         locale: candidate.locale,
         path: candidate.path,
-        dbUpdatedAt: existing.updated_at,
+        dbUpdatedAt: existing?.updated_at ?? '',
         localFile: candidate.sourceFilePath,
         localMtime: new Date(candidate.sourceMtimeMs).toISOString(),
       });
@@ -269,20 +276,22 @@ export async function POST(request: NextRequest) {
   }
 
   let imported = 0;
+  let failed = 0;
   const importQueue: typeof candidates = [];
   for (const candidate of candidates) {
     const key = `${candidate.locale}::${candidate.path}`;
     const existing = existingByKey.get(key);
 
-    if (mode === 'missing' && existing?.data) {
+    const existingDataWrite = existing?.content ?? existing?.data;
+    if (mode === 'missing' && existingDataWrite) {
       skipped += 1;
       continue;
     }
 
     if (
       mode === 'overwrite' &&
-      existing?.data &&
-      deepEqual(existing.data, candidate.data)
+      existingDataWrite &&
+      deepEqual(existingDataWrite, candidate.data)
     ) {
       continue;
     }
@@ -291,7 +300,7 @@ export async function POST(request: NextRequest) {
     if (
       mode === 'overwrite' &&
       !force &&
-      existing?.data &&
+      existingDataWrite &&
       Number.isFinite(dbUpdatedAtMs) &&
       dbUpdatedAtMs > candidate.sourceMtimeMs
     ) {
@@ -303,7 +312,7 @@ export async function POST(request: NextRequest) {
   const writeBatchSize = 30;
   for (let i = 0; i < importQueue.length; i += writeBatchSize) {
     const batch = importQueue.slice(i, i + writeBatchSize);
-    await Promise.all(
+    const results = await Promise.all(
       batch.map((candidate) =>
         upsertContentEntry({
           siteId,
@@ -314,7 +323,8 @@ export async function POST(request: NextRequest) {
         })
       )
     );
-    imported += batch.length;
+    imported += results.filter(Boolean).length;
+    failed += results.filter((entry) => !entry).length;
   }
 
   await writeAuditLog({
@@ -325,6 +335,7 @@ export async function POST(request: NextRequest) {
       locale,
       mode,
       imported,
+      failed,
       skipped,
       conflicts: mode === 'overwrite' ? conflicts.length : 0,
       durationMs: Date.now() - startedAt,
@@ -335,13 +346,14 @@ export async function POST(request: NextRequest) {
     success: true,
     dryRun: false,
     imported,
+    failed,
     skipped,
     conflicts: mode === 'overwrite' ? conflicts.length : 0,
     message:
       mode === 'overwrite'
-        ? `Imported ${imported} items from JSON (overwrite mode).`
+        ? `Imported ${imported} items from JSON (overwrite mode).${failed ? ` ${failed} failed writes.` : ''}`
         : skipped
-          ? `Imported ${imported} items. Skipped ${skipped} existing DB entries.`
-          : `Imported ${imported} items from JSON.`,
+          ? `Imported ${imported} items. Skipped ${skipped} existing DB entries.${failed ? ` ${failed} failed writes.` : ''}`
+          : `Imported ${imported} items from JSON.${failed ? ` ${failed} failed writes.` : ''}`,
   });
 }

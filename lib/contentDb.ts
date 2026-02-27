@@ -178,7 +178,7 @@ export async function upsertContentEntry(params: {
         locale: params.locale,
         path: params.path,
         content: params.data,
-        updated_by: params.updatedBy || null,
+        // updated_by column not present in this DB schema — omitted
       },
       { onConflict: 'site_id,locale,path' }
     )

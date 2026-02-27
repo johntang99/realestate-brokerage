@@ -67,10 +67,10 @@ async function findUserByEmail(email: string): Promise<UserRecord | null> {
       email: row.email,
       name: row.name,
       role: row.role,
-      sites: row.sites || [],
+      sites: Array.isArray(row.sites) ? row.sites : row.site_id ? [row.site_id] : [],
       avatar: row.avatar || undefined,
       createdAt: row.created_at,
-      lastLoginAt: row.last_login_at,
+      lastLoginAt: row.last_login_at || row.updated_at || row.created_at || '',
       passwordHash: row.password_hash,
     };
   }

@@ -11,12 +11,12 @@ interface AuditLogInput {
 }
 
 export async function writeAuditLog(input: AuditLogInput): Promise<void> {
+  // DB schema: id, site_id, user_id, action, resource_type, resource_id, details, ip_address, created_at
   const payload = {
-    actor_id: input.actor?.id || null,
-    actor_email: input.actor?.email || null,
+    user_id: input.actor?.id || null,
     action: input.action,
     site_id: input.siteId || null,
-    metadata: input.metadata || {},
+    details: input.metadata || {},
     created_at: new Date().toISOString(),
   };
 
