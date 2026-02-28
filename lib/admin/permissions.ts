@@ -24,6 +24,10 @@ export function canImportSites(user: User) {
   return hasGlobalSiteAccess(user);
 }
 
+export function canCreateSites(user: User) {
+  return hasGlobalSiteAccess(user);
+}
+
 export function canManageUsers(user: User) {
   const role = normalizeRole(user);
   return role === 'super_admin' || role === 'broker_admin' || role === 'site_admin';

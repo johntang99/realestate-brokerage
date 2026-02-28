@@ -104,7 +104,7 @@ export async function loadContent<T>(
 ): Promise<T | null> {
   if (canUseContentDb()) {
     const entry = await fetchContentEntry(siteId, locale, contentPath);
-    if (entry?.data) {
+    if (entry?.content ?? entry?.data) {
       return (entry.content ?? entry.data) as T;
     }
   }

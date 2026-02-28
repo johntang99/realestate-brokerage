@@ -5,7 +5,7 @@
     "width": 160,
     "height": 48
   },
-  "logoText": "Panorama NY, Inc",
+  "logoText": "PANAROMA",
   "phone": "(845) 555-0190",
   "ctaLabel": "Request Info",
   "ctaHref": "/contact",
@@ -14,23 +14,59 @@
   "stickyCtaButton": true,
   "transparentOnHero": true,
   "navigation": [
-    { "label": "Properties", "href": "/properties" },
-    { "label": "Neighborhoods", "href": "/neighborhoods" },
+    {
+      "label": "Properties",
+      "href": "/properties"
+    },
+    {
+      "label": "Neighborhoods",
+      "href": "/neighborhoods"
+    },
     {
       "label": "Buy & Sell",
       "href": "#",
       "children": [
-        { "label": "Buying", "href": "/buying" },
-        { "label": "Selling", "href": "/selling" },
-        { "label": "Home Valuation", "href": "/home-valuation" },
-        { "label": "New Construction", "href": "/new-construction" }
+        {
+          "label": "Buying",
+          "href": "/buying"
+        },
+        {
+          "label": "Selling",
+          "href": "/selling"
+        },
+        {
+          "label": "Home Valuation",
+          "href": "/home-valuation"
+        },
+        {
+          "label": "New Construction",
+          "href": "/new-construction"
+        }
       ]
     },
-    { "label": "Investing", "href": "/investing" },
-    { "label": "Relocating", "href": "/relocating" },
-    { "label": "Our Team", "href": "/team" },
-    { "label": "About", "href": "/about" },
-    { "label": "Knowledge Center", "href": "/knowledge-center" },
-    { "label": "Contact", "href": "/contact" }
+    {
+      "label": "Investing",
+      "href": "/investing"
+    },
+    {
+      "label": "Relocating",
+      "href": "/relocating"
+    },
+    {
+      "label": "Our Team",
+      "href": "/team"
+    },
+    {
+      "label": "About",
+      "href": "/about"
+    },
+    {
+      "label": "Knowledge Center",
+      "href": "/knowledge-center"
+    },
+    {
+      "label": "Contact",
+      "href": "/contact"
+    }
   ]
 }

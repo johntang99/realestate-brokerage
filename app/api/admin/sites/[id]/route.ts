@@ -44,7 +44,7 @@ export async function PUT(
   }
 
   try {
-    requireRole(session.user, ['super_admin', 'site_admin']);
+    requireRole(session.user, ['super_admin', 'site_admin', 'broker_admin']);
     requireSiteAccess(session.user, params.id);
   } catch {
     return NextResponse.json({ message: 'Forbidden' }, { status: 403 });

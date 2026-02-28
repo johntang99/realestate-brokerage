@@ -19,7 +19,7 @@ import {
   saveBookingSettingsDb,
 } from '@/lib/booking/db';
 import { listMediaDb, upsertMediaDb } from '@/lib/admin/mediaDb';
-import { filterSitesForUser, isSuperAdmin } from '@/lib/admin/permissions';
+import { canCreateSites, filterSitesForUser, isSuperAdmin } from '@/lib/admin/permissions';
 import { writeAuditLog } from '@/lib/admin/audit';
 
 export async function GET(request: NextRequest) {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   if (!session) {
     return NextResponse.json({ message: 'Not authenticated' }, { status: 401 });
   }
-  if (!isSuperAdmin(session.user)) {
+  if (!canCreateSites(session.user)) {
     return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
   }
 
