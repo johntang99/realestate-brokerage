@@ -22,6 +22,7 @@
     "qa:all": "npm run qa:content && npm run qa:bilingual && npm run qa:routes && npm run qa:seo"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
     "@fullcalendar/daygrid": "^6.1.20",
     "@fullcalendar/interaction": "^6.1.20",
     "@fullcalendar/react": "^6.1.20",
@@ -34,6 +35,7 @@
     "lucide-react": "^0.312.0",
     "negotiator": "^0.6.3",
     "next": "^14.1.0",
+    "openai": "^6.25.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.4.0",

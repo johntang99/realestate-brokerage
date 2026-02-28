@@ -108,6 +108,21 @@ create table if not exists public.admin_audit_logs (
   created_at timestamptz not null default now()
 );
 
+-- ── AI chat messages ────────────────────────────────────────────────────────────
+create table if not exists public.chat_messages (
+  id uuid primary key default gen_random_uuid(),
+  site_id text not null,
+  locale text not null default 'en',
+  conversation_id text not null,
+  role text not null check (role in ('user', 'assistant', 'tool')),
+  content text not null,
+  tool_name text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists chat_messages_lookup_idx
+  on public.chat_messages (site_id, locale, conversation_id, created_at asc);
+
 -- ── Seed Julia Studio site entry ───────────────────────────────────────────────
 insert into public.sites (id, name, domain, enabled, default_locale, supported_locales)
 values ('julia-studio', 'Julia Studio', 'studio-julia.com', true, 'en', array['en','zh']::text[])
