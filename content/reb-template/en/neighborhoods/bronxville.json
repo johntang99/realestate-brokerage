@@ -1,27 +1,48 @@
 {
-  "slug": "bronxville",
-  "name": "Bronxville",
-  "tagline": "The Crown Jewel of Westchester",
-  "region": "Southern Westchester",
-  "featured": true,
-  "coverImage": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800",
-  "overview": "Bronxville is Westchester County's most prestigious village — a tightly-held community of grand Tudor and Colonial estates set on tree-canopied streets just 16 miles from Midtown Manhattan. With one of the top-rated school districts in the state, a quaint village center, and an extraordinarily loyal resident base, Bronxville consistently commands Westchester's highest prices.",
-  "marketSnapshot": {
-    "medianPrice": "$2,100,000",
-    "avgDaysOnMarket": "18",
-    "inventoryCount": "15",
-    "pricePerSqft": "$640",
-    "yoyChange": "+5.8%"
-  },
-  "lifestyle": ["Luxury Estates", "Top-Ranked Schools", "Village Center", "Close to NYC", "Historic Architecture"],
-  "schools": [
-    { "name": "Bronxville High School", "type": "Public", "grades": "9-12", "rating": "10/10" },
-    { "name": "Bronxville Middle School", "type": "Public", "grades": "6-8", "rating": "10/10" },
-    { "name": "Bronxville Elementary School", "type": "Public", "grades": "K-5", "rating": "10/10" }
-  ],
-  "gallery": [],
   "seo": {
     "title": "Bronxville NY Real Estate | Pinnacle Realty Group",
     "description": "Search luxury homes in Bronxville, NY. Top-rated schools, Tudor estates, 16 miles to Midtown. Median price $2.1M. Pinnacle Realty Group."
+  },
+  "name": "Bronxville",
+  "slug": "bronxville",
+  "region": "Southern Westchester",
+  "gallery": [],
+  "schools": [
+    {
+      "name": "Bronxville High School",
+      "type": "Public",
+      "grades": "9-12",
+      "rating": "10/10"
+    },
+    {
+      "name": "Bronxville Middle School",
+      "type": "Public",
+      "grades": "6-8",
+      "rating": "10/10"
+    },
+    {
+      "name": "Bronxville Elementary School",
+      "type": "Public",
+      "grades": "K-5",
+      "rating": "10/10"
+    }
+  ],
+  "tagline": "The Crown Jewel of Westchester",
+  "featured": true,
+  "overview": "Bronxville is Westchester County's most prestigious village — a tightly-held community of grand Tudor and Colonial estates set on tree-canopied streets just 16 miles from Midtown Manhattan. With one of the top-rated school districts in the state, a quaint village center, and an extraordinarily loyal resident base, Bronxville consistently commands Westchester's highest prices.",
+  "lifestyle": [
+    "Luxury Estates",
+    "Top-Ranked Schools",
+    "Village Center",
+    "Close to NYC",
+    "Historic Architecture"
+  ],
+  "coverImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/cdcae92983c1d4c43355.jpg",
+  "marketSnapshot": {
+    "yoyChange": "+5.8%",
+    "medianPrice": "$2,100,000",
+    "pricePerSqft": "$640",
+    "inventoryCount": "15",
+    "avgDaysOnMarket": "18"
   }
 }

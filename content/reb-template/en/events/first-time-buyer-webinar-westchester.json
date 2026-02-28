@@ -1,0 +1,35 @@
+{
+  "slug": "first-time-buyer-webinar-westchester",
+  "tags": [
+    "webinar",
+    "first-time-buyers",
+    "education"
+  ],
+  "title": "First-Time Buyer Webinar: Westchester 2026 Playbook",
+  "status": "upcoming",
+  "address": "",
+  "endDate": "2026-04-02",
+  "endTime": "20:15",
+  "excerpt": "Learn how to win in a competitive market without overpaying.",
+  "featured": false,
+  "location": "Online",
+  "speakers": [
+    {
+      "name": "Jane Smith",
+      "title": "Principal Broker"
+    },
+    {
+      "name": "Marcus Johnson",
+      "title": "Senior Agent"
+    }
+  ],
+  "timezone": "America/New_York",
+  "eventType": "webinar",
+  "heroImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/3b455169df0b2b1d9006.jpg",
+  "organizer": "Pinnacle Realty Group",
+  "startDate": "2026-04-02",
+  "startTime": "19:00",
+  "description": "This live webinar walks first-time buyers through pre-approval, offer strategy, inspection contingencies, and closing timelines tailored to Westchester County neighborhoods.",
+  "contactEmail": "buyers@pinnaclerealty.com",
+  "registrationUrl": "https://www.pinnaclerealtygroup.com/events/first-time-buyer-webinar"
+}

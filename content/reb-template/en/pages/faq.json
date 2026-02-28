@@ -1,8 +1,8 @@
 {
   "hero": {
-    "variant": "photo-background",
     "image": "",
-    "headline": "Faq",
-    "subline": "Pinnacle Realty Group — Westchester County's trusted real estate brokerage."
+    "subline": "Pinnacle Realty Group — Westchester County's trusted real estate brokerage.",
+    "variant": "photo-background",
+    "headline": "Faq"
   }
 }

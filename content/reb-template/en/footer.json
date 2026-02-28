@@ -1,57 +1,108 @@
 {
   "columns": [
     {
-      "heading": "Panorama NY, Inc",
       "content": "Your trusted real estate partner in Orange County, NY. Buying, selling, investing, and relocating — we guide you every step of the way.",
-      "showSocials": true,
-      "showLogo": true
+      "heading": "Panorama NY, Inc",
+      "showLogo": true,
+      "showSocials": true
     },
     {
-      "heading": "Services",
       "links": [
-        { "label": "Buy a Home", "href": "/buying" },
-        { "label": "Sell Your Home", "href": "/selling" },
-        { "label": "Home Valuation", "href": "/home-valuation" },
-        { "label": "Investing", "href": "/investing" },
-        { "label": "Relocating", "href": "/relocating" },
-        { "label": "New Construction", "href": "/new-construction" }
-      ]
+        {
+          "href": "/buying",
+          "label": "Buy a Home"
+        },
+        {
+          "href": "/selling",
+          "label": "Sell Your Home"
+        },
+        {
+          "href": "/home-valuation",
+          "label": "Home Valuation"
+        },
+        {
+          "href": "/investing",
+          "label": "Investing"
+        },
+        {
+          "href": "/relocating",
+          "label": "Relocating"
+        },
+        {
+          "href": "/new-construction",
+          "label": "New Construction"
+        }
+      ],
+      "heading": "Services"
     },
     {
-      "heading": "Company",
       "links": [
-        { "label": "About Us", "href": "/about" },
-        { "label": "Our Team", "href": "/team" },
-        { "label": "Join the Team", "href": "/join" },
-        { "label": "Knowledge Center", "href": "/knowledge-center" },
-        { "label": "Market Reports", "href": "/market-reports" },
-        { "label": "Contact", "href": "/contact" }
-      ]
+        {
+          "href": "/about",
+          "label": "About Us"
+        },
+        {
+          "href": "/team",
+          "label": "Our Team"
+        },
+        {
+          "href": "/join",
+          "label": "Join the Team"
+        },
+        {
+          "href": "/knowledge-center",
+          "label": "Knowledge Center"
+        },
+        {
+          "href": "/market-reports",
+          "label": "Market Reports"
+        },
+        {
+          "href": "/contact",
+          "label": "Contact"
+        }
+      ],
+      "heading": "Company"
     },
     {
-      "heading": "Properties",
       "links": [
-        { "label": "All Listings", "href": "/properties" },
-        { "label": "For Sale", "href": "/properties?status=active" },
-        { "label": "Sold Portfolio", "href": "/sold" },
-        { "label": "Neighborhoods", "href": "/neighborhoods" },
-        { "label": "FAQ", "href": "/faq" }
-      ]
+        {
+          "href": "/properties",
+          "label": "All Listings"
+        },
+        {
+          "href": "/properties?status=active",
+          "label": "For Sale"
+        },
+        {
+          "href": "/sold",
+          "label": "Sold Portfolio"
+        },
+        {
+          "href": "/neighborhoods",
+          "label": "Neighborhoods"
+        },
+        {
+          "href": "/faq",
+          "label": "FAQ"
+        }
+      ],
+      "heading": "Properties"
     }
   ],
   "compliance": {
-    "brokerageName": "Panorama NY, Inc",
-    "licenseNumber": "10991200XXX",
-    "principalBroker": "Panorama NY Leadership Team",
-    "principalBrokerLicense": "10301200XXX",
     "state": "New York",
-    "equalHousingText": "Panorama NY, Inc is an Equal Housing Opportunity broker. All information deemed reliable but not guaranteed.",
+    "termsHref": "/terms",
+    "privacyHref": "/privacy",
+    "brokerageName": "Panorama NY, Inc",
+    "copyrightYear": "2026",
+    "licenseNumber": "10991200XXX",
     "mlsDisclaimer": "Listing information is from sources deemed reliable but not guaranteed and is provided exclusively for consumers' personal, non-commercial use.",
+    "copyrightSuffix": "All rights reserved. Technical Support By baamplatform.com.",
+    "principalBroker": "Panorama NY Leadership Team",
+    "equalHousingText": "Panorama NY, Inc is an Equal Housing Opportunity broker. All information deemed reliable but not guaranteed.",
     "fairHousingStatement": "We are pledged to the letter and spirit of U.S. policy for the achievement of equal housing opportunity throughout the Nation.",
     "showEqualHousingLogo": true,
-    "privacyHref": "/privacy",
-    "termsHref": "/terms",
-    "copyrightYear": "2026",
-    "copyrightSuffix": "All rights reserved. Technical Support By baamplatform.com."
+    "principalBrokerLicense": "10301200XXX"
   }
 }

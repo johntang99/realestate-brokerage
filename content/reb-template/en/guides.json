@@ -2,46 +2,46 @@
   {
     "slug": "buyers-guide",
     "title": "Complete Buyer's Guide to Westchester County",
-    "description": "Everything you need to know about buying a home in Westchester — from pre-approval to closing day. 24 pages of expert guidance.",
-    "category": "buyers",
+    "active": true,
     "pdfUrl": "/guides/buyers-guide.pdf",
-    "coverImage": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400",
-    "active": true
+    "category": "buyers",
+    "coverImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/1bbf4e60bb8389e56ce1.jpg",
+    "description": "Everything you need to know about buying a home in Westchester — from pre-approval to closing day. 24 pages of expert guidance."
   },
   {
     "slug": "sellers-guide",
     "title": "Seller's Complete Guide",
-    "description": "Our step-by-step guide to selling your Westchester home for maximum value. Includes pricing strategy, staging checklist, and marketing timeline.",
-    "category": "sellers",
+    "active": true,
     "pdfUrl": "/guides/sellers-guide.pdf",
-    "coverImage": "https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?w=400",
-    "active": true
+    "category": "sellers",
+    "coverImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/9a3cb4e262593e9eb4d8.jpg",
+    "description": "Our step-by-step guide to selling your Westchester home for maximum value. Includes pricing strategy, staging checklist, and marketing timeline."
   },
   {
     "slug": "relocation-guide",
     "title": "Complete Relocation Guide to Westchester County",
-    "description": "Moving to Westchester? This comprehensive guide covers neighborhoods, schools, commute times, cost of living, and everything you need to make the right choice.",
-    "category": "relocation",
+    "active": true,
     "pdfUrl": "/guides/relocation-guide.pdf",
-    "coverImage": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=400",
-    "active": true
+    "category": "relocation",
+    "coverImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/68574bd31d74d0d3407b.jpg",
+    "description": "Moving to Westchester? This comprehensive guide covers neighborhoods, schools, commute times, cost of living, and everything you need to make the right choice."
   },
   {
     "slug": "investor-report",
     "title": "Westchester Investment Market Report",
-    "description": "Current cap rates, rental yield data by neighborhood, market trends, and off-market deal criteria for Westchester County investors.",
-    "category": "investors",
+    "active": true,
     "pdfUrl": "/guides/investor-report.pdf",
-    "coverImage": "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400",
-    "active": true
+    "category": "investors",
+    "coverImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/bb73962d66a0434fb3e5.jpg",
+    "description": "Current cap rates, rental yield data by neighborhood, market trends, and off-market deal criteria for Westchester County investors."
   },
   {
     "slug": "first-time-buyer",
     "title": "First-Time Buyer Guide",
-    "description": "Specifically designed for first-time buyers in Westchester. Covers the entire process, common mistakes to avoid, and how to compete in a fast-moving market.",
-    "category": "buyers",
+    "active": true,
     "pdfUrl": "/guides/first-time-buyer.pdf",
-    "coverImage": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400",
-    "active": true
+    "category": "buyers",
+    "coverImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/0f50d25cd42506f8cb45.jpg",
+    "description": "Specifically designed for first-time buyers in Westchester. Covers the entire process, common mistakes to avoid, and how to compete in a fast-moving market."
   }
 ]

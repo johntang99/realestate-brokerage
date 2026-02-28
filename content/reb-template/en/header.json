@@ -1,72 +1,72 @@
 {
   "logo": {
-    "src": "",
     "alt": "Panorama NY, Inc",
+    "src": "",
     "width": 160,
     "height": 48
   },
-  "logoText": "PANAROMA",
   "phone": "(845) 555-0190",
-  "ctaLabel": "Request Info",
   "ctaHref": "/contact",
-  "scrollThreshold": 80,
-  "stickyCtaPhone": true,
-  "stickyCtaButton": true,
-  "transparentOnHero": true,
+  "ctaLabel": "Request Info",
+  "logoText": "PANAROMA",
   "navigation": [
     {
-      "label": "Properties",
-      "href": "/properties"
+      "href": "/properties",
+      "label": "Properties"
     },
     {
-      "label": "Neighborhoods",
-      "href": "/neighborhoods"
+      "href": "/neighborhoods",
+      "label": "Neighborhoods"
     },
     {
-      "label": "Buy & Sell",
       "href": "#",
+      "label": "Buy & Sell",
       "children": [
         {
-          "label": "Buying",
-          "href": "/buying"
+          "href": "/buying",
+          "label": "Buying"
         },
         {
-          "label": "Selling",
-          "href": "/selling"
+          "href": "/selling",
+          "label": "Selling"
         },
         {
-          "label": "Home Valuation",
-          "href": "/home-valuation"
+          "href": "/home-valuation",
+          "label": "Home Valuation"
         },
         {
-          "label": "New Construction",
-          "href": "/new-construction"
+          "href": "/new-construction",
+          "label": "New Construction"
         }
       ]
     },
     {
-      "label": "Investing",
-      "href": "/investing"
+      "href": "/investing",
+      "label": "Investing"
     },
     {
-      "label": "Relocating",
-      "href": "/relocating"
+      "href": "/relocating",
+      "label": "Relocating"
     },
     {
-      "label": "Our Team",
-      "href": "/team"
+      "href": "/team",
+      "label": "Our Team"
     },
     {
-      "label": "About",
-      "href": "/about"
+      "href": "/about",
+      "label": "About"
     },
     {
-      "label": "Knowledge Center",
-      "href": "/knowledge-center"
+      "href": "/knowledge-center",
+      "label": "Knowledge Center"
     },
     {
-      "label": "Contact",
-      "href": "/contact"
+      "href": "/contact",
+      "label": "Contact"
     }
-  ]
+  ],
+  "stickyCtaPhone": true,
+  "scrollThreshold": 80,
+  "stickyCtaButton": true,
+  "transparentOnHero": true
 }

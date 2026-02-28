@@ -5,6 +5,7 @@ import { getSessionFromRequest } from '@/lib/admin/auth';
 import { listContentEntries, upsertContentEntry } from '@/lib/contentDb';
 import { canWriteContent, requireSiteAccess } from '@/lib/admin/permissions';
 import { writeAuditLog } from '@/lib/admin/audit';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 async function collectJsonPathsRecursive(
   rootDir: string,
@@ -33,6 +34,21 @@ async function collectJsonPathsRecursive(
     }
   }
   return paths;
+}
+
+async function listDedicatedRows(siteId: string, table: string): Promise<Array<{ slug: string; data: any }>> {
+  const supabase = getSupabaseServerClient();
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from(table)
+    .select('slug,data')
+    .eq('site_id', siteId)
+    .order('slug', { ascending: true });
+  if (error) {
+    console.error(`listDedicatedRows error for ${table}:`, error);
+    return [];
+  }
+  return (data || []) as Array<{ slug: string; data: any }>;
 }
 
 export async function POST(request: NextRequest) {
@@ -66,6 +82,33 @@ export async function POST(request: NextRequest) {
   const entries = await listContentEntries(siteId, locale);
   const localeEntryMap = new Map(entries.filter((e) => e.path !== 'theme.json').map((e) => [e.path, e]));
   let themeEntry = entries.find((e) => e.path === 'theme.json');
+
+  // Ensure dedicated-table content is also exportable even if content_entries drifted.
+  const dedicatedMappings: Array<{ dir: string; table: string }> = [
+    { dir: 'agents', table: 'agents' },
+    { dir: 'new-construction', table: 'new_construction' },
+    { dir: 'events', table: 'events' },
+  ];
+  for (const mapping of dedicatedMappings) {
+    const rows = await listDedicatedRows(siteId, mapping.table);
+    rows.forEach((row) => {
+      const slug = typeof row.slug === 'string' ? row.slug.trim().toLowerCase() : '';
+      if (!slug || !row.data) return;
+      const entryPath = `${mapping.dir}/${slug}.json`;
+      if (!localeEntryMap.has(entryPath)) {
+        localeEntryMap.set(entryPath, {
+          id: `dedicated-${mapping.table}-${slug}`,
+          site_id: siteId,
+          locale,
+          path: entryPath,
+          content: row.data,
+          data: row.data,
+          updated_at: new Date().toISOString(),
+          updated_by: 'dedicated_table_backfill',
+        });
+      }
+    });
+  }
 
   // Backfill missing DB paths from local locale files (pages/*.json, *.layout.json, footer/header, etc.)
   const localJsonPaths = await collectJsonPathsRecursive(contentRoot);
@@ -140,14 +183,14 @@ export async function POST(request: NextRequest) {
     localeEntries.map(async (entry) => {
       const targetPath = path.join(contentRoot, entry.path);
       await fs.mkdir(path.dirname(targetPath), { recursive: true });
-      await fs.writeFile(targetPath, JSON.stringify(entry.data, null, 2));
+      await fs.writeFile(targetPath, JSON.stringify(entry.content ?? entry.data, null, 2));
     })
   );
 
   // Export theme to site-level (not locale)
   if (themeEntry) {
     const themePath = path.join(process.cwd(), 'content', siteId, 'theme.json');
-    await fs.writeFile(themePath, JSON.stringify(themeEntry.data, null, 2));
+    await fs.writeFile(themePath, JSON.stringify(themeEntry.content ?? themeEntry.data, null, 2));
   }
 
   await writeAuditLog({

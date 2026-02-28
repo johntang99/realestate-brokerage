@@ -2,119 +2,119 @@
   "items": [
     {
       "id": "t-001",
-      "reviewer": "Robert & Catherine Mills",
-      "reviewDate": "2025-12",
-      "rating": 5,
       "text": "Pinnacle Realty is in a class by itself. We interviewed four brokerages before listing our home in Scarsdale. No one came close to matching their market knowledge, marketing plan, or the professionalism of every person on their team. We received six offers in four days and closed at 9% above asking.",
-      "transactionType": "seller",
+      "rating": 5,
+      "featured": true,
       "location": "Scarsdale, NY",
+      "reviewer": "Robert & Catherine Mills",
       "verified": true,
-      "featured": true
+      "reviewDate": "2025-12",
+      "transactionType": "seller"
     },
     {
       "id": "t-002",
-      "reviewer": "James & Priya Agarwal",
-      "reviewDate": "2025-11",
-      "rating": 5,
       "text": "Relocating from London with three children, we had no idea where to start. Pinnacle Realty didn't just find us a house — they gave us a complete education on Westchester County. We knew exactly which school districts fit our family, which neighborhoods matched our lifestyle, and what fair value looked like before we made a single offer.",
-      "transactionType": "buyer",
+      "rating": 5,
+      "featured": true,
       "location": "Larchmont, NY",
+      "reviewer": "James & Priya Agarwal",
       "verified": true,
-      "featured": true
+      "reviewDate": "2025-11",
+      "transactionType": "buyer"
     },
     {
       "id": "t-003",
-      "reviewer": "Steven Kaufman",
-      "reviewDate": "2025-10",
-      "rating": 5,
       "text": "I've been an investor for 20 years. Sarah Rodriguez at Pinnacle found me an off-market multifamily that cash flows from day one. She ran the numbers more rigorously than my previous investment broker ever did. If you're serious about real estate investing in Westchester, call Pinnacle.",
-      "transactionType": "investor",
+      "rating": 5,
+      "featured": true,
       "location": "White Plains, NY",
-      "agentSlug": "sarah-rodriguez",
+      "reviewer": "Steven Kaufman",
       "verified": true,
-      "featured": true
+      "agentSlug": "sarah-rodriguez",
+      "reviewDate": "2025-10",
+      "transactionType": "investor"
     },
     {
       "id": "t-004",
-      "reviewer": "Diane & Frank Pellegrino",
-      "reviewDate": "2025-09",
-      "rating": 5,
       "text": "We've been Pinnacle clients for 11 years and three transactions. Jane Smith has been our agent every time. When you find an agent with that level of integrity and market knowledge, you don't go anywhere else.",
-      "transactionType": "seller",
+      "rating": 5,
+      "featured": false,
       "location": "Bronxville, NY",
-      "agentSlug": "jane-smith",
+      "reviewer": "Diane & Frank Pellegrino",
       "verified": true,
-      "featured": false
+      "agentSlug": "jane-smith",
+      "reviewDate": "2025-09",
+      "transactionType": "seller"
     },
     {
       "id": "t-005",
-      "reviewer": "Amanda Torres",
-      "reviewDate": "2025-08",
-      "rating": 5,
       "text": "As a single first-time buyer, I was nervous about the whole process. Marcus Johnson made every step feel manageable. He was endlessly patient with my questions, fiercely protective of my interests during negotiation, and completely honest even when the answer wasn't what I wanted to hear.",
-      "transactionType": "buyer",
+      "rating": 5,
+      "featured": true,
       "location": "Dobbs Ferry, NY",
-      "agentSlug": "marcus-johnson",
+      "reviewer": "Amanda Torres",
       "verified": true,
-      "featured": true
+      "agentSlug": "marcus-johnson",
+      "reviewDate": "2025-08",
+      "transactionType": "buyer"
     },
     {
       "id": "t-006",
-      "reviewer": "Daniel & Sophie Huang",
-      "reviewDate": "2025-07",
-      "rating": 5,
       "text": "Moving from Shanghai, we needed someone who truly understood both cultures. Marcus Johnson was extraordinary — he helped us understand the American home-buying process in detail, communicated in both English and Mandarin, and found us a home that exceeded every item on our list.",
-      "transactionType": "buyer",
+      "rating": 5,
+      "featured": false,
       "location": "Scarsdale, NY",
-      "agentSlug": "marcus-johnson",
+      "reviewer": "Daniel & Sophie Huang",
       "verified": true,
-      "featured": false
+      "agentSlug": "marcus-johnson",
+      "reviewDate": "2025-07",
+      "transactionType": "buyer"
     },
     {
       "id": "t-007",
-      "reviewer": "The Harrison Family",
-      "reviewDate": "2025-06",
-      "rating": 5,
       "text": "We needed to sell quickly due to a job relocation. Jane Smith listed our home on a Tuesday, held an open house that weekend, and had a signed contract by Monday — 8% above asking price. That's not luck. That's skill, preparation, and an incredible network.",
-      "transactionType": "seller",
+      "rating": 5,
+      "featured": false,
       "location": "White Plains, NY",
-      "agentSlug": "jane-smith",
+      "reviewer": "The Harrison Family",
       "verified": true,
-      "featured": false
+      "agentSlug": "jane-smith",
+      "reviewDate": "2025-06",
+      "transactionType": "seller"
     },
     {
       "id": "t-008",
-      "reviewer": "Marcus & Jennifer Wei",
-      "reviewDate": "2025-05",
-      "rating": 5,
       "text": "Pinnacle Realty understands the Westchester market at a level that the big national brokerages simply can't match. When we were competing on a home in Bronxville, Jane's knowledge of the local market — specifically what the sellers valued beyond price — is what won us the deal.",
-      "transactionType": "buyer",
+      "rating": 5,
+      "featured": false,
       "location": "Bronxville, NY",
+      "reviewer": "Marcus & Jennifer Wei",
       "verified": true,
-      "featured": false
+      "reviewDate": "2025-05",
+      "transactionType": "buyer"
     },
     {
       "id": "t-009",
-      "reviewer": "George & Lisa Fontaine",
-      "reviewDate": "2025-04",
-      "rating": 5,
       "text": "Sarah Rodriguez is an investment specialist in the truest sense. She ran a full financial model on every property we considered — cap rates, projected appreciation, rent comps, expense ratios. We closed on a duplex that's now generating positive cash flow from month one.",
-      "transactionType": "investor",
+      "rating": 5,
+      "featured": false,
       "location": "Yonkers, NY",
-      "agentSlug": "sarah-rodriguez",
+      "reviewer": "George & Lisa Fontaine",
       "verified": true,
-      "featured": false
+      "agentSlug": "sarah-rodriguez",
+      "reviewDate": "2025-04",
+      "transactionType": "investor"
     },
     {
       "id": "t-010",
-      "reviewer": "The Nakamura Family",
-      "reviewDate": "2025-03",
-      "rating": 5,
       "text": "Relocating from Tokyo with children in middle school, school quality was everything for us. Pinnacle Realty gave us a comprehensive school-by-school briefing before we ever looked at a single home. We found the perfect property in a top district and couldn't be happier.",
-      "transactionType": "buyer",
+      "rating": 5,
+      "featured": false,
       "location": "Larchmont, NY",
+      "reviewer": "The Nakamura Family",
       "verified": true,
-      "featured": false
+      "reviewDate": "2025-03",
+      "transactionType": "buyer"
     }
   ]
 }

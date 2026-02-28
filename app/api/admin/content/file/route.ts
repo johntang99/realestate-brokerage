@@ -11,6 +11,7 @@ import {
   insertContentRevision,
   upsertContentEntry,
 } from '@/lib/contentDb';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { canWriteContent, requireSiteAccess } from '@/lib/admin/permissions';
 import { locales } from '@/lib/i18n';
 import { normalizeMediaUrlsInData } from '@/lib/media-url';
@@ -35,11 +36,75 @@ const ALLOWED_TARGET_DIRS = [
 
 type TargetDir = (typeof ALLOWED_TARGET_DIRS)[number];
 
+const DEDICATED_TABLE_BY_DIR: Record<string, string> = {
+  agents: 'agents',
+  'new-construction': 'new_construction',
+  events: 'events',
+};
+
+function getDedicatedTableForPath(filePath: string) {
+  const dir = filePath.includes('/') ? filePath.split('/')[0] : '';
+  if (!dir) return null;
+  return DEDICATED_TABLE_BY_DIR[dir] || null;
+}
+
+function getSlugFromFilePath(filePath: string) {
+  const fileName = filePath.split('/').pop() || '';
+  return fileName.replace(/\.json$/i, '').trim().toLowerCase();
+}
+
+function getEventDateFromPayload(data: any): string | null {
+  const candidates = [data?.eventDate, data?.startDate, data?.date];
+  for (const value of candidates) {
+    if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}/.test(value)) {
+      return value.slice(0, 10);
+    }
+  }
+  return null;
+}
+
+async function upsertDedicatedCollectionRow(siteId: string, filePath: string, data: any) {
+  const table = getDedicatedTableForPath(filePath);
+  if (!table) return;
+  const supabase = getSupabaseServerClient();
+  if (!supabase) return;
+
+  const payload: Record<string, unknown> = {
+    site_id: siteId,
+    slug: typeof data?.slug === 'string' && data.slug.trim()
+      ? data.slug.trim().toLowerCase()
+      : getSlugFromFilePath(filePath),
+    data,
+    updated_at: new Date().toISOString(),
+  };
+  if (table === 'events') {
+    payload.event_date = getEventDateFromPayload(data);
+  }
+
+  const { error } = await supabase.from(table).upsert(payload, { onConflict: 'site_id,slug' });
+  if (error) {
+    console.error(`Dedicated table upsert failed for ${table}:`, error);
+  }
+}
+
+async function deleteDedicatedCollectionRow(siteId: string, filePath: string) {
+  const table = getDedicatedTableForPath(filePath);
+  if (!table) return;
+  const supabase = getSupabaseServerClient();
+  if (!supabase) return;
+
+  const slug = getSlugFromFilePath(filePath);
+  const { error } = await supabase.from(table).delete().eq('site_id', siteId).eq('slug', slug);
+  if (error) {
+    console.error(`Dedicated table delete failed for ${table}:`, error);
+  }
+}
+
 function syncSlugWithPath(filePath: string, data: any): any {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return data;
   const [dir, fileName] = filePath.split('/');
   if (!dir || !fileName) return data;
-  if (!['blog', 'portfolio', 'shop-products', 'journal', 'collections', 'properties', 'neighborhoods', 'market-reports', 'agents', 'knowledge-center', 'new-construction'].includes(dir)) {
+  if (!['blog', 'portfolio', 'shop-products', 'journal', 'collections', 'properties', 'neighborhoods', 'market-reports', 'agents', 'knowledge-center', 'new-construction', 'events', 'guides'].includes(dir)) {
     return data;
   }
   const slug = fileName.replace(/\.json$/i, '').trim().toLowerCase();
@@ -114,8 +179,9 @@ export async function GET(request: NextRequest) {
   try {
     if (canUseContentDb()) {
       const entry = await fetchContentEntry(siteId, locale, filePath);
-      if (entry?.data && !isEmptyHeaderPayload(filePath, entry.data)) {
-        return NextResponse.json({ content: JSON.stringify(entry.data, null, 2) });
+      const entryContent = entry?.content ?? entry?.data;
+      if (entryContent && !isEmptyHeaderPayload(filePath, entryContent)) {
+        return NextResponse.json({ content: JSON.stringify(entryContent, null, 2) });
       }
     }
 
@@ -186,10 +252,11 @@ export async function PUT(request: NextRequest) {
 
   if (canUseContentDb()) {
     const existing = await fetchContentEntry(siteId, locale, filePath);
-    if (existing?.data) {
+    const existingContent = existing?.content ?? existing?.data;
+    if (existing && existingContent) {
       await insertContentRevision({
         entryId: existing.id,
-        data: existing.data,
+        data: existingContent,
         createdBy: session.user.email,
         note: 'Admin update',
       });
@@ -215,6 +282,7 @@ export async function PUT(request: NextRequest) {
         updatedBy: session.user.email,
       });
     }
+    await upsertDedicatedCollectionRow(siteId, filePath, normalizedParsed);
 
     if (!shouldWriteThroughFile()) {
       return NextResponse.json({
@@ -331,6 +399,7 @@ export async function POST(request: NextRequest) {
         data: contentToCreate,
         updatedBy: session.user.email,
       });
+      await upsertDedicatedCollectionRow(siteId, filePath, contentToCreate);
       return NextResponse.json({ path: filePath });
     }
 
@@ -382,8 +451,9 @@ export async function POST(request: NextRequest) {
     let content = '';
     if (canUseContentDb()) {
       const sourceEntry = await fetchContentEntry(siteId, locale, sourcePath);
-      if (sourceEntry?.data) {
-        content = JSON.stringify(sourceEntry.data, null, 2);
+      const sourceContent = sourceEntry?.content ?? sourceEntry?.data;
+      if (sourceContent) {
+        content = JSON.stringify(sourceContent, null, 2);
       }
     }
     if (!content) {
@@ -391,8 +461,21 @@ export async function POST(request: NextRequest) {
     }
 
     let nextContent = content;
-    const shouldSyncSlug = ['blog', 'portfolio', 'shop-products', 'journal', 'collections']
-      .includes(resolvedSourceDir);
+    const shouldSyncSlug = [
+      'blog',
+      'portfolio',
+      'shop-products',
+      'journal',
+      'collections',
+      'properties',
+      'neighborhoods',
+      'market-reports',
+      'agents',
+      'knowledge-center',
+      'new-construction',
+      'events',
+      'guides',
+    ].includes(resolvedSourceDir);
     if (shouldSyncSlug) {
       try {
         const parsed = JSON.parse(content);
@@ -411,6 +494,7 @@ export async function POST(request: NextRequest) {
         data: parsed,
         updatedBy: session.user.email,
       });
+      await upsertDedicatedCollectionRow(siteId, targetPath, parsed);
       return NextResponse.json({ path: targetPath });
     }
 
@@ -463,6 +547,7 @@ export async function DELETE(request: NextRequest) {
 
   if (canUseContentDb()) {
     await deleteContentEntry({ siteId, locale, path: filePath });
+    await deleteDedicatedCollectionRow(siteId, filePath);
     try {
       await fs.unlink(resolved);
     } catch (error: any) {

@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
                 siteId: created.id,
                 locale: entry.locale,
                 path: entry.path,
-                data: entry.data,
+                data: entry.content ?? entry.data,
                 updatedBy: session.user.id,
               })
             )

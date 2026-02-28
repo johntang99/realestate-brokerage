@@ -1,100 +1,191 @@
 {
   "hero": {
-    "variant": "gallery-background",
-    "overlayOpacity": 0.45,
     "slides": [
-      { "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1400", "alt": "Luxury home in Scarsdale" },
-      { "image": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1400", "alt": "Waterfront home in Larchmont" },
-      { "image": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1400", "alt": "Estate home in Bronxville" }
+      {
+        "alt": "Luxury home in Scarsdale",
+        "image": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/99b069f02a46f2112057.jpg"
+      },
+      {
+        "alt": "Waterfront home in Larchmont",
+        "image": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/4bcff0290367977a8a10.jpg"
+      },
+      {
+        "alt": "Estate home in Bronxville",
+        "image": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/23e46f2fd0956e055754.jpg"
+      }
     ],
-    "headline": "Real Estate Guidance You Can Trust in Orange County, NY",
     "subline": "Clear strategy for buying, selling, relocating, and investing - with a local team that puts your goals first.",
-    "ctaPrimary": { "label": "Search Properties", "href": "/properties" },
-    "ctaSecondary": { "label": "Free Consultation", "href": "/contact" }
-  },
-  "goalPaths": {
-    "headline": "How Can We Help You?",
-    "items": [
-      { "label": "I Want to Buy", "subline": "Find your perfect home with expert guidance", "href": "/buying", "icon": "Home" },
-      { "label": "I Want to Sell", "subline": "Strategic pricing and premium marketing", "href": "/selling", "icon": "DollarSign" },
-      { "label": "I'm Relocating", "subline": "Deep local knowledge for your move", "href": "/relocating", "icon": "MapPin" },
-      { "label": "I'm an Investor", "subline": "Data-driven investment strategy", "href": "/investing", "icon": "TrendingUp" },
-      { "label": "I Want to Join the Team", "subline": "Explore opportunities to grow with Panorama NY", "href": "/join", "icon": "Users" }
-    ]
-  },
-  "statsBar": {
-    "variant": "animated-count",
-    "items": [
-      { "value": "180", "label": "In Career Sales", "prefix": "$", "suffix": "M+" },
-      { "value": "620", "label": "Transactions Closed", "suffix": "+" },
-      { "value": "12", "label": "Years in Business" },
-      { "value": "18", "label": "Expert Agents" },
-      { "value": "200", "label": "Five-Star Reviews", "suffix": "+" }
-    ]
+    "variant": "gallery-background",
+    "headline": "Real Estate Guidance You Can Trust in Orange County, NY",
+    "ctaPrimary": {
+      "href": "/properties",
+      "label": "Search Properties"
+    },
+    "ctaSecondary": {
+      "href": "/contact",
+      "label": "Free Consultation"
+    },
+    "overlayOpacity": 0.45
   },
   "intro": {
-    "headline": "A Brokerage Built Around Client Trust",
     "body": "Panorama NY, Inc is built around one core promise: to earn your trust with honest advice, strong local knowledge, and hands-on support from first conversation to closing.",
-    "ctaLabel": "Our Story",
+    "image": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/78543c79b8563255d988.jpg",
     "ctaHref": "/about",
-    "image": "https://images.unsplash.com/photo-1560520031-3a4dc4e9de0c?w=800"
+    "ctaLabel": "Our Story",
+    "headline": "A Brokerage Built Around Client Trust"
   },
-  "whyChooseUs": {
-    "headline": "Why Choose Panorama NY",
+  "statsBar": {
     "items": [
-      { "icon": "MapPin", "heading": "Orange County Market Expertise", "description": "Neighborhood-level insight across Orange County, NY to help you make better decisions." },
-      { "icon": "TrendingUp", "heading": "Clear Strategy and Execution", "description": "Pricing, negotiation, and marketing plans tailored to your goals and timeline." },
-      { "icon": "Users", "heading": "Personalized Client Experience", "description": "Responsive communication and practical guidance for one of life's biggest transactions." }
-    ]
+      {
+        "label": "In Career Sales",
+        "value": "180",
+        "prefix": "$",
+        "suffix": "M+"
+      },
+      {
+        "label": "Transactions Closed",
+        "value": "620",
+        "suffix": "+"
+      },
+      {
+        "label": "Years in Business",
+        "value": "12"
+      },
+      {
+        "label": "Expert Agents",
+        "value": "18"
+      },
+      {
+        "label": "Five-Star Reviews",
+        "value": "200",
+        "suffix": "+"
+      }
+    ],
+    "variant": "animated-count"
+  },
+  "goalPaths": {
+    "items": [
+      {
+        "href": "/buying",
+        "icon": "Home",
+        "label": "I Want to Buy",
+        "subline": "Find your perfect home with expert guidance"
+      },
+      {
+        "href": "/selling",
+        "icon": "DollarSign",
+        "label": "I Want to Sell",
+        "subline": "Strategic pricing and premium marketing"
+      },
+      {
+        "href": "/relocating",
+        "icon": "MapPin",
+        "label": "I'm Relocating",
+        "subline": "Deep local knowledge for your move"
+      },
+      {
+        "href": "/investing",
+        "icon": "TrendingUp",
+        "label": "I'm an Investor",
+        "subline": "Data-driven investment strategy"
+      },
+      {
+        "href": "/join",
+        "icon": "Users",
+        "label": "I Want to Join the Team",
+        "subline": "Explore opportunities to grow with Panorama NY"
+      }
+    ],
+    "headline": "How Can We Help You?"
+  },
+  "contactForm": {
+    "subline": "Send us a message and we'll respond within 2 hours.",
+    "headline": "Get in Touch"
   },
   "teamPreview": {
-    "headline": "Meet Our Agents",
+    "ctaHref": "/team",
     "subline": "Meet the Panorama NY team serving Orange County, NY.",
     "ctaLabel": "Meet the Full Team",
-    "ctaHref": "/team",
-    "agentSlugs": ["jane-smith", "marcus-johnson", "sarah-rodriguez"]
+    "headline": "Meet Our Agents",
+    "agentSlugs": [
+      "jane-smith",
+      "marcus-johnson",
+      "sarah-rodriguez"
+    ]
+  },
+  "whyChooseUs": {
+    "items": [
+      {
+        "icon": "MapPin",
+        "heading": "Orange County Market Expertise",
+        "description": "Neighborhood-level insight across Orange County, NY to help you make better decisions."
+      },
+      {
+        "icon": "TrendingUp",
+        "heading": "Clear Strategy and Execution",
+        "description": "Pricing, negotiation, and marketing plans tailored to your goals and timeline."
+      },
+      {
+        "icon": "Users",
+        "heading": "Personalized Client Experience",
+        "description": "Responsive communication and practical guidance for one of life's biggest transactions."
+      }
+    ],
+    "headline": "Why Choose Panorama NY"
+  },
+  "consultationCta": {
+    "ctaHref": "/contact",
+    "subline": "Ready to buy, sell, relocate, or invest? Let's talk about your next move.",
+    "ctaLabel": "Request Consultation",
+    "headline": "Ready to Take the Next Step?",
+    "backgroundImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/23e46f2fd0956e055754.jpg"
+  },
+  "featuredListings": {
+    "ctaHref": "/properties",
+    "subline": "Handpicked listings across Westchester's finest communities.",
+    "ctaLabel": "View All Properties",
+    "headline": "Featured Properties",
+    "maxDisplay": 6,
+    "propertySlugs": [
+      "45-oak-ridge-lane",
+      "77-highland-terrace",
+      "12-harbor-view-drive"
+    ]
   },
   "testimonialStrip": {
     "headline": "What Our Clients Say",
-    "testimonialIds": ["t-001", "t-002", "t-005"]
-  },
-  "neighborhoodSpotlight": {
-    "headline": "Explore Orange County Neighborhoods",
-    "subline": "Area insights for buyers, sellers, relocators, and investors.",
-    "ctaLabel": "All Neighborhoods",
-    "ctaHref": "/neighborhoods",
-    "neighborhoodSlugs": ["scarsdale", "larchmont", "bronxville"]
+    "testimonialIds": [
+      "t-001",
+      "t-002",
+      "t-005"
+    ]
   },
   "marketReportTeaser": {
-    "headline": "Market Report",
-    "subline": "Orange County, NY — Latest Update",
+    "ctaHref": "/market-reports/february-2026",
     "keyStat": "Local trends and pricing signals for smarter decisions",
+    "subline": "Orange County, NY — Latest Update",
     "ctaLabel": "Read Full Report",
-    "ctaHref": "/market-reports/february-2026"
+    "headline": "Market Report"
+  },
+  "neighborhoodSpotlight": {
+    "ctaHref": "/neighborhoods",
+    "subline": "Area insights for buyers, sellers, relocators, and investors.",
+    "ctaLabel": "All Neighborhoods",
+    "headline": "Explore Orange County Neighborhoods",
+    "neighborhoodSlugs": [
+      "scarsdale",
+      "larchmont",
+      "bronxville"
+    ]
   },
   "knowledgeCenterPreview": {
-    "headline": "From Our Knowledge Center",
-    "ctaLabel": "Visit the Knowledge Center",
     "ctaHref": "/knowledge-center",
-    "postSlugs": ["westchester-market-report-2026", "first-time-buyer-guide-westchester", "relocating-to-westchester"]
-  },
-  "consultationCta": {
-    "headline": "Ready to Take the Next Step?",
-    "subline": "Ready to buy, sell, relocate, or invest? Let's talk about your next move.",
-    "ctaLabel": "Request Consultation",
-    "ctaHref": "/contact",
-    "backgroundImage": "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1400"
-  },
-  "contactForm": {
-    "headline": "Get in Touch",
-    "subline": "Send us a message and we'll respond within 2 hours."
-  },
-  "featuredListings": {
-    "headline": "Featured Properties",
-    "subline": "Handpicked listings across Westchester's finest communities.",
-    "ctaLabel": "View All Properties",
-    "ctaHref": "/properties",
-    "maxDisplay": 6,
-    "propertySlugs": ["45-oak-ridge-lane", "77-highland-terrace", "12-harbor-view-drive"]
+    "ctaLabel": "Visit the Knowledge Center",
+    "headline": "From Our Knowledge Center",
+    "postSlugs": [
+      "westchester-market-report-2026",
+      "first-time-buyer-guide-westchester",
+      "relocating-to-westchester"
+    ]
   }
 }

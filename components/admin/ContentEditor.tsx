@@ -14,6 +14,8 @@ import { MarketReportPanel } from '@/components/admin/panels/MarketReportPanel';
 import { REATestimonialsPanel } from '@/components/admin/panels/REATestimonialsPanel';
 import { SeoPanel } from '@/components/admin/panels/SeoPanel';
 import { HeaderPanel } from '@/components/admin/panels/HeaderPanel';
+import { FooterPanel } from '@/components/admin/panels/FooterPanel';
+import { SitePanel } from '@/components/admin/panels/SitePanel';
 import { ThemePanel } from '@/components/admin/panels/ThemePanel';
 import { SectionVariantsPanel } from '@/components/admin/panels/SectionVariantsPanel';
 import { HomeSectionPhotosPanel } from '@/components/admin/panels/HomeSectionPhotosPanel';
@@ -30,6 +32,8 @@ import { ServicesListPanel } from '@/components/admin/panels/ServicesListPanel';
 import { FeaturedPostPanel } from '@/components/admin/panels/FeaturedPostPanel';
 import { PostsPanel } from '@/components/admin/panels/PostsPanel';
 import { AboutPagePanel } from '@/components/admin/panels/AboutPagePanel';
+import { AgentItemPanel } from '@/components/admin/panels/AgentItemPanel';
+import { JsonMatchingPanel } from '@/components/admin/panels/JsonMatchingPanel';
 
 interface ContentFileItem {
   id: string;
@@ -462,6 +466,14 @@ export function ContentEditor({
       'journal',
       'collections',
       'testimonials',
+      'properties',
+      'neighborhoods',
+      'market-reports',
+      'agents',
+      'knowledge-center',
+      'new-construction',
+      'events',
+      'guides',
       'root',
     ];
     const byFolder = new Map<string, number>(folderOrder.map((folder) => [folder, 0]));
@@ -528,7 +540,21 @@ export function ContentEditor({
   const handleCreate = async () => {
     const targetDir = TARGET_DIR_BY_FILTER[fileFilter] || 'pages';
     const isBlog = targetDir === 'blog';
-    const isCollection = ['portfolio', 'shop-products', 'journal', 'collections', 'testimonials'].includes(targetDir);
+    const isCollection = [
+      'portfolio',
+      'shop-products',
+      'journal',
+      'collections',
+      'testimonials',
+      'properties',
+      'neighborhoods',
+      'market-reports',
+      'agents',
+      'knowledge-center',
+      'new-construction',
+      'events',
+      'guides',
+    ].includes(targetDir);
     const slug = window.prompt(
       isBlog
         ? 'New blog slug (example: my-post)'
@@ -628,6 +654,203 @@ export function ContentEditor({
         };
       }
 
+      if (targetDir === 'agents') {
+        return {
+          slug: normalizedSlug,
+          status: 'active',
+          displayOrder: 1,
+          role: 'agent',
+          name: '',
+          title: '',
+          photo: '',
+          bio: '',
+          phone: '',
+          email: '',
+          social: {
+            instagram: '',
+            linkedin: '',
+            facebook: '',
+          },
+          licenseNumber: '',
+          licenseState: '',
+          specialties: [],
+          languages: [],
+          yearsExperience: 0,
+          transactionCount: 0,
+          volumeLabel: '',
+          avgDaysOnMarket: 0,
+          saleToListRatio: '',
+          neighborhoods: [],
+          awards: [],
+          testimonials: [],
+          featured: false,
+        };
+      }
+
+      if (targetDir === 'testimonials') {
+        return {
+          id: `t-${Date.now()}`,
+          text: '',
+          rating: 5,
+          featured: false,
+          location: '',
+          reviewer: '',
+          verified: true,
+          agentSlug: '',
+          reviewDate: new Date().toISOString().slice(0, 7),
+          transactionType: 'buyer',
+        };
+      }
+
+      if (targetDir === 'properties') {
+        return {
+          slug: normalizedSlug,
+          status: 'active',
+          type: 'single-family',
+          featured: false,
+          address: '',
+          city: '',
+          state: 'NY',
+          zip: '',
+          neighborhood: '',
+          schoolDistrict: '',
+          price: 0,
+          priceDisplay: '',
+          beds: 0,
+          baths: 0,
+          sqft: 0,
+          lotSize: '',
+          yearBuilt: new Date().getFullYear(),
+          mlsNumber: '',
+          garage: '',
+          hoa: null,
+          description: '',
+          coverImage: '',
+          gallery: [],
+          features: {
+            interior: [],
+            exterior: [],
+            systems: [],
+          },
+          listingAgentSlug: '',
+          seo: {
+            title: '',
+            description: '',
+          },
+        };
+      }
+
+      if (targetDir === 'neighborhoods') {
+        return {
+          slug: normalizedSlug,
+          name: '',
+          region: '',
+          featured: false,
+          tagline: '',
+          overview: '',
+          coverImage: '',
+          gallery: [],
+          lifestyle: [],
+          schools: [],
+          marketSnapshot: {
+            medianPrice: '',
+            yoyChange: '',
+            pricePerSqft: '',
+            inventoryCount: '',
+            avgDaysOnMarket: '',
+          },
+          seo: {
+            title: '',
+            description: '',
+          },
+        };
+      }
+
+      if (targetDir === 'market-reports') {
+        return {
+          slug: normalizedSlug,
+          title: '',
+          date: new Date().toISOString().slice(0, 10),
+          area: '',
+          heroImage: '',
+          excerpt: '',
+          body: '',
+          keyMetrics: [],
+          neighborhoodBreakdown: [],
+          seo: {
+            title: '',
+            description: '',
+          },
+        };
+      }
+
+      if (targetDir === 'knowledge-center' || targetDir === 'guides') {
+        return {
+          slug: normalizedSlug,
+          title: '',
+          category: '',
+          type: 'article',
+          author: '',
+          publishDate: new Date().toISOString().slice(0, 10),
+          heroImage: '',
+          excerpt: '',
+          readTime: '',
+          featured: false,
+          tags: [],
+          body: '',
+        };
+      }
+
+      if (targetDir === 'new-construction') {
+        return {
+          slug: normalizedSlug,
+          status: 'planned',
+          name: '',
+          builder: '',
+          location: '',
+          neighborhood: '',
+          priceFrom: 0,
+          priceTo: 0,
+          priceRange: '',
+          description: '',
+          heroImage: '',
+          gallery: [],
+          features: [],
+          floorPlans: [],
+          virtualTourUrl: '',
+          estimatedCompletion: '',
+          inquiryAgentSlug: '',
+          seo: {
+            title: '',
+            description: '',
+          },
+        };
+      }
+
+      if (targetDir === 'events') {
+        return {
+          slug: normalizedSlug,
+          title: '',
+          status: 'upcoming',
+          eventType: '',
+          startDate: '',
+          endDate: '',
+          startTime: '',
+          endTime: '',
+          timezone: '',
+          location: '',
+          address: '',
+          organizer: '',
+          contactEmail: '',
+          registrationUrl: '',
+          heroImage: '',
+          excerpt: '',
+          description: '',
+          featured: false,
+          tags: [],
+        };
+      }
+
       return null;
     };
 
@@ -669,7 +892,21 @@ export function ContentEditor({
     if (!activeFile) return;
     const sourceDir = activeFile.path.includes('/') ? activeFile.path.split('/')[0] : 'pages';
     const isBlog = sourceDir === 'blog';
-    const isCollection = ['portfolio', 'shop-products', 'journal', 'collections', 'testimonials'].includes(sourceDir);
+    const isCollection = [
+      'portfolio',
+      'shop-products',
+      'journal',
+      'collections',
+      'testimonials',
+      'properties',
+      'neighborhoods',
+      'market-reports',
+      'agents',
+      'knowledge-center',
+      'new-construction',
+      'events',
+      'guides',
+    ].includes(sourceDir);
     const slug = window.prompt(
       isBlog
         ? 'Duplicate blog slug (example: my-post-copy)'
@@ -1012,6 +1249,11 @@ export function ContentEditor({
   const isPropertyItemFile = activeFile?.path.startsWith('properties/');
   const isNeighborhoodItemFile = activeFile?.path.startsWith('neighborhoods/');
   const isMarketReportFile = activeFile?.path.startsWith('market-reports/');
+  const isAgentItemFile = activeFile?.path.startsWith('agents/');
+  const isKnowledgeCenterItemFile = activeFile?.path.startsWith('knowledge-center/');
+  const isNewConstructionItemFile = activeFile?.path.startsWith('new-construction/');
+  const isEventsItemFile = activeFile?.path.startsWith('events/');
+  const isGuidesItemFile = activeFile?.path.startsWith('guides/');
   const canDeleteActiveFile = Boolean(
     activeFile &&
       (
@@ -1026,10 +1268,14 @@ export function ContentEditor({
         activeFile.path.startsWith('market-reports/') ||
         activeFile.path.startsWith('agents/') ||
         activeFile.path.startsWith('knowledge-center/') ||
-        activeFile.path.startsWith('new-construction/')
+        activeFile.path.startsWith('new-construction/') ||
+        activeFile.path.startsWith('events/') ||
+        activeFile.path.startsWith('guides/')
       )
   );
   const isHeaderFile = activeFile?.path === 'header.json';
+  const isFooterFile = activeFile?.path === 'footer.json';
+  const isSiteFile = activeFile?.path === 'site.json';
   const isThemeFile = activeFile?.path === 'theme.json';
   const isHomePageFile = activeFile?.path === 'pages/home.json';
   const isAboutPageFile = activeFile?.path === 'pages/about.json';
@@ -1618,8 +1864,6 @@ export function ContentEditor({
                   updateFormValue={updateFormValue}
                   openImagePicker={openImagePicker}
                   populateSeoFromHeroes={populateSeoFromHeroes}
-                  addSeoPage={addSeoPage}
-                  removeSeoPage={removeSeoPage}
                 />
               )}
 
@@ -1632,6 +1876,20 @@ export function ContentEditor({
                   removeHeaderMenuItem={removeHeaderMenuItem}
                   addHeaderLanguage={addHeaderLanguage}
                   removeHeaderLanguage={removeHeaderLanguage}
+                />
+              )}
+
+              {isFooterFile && formData && (
+                <FooterPanel
+                  formData={formData}
+                  updateFormValue={updateFormValue}
+                />
+              )}
+
+              {isSiteFile && formData && (
+                <SitePanel
+                  formData={formData}
+                  updateFormValue={updateFormValue}
                 />
               )}
 
@@ -1795,6 +2053,22 @@ export function ContentEditor({
                 />
               )}
 
+              {isAgentItemFile && formData && (
+                <AgentItemPanel
+                  formData={formData}
+                  updateFormValue={(path: string, value: any) => updateFormValue(path.split('.'), value)}
+                  openImagePicker={(field: string) => openImagePicker(field.split('.'))}
+                />
+              )}
+
+              {(isKnowledgeCenterItemFile || isNewConstructionItemFile || isEventsItemFile || isGuidesItemFile) && formData && (
+                <JsonMatchingPanel
+                  formData={formData}
+                  updateFormValue={updateFormValue}
+                  openImagePicker={openImagePicker}
+                />
+              )}
+
               {isTestimonialsFile && formData && (
                 <REATestimonialsPanel
                   formData={formData}
@@ -1820,7 +2094,7 @@ export function ContentEditor({
                 />
               )}
 
-              {formData && !formData.hero && !formData.introduction && !formData.cta && !isBlogPostFile && !isJournalItemFile && !isPropertyItemFile && !isNeighborhoodItemFile && !isMarketReportFile && !isTestimonialsFile && (
+              {formData && !formData.hero && !formData.introduction && !formData.cta && !isSeoFile && !isHeaderFile && !isFooterFile && !isSiteFile && !isThemeFile && !isBlogPostFile && !isJournalItemFile && !isPropertyItemFile && !isNeighborhoodItemFile && !isMarketReportFile && !isAgentItemFile && !isKnowledgeCenterItemFile && !isNewConstructionItemFile && !isEventsItemFile && !isGuidesItemFile && !isTestimonialsFile && (
                 <div className="text-sm text-gray-500">
                   No schema panels available for this file yet. Use the JSON tab.
                 </div>

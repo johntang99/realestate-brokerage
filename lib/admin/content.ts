@@ -24,11 +24,13 @@ const COLLECTION_PREFIXES = [
   'agents/',
   'knowledge-center/',
   'new-construction/',
+  'events/',
+  'guides/',
 ];
 const COLLECTION_DIRS = [
   'portfolio', 'shop-products', 'journal', 'collections', 'testimonials',
   'properties', 'neighborhoods', 'market-reports',
-  'agents', 'knowledge-center', 'new-construction',
+  'agents', 'knowledge-center', 'new-construction', 'events', 'guides',
 ];
 
 function getTitleFromData(data: unknown): string {
@@ -186,7 +188,7 @@ export async function listContentFiles(
 
       if (entry.path.startsWith('blog/') && entry.path.endsWith('.json')) {
         const slug = entry.path.replace('blog/', '').replace('.json', '');
-        const data = entry.data as Record<string, any>;
+        const data = (entry.content ?? entry.data) as Record<string, any>;
         const title = typeof data?.title === 'string' ? data.title : '';
         const publishDate =
           typeof data?.publishDate === 'string' ? data.publishDate : '';
@@ -206,7 +208,7 @@ export async function listContentFiles(
       ) {
         addItem({
           id: `collection-${entry.path.replace(/\//g, '-').replace('.json', '')}`,
-          label: getCollectionLabel(entry.path, entry.data),
+          label: getCollectionLabel(entry.path, entry.content ?? entry.data),
           path: entry.path,
           scope: 'locale',
         });

@@ -1,49 +1,66 @@
 {
-  "slug": "jane-smith",
-  "status": "active",
-  "displayOrder": 1,
-  "role": "principal_broker",
-  "name": "Jane Smith",
-  "title": "Principal Broker & Founder",
-  "photo": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600",
   "bio": "Jane founded Pinnacle Realty Group 12 years ago with a single mission: to build the most trusted real estate company in Westchester County. A lifelong resident of the area, Jane brings 18+ years of transaction experience, a deep network of local relationships, and an unwavering commitment to client outcomes. She has personally closed over $80M in transactions and mentors every agent on the team.",
-  "phone": "(845) 555-0191",
+  "name": "Jane Smith",
+  "role": "principal_broker",
+  "slug": "jane-smith",
   "email": "jane@pinnaclerealty.com",
+  "phone": "(845) 555-0191",
+  "photo": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/451ba1bdadd05b3e8a85.jpg",
+  "title": "Principal Broker & Founder",
+  "awards": [
+    "Top Producer 2024",
+    "Five Star Professional 2022–2024",
+    "Chairman's Club 2023"
+  ],
   "social": {
-    "instagram": "https://instagram.com/janesmith_re",
+    "facebook": "",
     "linkedin": "https://linkedin.com/in/janesmith",
-    "facebook": ""
+    "instagram": "https://instagram.com/janesmith_re"
   },
-  "licenseNumber": "10301200XXX",
-  "licenseState": "NY",
-  "specialties": ["Luxury", "Sellers", "Buyers", "Investment", "Relocation"],
-  "languages": ["English", "Spanish"],
-  "yearsExperience": 18,
-  "transactionCount": 320,
+  "status": "active",
+  "featured": true,
+  "languages": [
+    "English",
+    "Spanish"
+  ],
+  "specialties": [
+    "Luxury",
+    "Sellers",
+    "Buyers",
+    "Investment",
+    "Relocation"
+  ],
   "volumeLabel": "$80M+",
-  "avgDaysOnMarket": 19,
-  "saleToListRatio": "105%",
-  "neighborhoods": ["Downtown", "Westside", "Northfield"],
-  "awards": ["Top Producer 2024", "Five Star Professional 2022–2024", "Chairman's Club 2023"],
+  "displayOrder": 1,
+  "licenseState": "NY",
   "testimonials": [
     {
       "id": "t-js-1",
-      "reviewer": "Michael & Sara Chen",
-      "reviewDate": "2025-11",
-      "rating": 5,
       "text": "Jane is the kind of broker you only find once in a lifetime. She negotiated $42K above our asking price and made the entire experience feel completely stress-free.",
-      "transactionType": "seller",
-      "verified": true
+      "rating": 5,
+      "reviewer": "Michael & Sara Chen",
+      "verified": true,
+      "reviewDate": "2025-11",
+      "transactionType": "seller"
     },
     {
       "id": "t-js-2",
-      "reviewer": "David Park",
-      "reviewDate": "2025-09",
-      "rating": 5,
       "text": "I've bought and sold three properties with Jane. Her market knowledge is unmatched in this area — she knew what our home would sell for before we even listed.",
-      "transactionType": "seller",
-      "verified": true
+      "rating": 5,
+      "reviewer": "David Park",
+      "verified": true,
+      "reviewDate": "2025-09",
+      "transactionType": "seller"
     }
   ],
-  "featured": true
+  "licenseNumber": "10301200XXX",
+  "neighborhoods": [
+    "Downtown",
+    "Westside",
+    "Northfield"
+  ],
+  "avgDaysOnMarket": 19,
+  "saleToListRatio": "105%",
+  "yearsExperience": 18,
+  "transactionCount": 320
 }

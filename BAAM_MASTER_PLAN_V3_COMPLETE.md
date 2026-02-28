@@ -47,6 +47,8 @@
 - [25. Process Summary Diagram](#25-process-summary-diagram)
 - [26. Theme Token Normalization Playbook](#26-theme-token-normalization-playbook)
 - [27. Platform Guardrails (Julia Studio Learnings)](#27-platform-guardrails-julia-studio-learnings)
+- [28. REB Admin Reuse for New Site Setup](#28-reb-admin-reuse-for-new-site-setup)
+- [29. Admin Certification SOP (One-Pass Cursor Checklist)](#29-admin-certification-sop-one-pass-cursor-checklist)
 
 ---
 
@@ -460,6 +462,7 @@ Two principles govern all of Stage B:
 | **Phase 1** | Week 1-2 | Core Pages (frontend + admin wiring) | Build → Wire → Verify per page |
 | **Phase 2** | Week 3 | Conversion + Content + Polish | Same pattern for remaining pages |
 | **Phase 3** | Week 4 | Admin Hardening + SEO | Gap closure + programmatic pages |
+| **Phase 3.5** | 1-2 days | Admin Certification SOP | One-pass checklist + fix sweep before launch |
 | **Phase 4** | Week 5 | QA + Deploy | Acceptance testing + production launch |
 
 ---
@@ -1474,6 +1477,209 @@ Unique content: 2-3 paragraphs specific to this [location/route/industry]
 Include: Service description, local relevance, transit/details, testimonial, CTA
 Avoid: Duplicate content from other programmatic pages
 ```
+
+---
+
+## 28. REB Admin Reuse for New Site Setup
+
+### 28.1 Decision
+
+Yes, the REB admin improvements are **highly useful** for generating and setting up future sites.  
+This work should be treated as a **reusable platform baseline**, not a one-off patch set.
+
+### 28.2 What Can Be Reused Without Rebuilding
+
+The following capabilities are now clone-ready and should carry forward as-is:
+
+- Full collection lifecycle actions across key content types: `New Item`, `Save`, `Duplicate`, `Delete`
+- Import/export and diff operations across sidebar content types: `Check Update From DB`, `Overwrite Import`, `Export JSON`
+- JSON/form parity and richer form coverage for site settings and collections
+- Dedicated table syncing for collections that require DB-backed runtime pages (for example `agents`, `events`, `new-construction`)
+- Slug/path synchronization behavior for create/duplicate flows
+- Media sync/import foundations so Media reflects content image usage
+- RBAC updates for broker-level operational workflows in admin
+
+### 28.3 What Is Still One-Time Per New Site
+
+You still need per-site setup, but this is configuration, not feature re-implementation:
+
+1. New Supabase project and schema migration
+2. Environment variables and storage bucket configuration
+3. Site/domain records and route mapping (`siteId`, locale/domain bindings)
+4. Initial content import (source-of-truth decision: DB vs files)
+5. Theme/branding content update (`site.json`, `header.json`, `footer.json`, `seo.json`, `theme.json`)
+
+### 28.4 Rule for Future Projects
+
+For every new BAAM site, **do not rebuild admin behavior from scratch**.  
+Clone this admin baseline first, then perform only:
+
+- site-specific content contract adjustments
+- option list/data mapping changes
+- project-level configuration and QA verification
+
+### 28.5 Acceptance for Clone Readiness
+
+Before declaring a cloned site ready, run one runtime sweep on 2-3 representative sections (for example `agents`, `events`, `guides`) and confirm:
+
+- `Create -> Save -> Duplicate -> Delete` passes
+- `Check Update From DB / Overwrite Import / Export JSON` are coherent
+- DB tables and file content remain in sync after operations
+
+---
+
+## 29. Admin Certification SOP (One-Pass Cursor Checklist)
+
+### 29.1 Purpose
+
+This SOP is a single-run admin verification + remediation phase so Cursor can:
+
+1. check all critical admin behaviors end-to-end,
+2. fix issues in grouped batches,
+3. re-run the same checklist,
+4. finish with one final pass/fail report.
+
+Goal: avoid one-by-one issue discovery and repeated back-and-forth.
+
+### 29.2 When To Run
+
+Run this as **Phase 3.5** (after Phase 3 hardening, before Phase 4 launch) and also:
+
+- after major admin refactors,
+- after adding new content types to sidebar,
+- after RBAC/schema changes,
+- after import/export or media pipeline changes.
+
+### 29.3 Scope (What Must Be Certified)
+
+The certification must cover:
+
+- all left-sidebar content sections,
+- all core admin actions (`New Item`, `Save`, `Duplicate`, `Delete`, `Format`),
+- all sync actions (`Check Update From DB`, `Overwrite Import`, `Export JSON`),
+- JSON/Form parity and field completeness,
+- DB/file sync (including dedicated tables),
+- media visibility/sync behavior,
+- RBAC behavior for target roles,
+- no destructive side effects after test cleanup.
+
+### 29.4 Sidebar Coverage Matrix (Required)
+
+Cursor must test each section below and mark `PASS` or `FAIL`:
+
+- `site settings` (`site.json`, `header.json`, `footer.json`, `seo.json`, `theme.json`)
+- `pages/*`
+- `blog/*` (via Blog Posts editor boundary)
+- `portfolio/*`
+- `shop-products/*`
+- `journal/*`
+- `collections/*`
+- `testimonials`
+- `properties/*`
+- `neighborhoods/*`
+- `market-reports/*`
+- `agents/*`
+- `knowledge-center/*`
+- `new-construction/*`
+- `events/*`
+- `guides/*`
+
+### 29.5 Action Checklist Per Section
+
+For each section/content type, execute this exact checklist:
+
+1. Open a known file/item.
+2. `Format` works and keeps valid JSON.
+3. `Save` succeeds (expect `PUT` success).
+4. `New Item` works (use disposable slug).
+5. `Duplicate` works (new slug generated correctly).
+6. `Delete` works for disposable item (expect `DELETE` success).
+7. JSON tab edit and Form tab edit stay in sync after save.
+8. If section is non-deletable/protected, verify correct guard message.
+
+If browser prompt flows are automation-limited, use API-driven disposable create/duplicate fallback but still validate save/delete in runtime UI.
+
+### 29.6 Sync Integrity Checklist (Global)
+
+Run these once per locale/site combination:
+
+1. `Check Update From DB` dry-run shows clear diff counts and changed paths.
+2. `Overwrite Import` applies source-of-truth correctly (DB -> files).
+3. `Export JSON` applies source-of-truth correctly (files -> DB).
+4. Re-run `Check Update From DB` to verify no unexpected residual diffs.
+5. Verify collection dirs are included in diff (`agents`, `knowledge-center`, `new-construction`, `events`, `guides`, etc.).
+6. Verify slug-path consistency after create/duplicate across collection folders.
+
+### 29.7 Dedicated Table + Content Entry Consistency
+
+For relevant types (`agents`, `new-construction`, `events`):
+
+- create/update/delete from admin must reflect in both:
+  - `content_entries` path row
+  - dedicated table row (`site_id + slug`)
+- duplicate must write correct slug in both stores
+- delete must remove from both stores
+
+Record result as `PASS` only if both layers are consistent.
+
+### 29.8 Media Checklist
+
+Verify:
+
+1. Media panel lists content-used images after sync/import.
+2. URL normalization works for bucket and external-origin paths per policy.
+3. Image picker updates content JSON and persists after save.
+4. No broken media references in sampled pages/collections.
+
+### 29.9 RBAC Checklist
+
+At minimum test these roles on target site:
+
+- `super_admin`
+- `broker_admin`
+- `site_admin` (if used)
+- `editor` (write scope only where intended)
+
+For each role validate visibility + action permission on:
+
+- users, sites/domains, content actions, media actions, import/export actions.
+
+### 29.10 Cursor One-Pass Execution Flow
+
+Use this execution order in one Cursor run:
+
+1. **Discover**: collect all sidebar sections and action handlers.
+2. **Baseline**: run quick pass/fail matrix without edits.
+3. **Batch Fix A**: action wiring bugs (`New/Save/Duplicate/Delete/Format`).
+4. **Batch Fix B**: sync pipeline bugs (`check/import/export`, diff observability).
+5. **Batch Fix C**: DB schema compatibility + dedicated table sync.
+6. **Batch Fix D**: JSON/Form parity and panel completeness.
+7. **Batch Fix E**: media sync/listing/normalization.
+8. **Re-test Full Matrix**: same checklist, fresh pass.
+9. **Cleanup**: remove disposable QA items.
+10. **Report**: final pass/fail matrix + residual risks.
+
+### 29.11 Required Deliverables
+
+After this SOP run, Cursor must provide:
+
+1. **Admin Certification Matrix** (section x action pass/fail).
+2. **Sync Matrix** (`check/import/export` pass/fail with notes).
+3. **RBAC Matrix** (role x capability pass/fail).
+4. **Fix Log** (files changed + what issue each fixed).
+5. **Residual Risk List** (if any) with owner and next action.
+
+### 29.12 Exit Criteria (Phase 3.5 Complete)
+
+Phase 3.5 is complete only when:
+
+- all targeted sections pass action checklist,
+- sync actions pass with no unexplained diffs,
+- dedicated table/content consistency passes,
+- JSON/Form parity passes for key settings and collections,
+- media checks pass,
+- disposable QA artifacts are cleaned up,
+- final report contains zero P0/P1 admin defects.
 
 ---
 

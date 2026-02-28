@@ -12,11 +12,40 @@ export function HeaderPanel({
   formData,
   updateFormValue,
   openImagePicker,
-  addHeaderMenuItem,
-  removeHeaderMenuItem,
-  addHeaderLanguage,
-  removeHeaderLanguage,
 }: HeaderPanelProps) {
+  const navigationItems = Array.isArray(formData.navigation) ? formData.navigation : [];
+
+  const addNavigationItem = () => {
+    const next = [...navigationItems, { label: '', href: '', children: [] }];
+    updateFormValue(['navigation'], next);
+  };
+
+  const removeNavigationItem = (index: number) => {
+    const next = [...navigationItems];
+    next.splice(index, 1);
+    updateFormValue(['navigation'], next);
+  };
+
+  const addNavigationChild = (parentIndex: number) => {
+    const next = [...navigationItems];
+    const parent = next[parentIndex] || {};
+    const currentChildren = Array.isArray(parent.children) ? parent.children : [];
+    next[parentIndex] = {
+      ...parent,
+      children: [...currentChildren, { label: '', href: '' }],
+    };
+    updateFormValue(['navigation'], next);
+  };
+
+  const removeNavigationChild = (parentIndex: number, childIndex: number) => {
+    const next = [...navigationItems];
+    const parent = next[parentIndex] || {};
+    const currentChildren = Array.isArray(parent.children) ? [...parent.children] : [];
+    currentChildren.splice(childIndex, 1);
+    next[parentIndex] = { ...parent, children: currentChildren };
+    updateFormValue(['navigation'], next);
+  };
+
   return (
     <div className="border border-gray-200 rounded-lg p-4">
       <div className="text-xs font-semibold text-gray-500 uppercase mb-3">
@@ -26,60 +55,98 @@ export function HeaderPanel({
       <div className="space-y-4">
         <div>
           <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
-            Topbar
+            Branding
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 md:grid-cols-3">
+            <div>
+              <label className="block text-xs text-gray-500">Logo Text</label>
+              <input
+                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                value={formData.logoText || ''}
+                onChange={(event) => updateFormValue(['logoText'], event.target.value)}
+              />
+            </div>
             <div>
               <label className="block text-xs text-gray-500">Phone</label>
               <input
                 className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.topbar?.phone || ''}
-                onChange={(event) => updateFormValue(['topbar', 'phone'], event.target.value)}
+                value={formData.phone || ''}
+                onChange={(event) => updateFormValue(['phone'], event.target.value)}
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500">Phone Href</label>
+              <label className="block text-xs text-gray-500">CTA Label</label>
               <input
                 className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.topbar?.phoneHref || ''}
+                value={formData.ctaLabel || ''}
+                onChange={(event) => updateFormValue(['ctaLabel'], event.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500">CTA Href</label>
+              <input
+                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                value={formData.ctaHref || ''}
+                onChange={(event) => updateFormValue(['ctaHref'], event.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500">Scroll Threshold</label>
+              <input
+                type="number"
+                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                value={typeof formData.scrollThreshold === 'number' ? formData.scrollThreshold : 80}
                 onChange={(event) =>
-                  updateFormValue(['topbar', 'phoneHref'], event.target.value)
+                  updateFormValue(['scrollThreshold'], Number(event.target.value || 0))
                 }
               />
             </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
+            Behavior
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
             <div>
-              <label className="block text-xs text-gray-500">Address</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.topbar?.address || ''}
-                onChange={(event) => updateFormValue(['topbar', 'address'], event.target.value)}
-              />
+              <label className="inline-flex items-center gap-2 text-sm text-gray-700 mt-2">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={Boolean(formData.stickyCtaPhone)}
+                  onChange={(event) =>
+                    updateFormValue(['stickyCtaPhone'], event.target.checked)
+                  }
+                />
+                Sticky CTA Phone
+              </label>
             </div>
             <div>
-              <label className="block text-xs text-gray-500">Address Href</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.topbar?.addressHref || ''}
-                onChange={(event) =>
-                  updateFormValue(['topbar', 'addressHref'], event.target.value)
-                }
-              />
+              <label className="inline-flex items-center gap-2 text-sm text-gray-700 mt-2">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={Boolean(formData.stickyCtaButton)}
+                  onChange={(event) =>
+                    updateFormValue(['stickyCtaButton'], event.target.checked)
+                  }
+                />
+                Sticky CTA Button
+              </label>
             </div>
             <div>
-              <label className="block text-xs text-gray-500">Hours</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.topbar?.hours || ''}
-                onChange={(event) => updateFormValue(['topbar', 'hours'], event.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500">Badge</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.topbar?.badge || ''}
-                onChange={(event) => updateFormValue(['topbar', 'badge'], event.target.value)}
-              />
+              <label className="inline-flex items-center gap-2 text-sm text-gray-700 mt-2">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300"
+                  checked={Boolean(formData.transparentOnHero)}
+                  onChange={(event) =>
+                    updateFormValue(['transparentOnHero'], event.target.checked)
+                  }
+                />
+                Transparent On Hero
+              </label>
             </div>
           </div>
         </div>
@@ -88,72 +155,18 @@ export function HeaderPanel({
           <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
             Logo
           </div>
-          <div className="mb-3">
-            <label className="block text-xs text-gray-500">Menu Variant</label>
-            <select
-              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-              value={formData.menu?.variant || 'default'}
-              onChange={(event) => updateFormValue(['menu', 'variant'], event.target.value)}
-            >
-              <option value="default">Default</option>
-              <option value="centered">Centered</option>
-              <option value="transparent">Transparent</option>
-              <option value="stacked">Stacked</option>
-            </select>
-          </div>
-          <div className="mb-3">
-            <label className="block text-xs text-gray-500">Menu Font Weight</label>
-            <select
-              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-              value={formData.menu?.fontWeight || 'semibold'}
-              onChange={(event) => updateFormValue(['menu', 'fontWeight'], event.target.value)}
-            >
-              <option value="regular">Regular</option>
-              <option value="semibold">Semibold</option>
-            </select>
-          </div>
-          <div className="grid gap-3 md:grid-cols-3">
+          <div className="grid gap-3 md:grid-cols-2">
             <div>
-              <label className="block text-xs text-gray-500">Emoji</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.menu?.logo?.emoji || ''}
-                onChange={(event) => updateFormValue(['menu', 'logo', 'emoji'], event.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500">Text</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.menu?.logo?.text || ''}
-                onChange={(event) => updateFormValue(['menu', 'logo', 'text'], event.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500">Subtext</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.menu?.logo?.subtext || ''}
-                onChange={(event) =>
-                  updateFormValue(['menu', 'logo', 'subtext'], event.target.value)
-                }
-              />
-            </div>
-          </div>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
-            <div>
-              <label className="block text-xs text-gray-500">Logo Image</label>
+              <label className="block text-xs text-gray-500">Logo Image Src</label>
               <div className="mt-1 flex gap-2">
                 <input
                   className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                  value={formData.menu?.logo?.image?.src || ''}
-                  onChange={(event) =>
-                    updateFormValue(['menu', 'logo', 'image', 'src'], event.target.value)
-                  }
+                  value={formData.logo?.src || ''}
+                  onChange={(event) => updateFormValue(['logo', 'src'], event.target.value)}
                 />
                 <button
                   type="button"
-                  onClick={() => openImagePicker(['menu', 'logo', 'image', 'src'])}
+                  onClick={() => openImagePicker(['logo', 'src'])}
                   className="px-3 rounded-md border border-gray-200 text-xs"
                 >
                   Choose
@@ -164,9 +177,29 @@ export function HeaderPanel({
               <label className="block text-xs text-gray-500">Logo Alt</label>
               <input
                 className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.menu?.logo?.image?.alt || ''}
+                value={formData.logo?.alt || ''}
+                onChange={(event) => updateFormValue(['logo', 'alt'], event.target.value)}
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500">Logo Width</label>
+              <input
+                type="number"
+                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                value={typeof formData.logo?.width === 'number' ? formData.logo.width : 160}
                 onChange={(event) =>
-                  updateFormValue(['menu', 'logo', 'image', 'alt'], event.target.value)
+                  updateFormValue(['logo', 'width'], Number(event.target.value || 0))
+                }
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500">Logo Height</label>
+              <input
+                type="number"
+                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                value={typeof formData.logo?.height === 'number' ? formData.logo.height : 48}
+                onChange={(event) =>
+                  updateFormValue(['logo', 'height'], Number(event.target.value || 0))
                 }
               />
             </div>
@@ -176,150 +209,116 @@ export function HeaderPanel({
         <div>
           <div className="flex items-center justify-between mb-2">
             <div className="text-xs font-semibold text-gray-500 uppercase">
-              Menu Items
+              Navigation
             </div>
             <button
               type="button"
-              onClick={addHeaderMenuItem}
+              onClick={addNavigationItem}
               className="px-3 py-1.5 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
             >
               Add Item
             </button>
           </div>
           <div className="space-y-3">
-            {(Array.isArray(formData.menu?.items) ? formData.menu.items : []).map(
+            {navigationItems.map(
               (item: any, index: number) => (
                 <div
                   key={`header-item-${index}`}
-                  className="grid gap-3 md:grid-cols-[1fr_1fr_auto] items-end"
+                  className="border border-gray-200 rounded-md p-3 space-y-3"
                 >
-                  <div>
-                    <label className="block text-xs text-gray-500">Text</label>
-                    <input
-                      className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                      value={item?.text || ''}
-                      onChange={(event) =>
-                        updateFormValue(['menu', 'items', `${index}`, 'text'], event.target.value)
-                      }
-                    />
+                  <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto] items-end">
+                    <div>
+                      <label className="block text-xs text-gray-500">Label</label>
+                      <input
+                        className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                        value={item?.label || ''}
+                        onChange={(event) =>
+                          updateFormValue(['navigation', `${index}`, 'label'], event.target.value)
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500">Href</label>
+                      <input
+                        className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                        value={item?.href || ''}
+                        onChange={(event) =>
+                          updateFormValue(['navigation', `${index}`, 'href'], event.target.value)
+                        }
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeNavigationItem(index)}
+                      className="text-xs text-red-600 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
                   </div>
+
                   <div>
-                    <label className="block text-xs text-gray-500">URL</label>
-                    <input
-                      className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                      value={item?.url || ''}
-                      onChange={(event) =>
-                        updateFormValue(['menu', 'items', `${index}`, 'url'], event.target.value)
-                      }
-                    />
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="text-xs font-semibold text-gray-500 uppercase">Children</div>
+                      <button
+                        type="button"
+                        onClick={() => addNavigationChild(index)}
+                        className="px-2 py-1 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
+                      >
+                        Add Child
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {(Array.isArray(item?.children) ? item.children : []).map(
+                        (child: any, childIndex: number) => (
+                          <div
+                            key={`header-item-${index}-child-${childIndex}`}
+                            className="grid gap-2 md:grid-cols-[1fr_1fr_auto] items-end"
+                          >
+                            <input
+                              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                              placeholder="Child label"
+                              value={child?.label || ''}
+                              onChange={(event) =>
+                                updateFormValue(
+                                  ['navigation', `${index}`, 'children', `${childIndex}`, 'label'],
+                                  event.target.value
+                                )
+                              }
+                            />
+                            <input
+                              className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                              placeholder="Child href"
+                              value={child?.href || ''}
+                              onChange={(event) =>
+                                updateFormValue(
+                                  ['navigation', `${index}`, 'children', `${childIndex}`, 'href'],
+                                  event.target.value
+                                )
+                              }
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeNavigationChild(index, childIndex)}
+                              className="text-xs text-red-600 hover:text-red-700"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )
+                      )}
+                      {!Array.isArray(item?.children) || item.children.length === 0 ? (
+                        <div className="text-xs text-gray-500">No children.</div>
+                      ) : null}
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeHeaderMenuItem(index)}
-                    className="text-xs text-red-600 hover:text-red-700"
-                  >
-                    Remove
-                  </button>
                 </div>
               )
             )}
-            {!Array.isArray(formData.menu?.items) || formData.menu.items.length === 0 ? (
+            {navigationItems.length === 0 ? (
               <div className="text-xs text-gray-500">
-                No menu items yet.
+                No navigation items yet.
               </div>
             ) : null}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-xs font-semibold text-gray-500 uppercase">
-              Languages
-            </div>
-            <button
-              type="button"
-              onClick={addHeaderLanguage}
-              className="px-3 py-1.5 rounded-md border border-gray-200 text-xs text-gray-700 hover:bg-gray-50"
-            >
-              Add Language
-            </button>
-          </div>
-          <div className="space-y-3">
-            {(Array.isArray(formData.languages) ? formData.languages : []).map(
-              (item: any, index: number) => (
-                <div
-                  key={`header-language-${index}`}
-                  className="grid gap-3 md:grid-cols-[1fr_1fr_1fr_auto] items-end"
-                >
-                  <div>
-                    <label className="block text-xs text-gray-500">Label</label>
-                    <input
-                      className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                      value={item?.label || ''}
-                      onChange={(event) =>
-                        updateFormValue(['languages', `${index}`, 'label'], event.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500">Locale</label>
-                    <input
-                      className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                      value={item?.locale || ''}
-                      onChange={(event) =>
-                        updateFormValue(['languages', `${index}`, 'locale'], event.target.value)
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs text-gray-500">URL</label>
-                    <input
-                      className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                      value={item?.url || ''}
-                      onChange={(event) =>
-                        updateFormValue(['languages', `${index}`, 'url'], event.target.value)
-                      }
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => removeHeaderLanguage(index)}
-                    className="text-xs text-red-600 hover:text-red-700"
-                  >
-                    Remove
-                  </button>
-                </div>
-              )
-            )}
-            {!Array.isArray(formData.languages) || formData.languages.length === 0 ? (
-              <div className="text-xs text-gray-500">
-                No languages yet.
-              </div>
-            ) : null}
-          </div>
-        </div>
-
-        <div>
-          <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
-            CTA
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <div>
-              <label className="block text-xs text-gray-500">Text</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.cta?.text || ''}
-                onChange={(event) => updateFormValue(['cta', 'text'], event.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-500">Link</label>
-              <input
-                className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
-                value={formData.cta?.link || ''}
-                onChange={(event) => updateFormValue(['cta', 'link'], event.target.value)}
-              />
-            </div>
           </div>
         </div>
       </div>

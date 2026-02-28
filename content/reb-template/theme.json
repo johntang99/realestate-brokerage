@@ -1,49 +1,80 @@
 {
-  "colors": {
-    "primary": "#1A2744",
-    "secondary": "#C9A96E",
-    "accent": "#2E6B4F",
-    "accentAlt": "#8B1A1A",
-    "backdropLight": "#F8F6F2",
-    "backdropDark": "#141E30",
-    "backdropMid": "#EDF0F4",
-    "textPrimary": "#1A1A2E",
-    "textSecondary": "#5A6478",
-    "textOnDark": "#FFFFFF",
-    "textOnDarkMuted": "#B8C4D4",
-    "border": "#E2E5EA",
-    "statusActive": "#2E6B4F",
-    "statusSold": "#8B1A1A",
-    "statusPending": "#C17F24",
-    "statusComingSoon": "#1A2744",
-    "statusLease": "#2563EB",
-    "goldStar": "#F59E0B",
-    "success": "#2E6B4F",
-    "warning": "#C17F24",
-    "error": "#8B1A1A"
-  },
   "fonts": {
+    "ui": "DM Sans",
+    "body": "Inter",
     "heading": "Cormorant Garamond",
     "subheading": "Playfair Display",
-    "body": "Inter",
-    "ui": "DM Sans",
-    "chineseHeading": "Noto Serif SC",
-    "chineseBody": "Noto Sans SC"
+    "chineseBody": "Noto Sans SC",
+    "chineseHeading": "Noto Serif SC"
   },
-  "spacing": {
-    "sectionPaddingY": "80px",
-    "sectionPaddingYSm": "56px",
-    "containerMaxWidth": "1280px",
-    "containerPaddingX": "24px"
+  "colors": {
+    "error": "#8B1A1A",
+    "accent": "#2E6B4F",
+    "border": "#E2E5EA",
+    "primary": "#1A2744",
+    "success": "#2E6B4F",
+    "warning": "#C17F24",
+    "backdrop": {
+      "primary": "#F8F6F2",
+      "secondary": "#141E30"
+    },
+    "goldStar": "#F59E0B",
+    "accentAlt": "#8B1A1A",
+    "secondary": "#C9A96E",
+    "statusSold": "#8B1A1A",
+    "textOnDark": "#FFFFFF",
+    "backdropMid": "#EDF0F4",
+    "statusLease": "#2563EB",
+    "textPrimary": "#1A1A2E",
+    "backdropDark": "#141E30",
+    "primaryScale": {
+      "50": "#E9EEF7",
+      "100": "#D4DEEE",
+      "dark": "#121D33",
+      "light": "#2A3E63",
+      "DEFAULT": "#1A2744"
+    },
+    "statusActive": "#2E6B4F",
+    "backdropLight": "#F8F6F2",
+    "statusPending": "#C17F24",
+    "textSecondary": "#5A6478",
+    "secondaryScale": {
+      "50": "#F6EFE3",
+      "dark": "#B08E54",
+      "light": "#D8BE8E",
+      "DEFAULT": "#C9A96E"
+    },
+    "textOnDarkMuted": "#B8C4D4",
+    "statusComingSoon": "#1A2744"
   },
   "effects": {
     "cardRadius": "12px",
-    "buttonRadius": "6px",
-    "badgeRadius": "4px",
     "cardShadow": "0 2px 12px rgba(26,39,68,0.08)",
-    "cardShadowHover": "0 8px 32px rgba(26,39,68,0.16)",
+    "badgeRadius": "4px",
     "photoShadow": "0 4px 24px rgba(26,39,68,0.14)",
-    "heroOverlayOpacity": "0.45",
-    "transitionBase": "200ms ease"
+    "buttonRadius": "6px",
+    "transitionBase": "200ms ease",
+    "cardShadowHover": "0 8px 32px rgba(26,39,68,0.16)",
+    "heroOverlayOpacity": "0.45"
+  },
+  "spacing": {
+    "sectionPaddingY": "80px",
+    "containerMaxWidth": "1280px",
+    "containerPaddingX": "24px",
+    "sectionPaddingYSm": "56px"
+  },
+  "typography": {
+    "body": "1rem",
+    "fonts": {
+      "body": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "small": "'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "display": "'Playfair Display', Georgia, serif",
+      "heading": "'Cormorant Garamond', Georgia, serif",
+      "subheading": "'Playfair Display', Georgia, serif"
+    },
+    "small": "0.875rem",
+    "display": "3rem",
+    "heading": "2rem",
+    "subheading": "1.5rem"
   }
 }

@@ -1,9 +1,9 @@
 {
-  "defaultTitle": "Panorama NY, Inc | Orange County NY Real Estate Brokerage",
-  "titleTemplate": "%s | Panorama NY, Inc",
-  "defaultDescription": "Panorama NY, Inc helps buyers, sellers, investors, and relocating families across Orange County, NY with trusted local guidance.",
   "ogImage": "/images/og-default.jpg",
   "twitterCard": "summary_large_image",
+  "defaultTitle": "Panorama NY, Inc | Orange County NY Real Estate Brokerage",
+  "canonicalBase": "https://www.panorama-nyrealty.com",
+  "titleTemplate": "%s | Panorama NY, Inc",
   "twitterHandle": "@panoramanyrealty",
-  "canonicalBase": "https://www.panorama-nyrealty.com"
+  "defaultDescription": "Panorama NY, Inc helps buyers, sellers, investors, and relocating families across Orange County, NY with trusted local guidance."
 }

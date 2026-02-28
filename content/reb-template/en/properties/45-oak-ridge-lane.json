@@ -1,39 +1,65 @@
 {
-  "slug": "45-oak-ridge-lane",
-  "address": "45 Oak Ridge Lane",
-  "city": "Scarsdale",
-  "state": "NY",
-  "zip": "10583",
-  "neighborhood": "northfield",
-  "status": "active",
-  "type": "single-family",
-  "price": 1295000,
-  "priceDisplay": "$1,295,000",
-  "beds": 5,
-  "baths": 4,
-  "sqft": 4200,
-  "lotSize": "0.42 acres",
-  "yearBuilt": 2018,
-  "garage": "2-car attached",
   "hoa": null,
-  "schoolDistrict": "Scarsdale Union Free School District",
-  "mlsNumber": "H6280011",
-  "listingAgentSlug": "jane-smith",
-  "featured": true,
-  "coverImage": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800",
-  "gallery": [
-    { "image": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800", "alt": "Front exterior" },
-    { "image": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800", "alt": "Living room" },
-    { "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800", "alt": "Kitchen" }
-  ],
-  "description": "Stunning colonial set on nearly half an acre in the heart of Scarsdale. Completely renovated in 2022, this exceptional home features a chef's kitchen with Thermador appliances, wide-plank white oak floors throughout, and a primary suite that rivals any luxury hotel. The professionally landscaped grounds include a heated in-ground pool, bluestone patio, and mature specimen trees offering complete privacy.",
-  "features": {
-    "interior": ["Chef's Kitchen", "Primary Suite", "Home Office", "Gas Fireplace", "Wine Cellar", "Mudroom"],
-    "exterior": ["In-Ground Pool", "Bluestone Patio", "3-Season Porch", "Privacy Landscaping"],
-    "systems": ["Whole-House Generator", "Central Vacuum", "Smart Home System", "3-Zone HVAC"]
-  },
   "seo": {
     "title": "45 Oak Ridge Lane, Scarsdale NY | $1,295,000",
     "description": "Stunning 5BR/4BA colonial in Scarsdale. Renovated 2022, chef's kitchen, in-ground pool, Scarsdale schools. Listed by Pinnacle Realty Group."
-  }
+  },
+  "zip": "10583",
+  "beds": 5,
+  "city": "Scarsdale",
+  "slug": "45-oak-ridge-lane",
+  "sqft": 4200,
+  "type": "single-family",
+  "baths": 4,
+  "price": 1295000,
+  "state": "NY",
+  "garage": "2-car attached",
+  "status": "active",
+  "address": "45 Oak Ridge Lane",
+  "gallery": [
+    {
+      "alt": "Front exterior",
+      "image": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/b1cf669c5090161f58e4.jpg"
+    },
+    {
+      "alt": "Living room",
+      "image": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/d14b9ca75124c6efd775.jpg"
+    },
+    {
+      "alt": "Kitchen",
+      "image": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/fec7a8094980927134df.jpg"
+    }
+  ],
+  "lotSize": "0.42 acres",
+  "featured": true,
+  "features": {
+    "systems": [
+      "Whole-House Generator",
+      "Central Vacuum",
+      "Smart Home System",
+      "3-Zone HVAC"
+    ],
+    "exterior": [
+      "In-Ground Pool",
+      "Bluestone Patio",
+      "3-Season Porch",
+      "Privacy Landscaping"
+    ],
+    "interior": [
+      "Chef's Kitchen",
+      "Primary Suite",
+      "Home Office",
+      "Gas Fireplace",
+      "Wine Cellar",
+      "Mudroom"
+    ]
+  },
+  "mlsNumber": "H6280011",
+  "yearBuilt": 2018,
+  "coverImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/b1cf669c5090161f58e4.jpg",
+  "description": "Stunning colonial set on nearly half an acre in the heart of Scarsdale. Completely renovated in 2022, this exceptional home features a chef's kitchen with Thermador appliances, wide-plank white oak floors throughout, and a primary suite that rivals any luxury hotel. The professionally landscaped grounds include a heated in-ground pool, bluestone patio, and mature specimen trees offering complete privacy.",
+  "neighborhood": "northfield",
+  "priceDisplay": "$1,295,000",
+  "schoolDistrict": "Scarsdale Union Free School District",
+  "listingAgentSlug": "jane-smith"
 }
