@@ -147,6 +147,38 @@ export function PropertyItemPanel({ formData, updateFormValue, openImagePicker, 
             <label className={labelCls}>School District</label>
             <input className={inputCls} value={f.schoolDistrict || ''} onChange={e => updateFormValue('schoolDistrict', e.target.value)} />
           </div>
+          <div>
+            <label className={labelCls}>Latitude</label>
+            <input
+              type="number"
+              step="0.000001"
+              className={inputCls}
+              value={f.coordinates?.lat ?? ''}
+              onChange={e =>
+                updateFormValue(
+                  'coordinates.lat',
+                  e.target.value === '' ? null : Number(e.target.value)
+                )
+              }
+              placeholder="40.7128"
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Longitude</label>
+            <input
+              type="number"
+              step="0.000001"
+              className={inputCls}
+              value={f.coordinates?.lng ?? ''}
+              onChange={e =>
+                updateFormValue(
+                  'coordinates.lng',
+                  e.target.value === '' ? null : Number(e.target.value)
+                )
+              }
+              placeholder="-73.9352"
+            />
+          </div>
         </div>
       </div>
 
@@ -246,6 +278,52 @@ export function PropertyItemPanel({ formData, updateFormValue, openImagePicker, 
         <h3 className="text-sm font-bold text-gray-700 mb-3">Virtual Tour URL</h3>
         <input className={inputCls} value={f.virtualTourUrl || ''} onChange={e => updateFormValue('virtualTourUrl', e.target.value)} placeholder="YouTube, Vimeo, or Matterport URL" />
         <p className="text-xs text-gray-400 mt-1">Paste any YouTube/Vimeo URL — it will be auto-converted to embed format.</p>
+      </div>
+
+      {/* MLS metadata */}
+      <div className="bg-white border border-gray-100 rounded-lg p-5">
+        <h3 className="text-sm font-bold text-gray-700 mb-3">MLS Source Metadata</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={labelCls}>Provider</label>
+            <input
+              className={inputCls}
+              value={f.mlsSource?.provider || ''}
+              onChange={e => updateFormValue('mlsSource.provider', e.target.value)}
+              placeholder="generic-json"
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Listing ID</label>
+            <input
+              className={inputCls}
+              value={f.mlsSource?.listingId || ''}
+              onChange={e => updateFormValue('mlsSource.listingId', e.target.value)}
+              placeholder="H6299912"
+            />
+          </div>
+          <div>
+            <label className={labelCls}>Sync Status</label>
+            <select
+              className={inputCls}
+              value={f.mlsSource?.syncStatus || ''}
+              onChange={e => updateFormValue('mlsSource.syncStatus', e.target.value)}
+            >
+              <option value="">Select...</option>
+              <option value="active">active</option>
+              <option value="archived">archived</option>
+            </select>
+          </div>
+          <div>
+            <label className={labelCls}>Synced At</label>
+            <input
+              className={inputCls}
+              value={f.mlsSource?.syncedAt || ''}
+              onChange={e => updateFormValue('mlsSource.syncedAt', e.target.value)}
+              placeholder="2026-03-01T12:00:00.000Z"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Sold details — shown only if status=sold */}

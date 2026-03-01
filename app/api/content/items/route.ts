@@ -4,6 +4,7 @@ import path from 'path';
 import { canUseContentDb, listContentEntriesByPrefix } from '@/lib/contentDb';
 import { getRequestSiteId } from '@/lib/content';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { defaultLocale } from '@/lib/i18n';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 const ALLOWED_DIRECTORIES = [
@@ -45,11 +46,22 @@ export async function GET(request: NextRequest) {
       if (dedicatedTable) {
         const supabase = getSupabaseServerClient();
         if (supabase) {
-          const { data, error } = await supabase
+          let { data, error } = await supabase
             .from(dedicatedTable)
             .select('data')
             .eq('site_id', siteId)
+            .eq('locale', locale)
             .order('created_at', { ascending: true });
+          if ((!data || data.length === 0) && locale !== defaultLocale) {
+            const fallback = await supabase
+              .from(dedicatedTable)
+              .select('data')
+              .eq('site_id', siteId)
+              .eq('locale', defaultLocale)
+              .order('created_at', { ascending: true });
+            data = fallback.data;
+            error = fallback.error;
+          }
           if (!error && data) {
             const items = data.map((row: any) => row.data).filter(Boolean);
             return NextResponse.json({ items });
@@ -57,17 +69,31 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      const entries = await listContentEntriesByPrefix(siteId, locale, `${directory}/`);
+      let entries = await listContentEntriesByPrefix(siteId, locale, `${directory}/`);
+      if (entries.length === 0 && locale !== defaultLocale) {
+        entries = await listContentEntriesByPrefix(siteId, defaultLocale, `${directory}/`);
+      }
       const items = entries.map((entry: any) => entry.content ?? entry.data);
       return NextResponse.json({ items });
     }
 
     const dirPath = path.join(CONTENT_DIR, siteId, locale, directory);
-    const files = await fs.readdir(dirPath);
+    let files: string[] = [];
+    let readDirPath = dirPath;
+    try {
+      files = await fs.readdir(dirPath);
+    } catch {
+      if (locale !== defaultLocale) {
+        readDirPath = path.join(CONTENT_DIR, siteId, defaultLocale, directory);
+        files = await fs.readdir(readDirPath);
+      } else {
+        throw new Error('missing-directory');
+      }
+    }
     const jsonFiles = files.filter((file) => file.endsWith('.json'));
     const items = await Promise.all(
       jsonFiles.map(async (file) => {
-        const filePath = path.join(dirPath, file);
+        const filePath = path.join(readDirPath, file);
         const raw = await fs.readFile(filePath, 'utf-8');
         return JSON.parse(raw);
       })

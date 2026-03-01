@@ -1,4 +1,6 @@
-import { getPathValue, setPathValue } from '@/lib/ai-chat/path-utils';
+import { setPathValue } from '@/lib/ai-chat/path-utils';
+import { resolveFriendlyFieldPath } from '@/lib/ai-chat/field-aliases';
+import { getVariantOptions } from '@/lib/ai-chat/variant-options';
 import type { ExecutedToolResult } from './shared';
 import { listByPrefix, readJson, writeJson, type ToolContext } from './context';
 
@@ -9,15 +11,38 @@ function pagePath(page: string) {
 }
 
 function normalizePageFieldPath(current: unknown, rawPath: string) {
-  const path = rawPath.trim();
-  if (!path.startsWith('content.')) return path;
-  const stripped = path.replace(/^content\./, '');
-  const strippedExists = getPathValue(current, stripped) !== undefined;
-  const contentExists = getPathValue(current, path) !== undefined;
-  if (strippedExists || !contentExists) {
-    return stripped;
+  return resolveFriendlyFieldPath(current, rawPath);
+}
+
+function flattenFieldPaths(input: unknown, parent = ''): string[] {
+  if (input == null) return parent ? [parent] : [];
+  if (Array.isArray(input)) {
+    if (!input.length) return parent ? [parent] : [];
+    const paths = new Set<string>();
+    if (parent) paths.add(parent);
+    const first = input[0];
+    if (first && typeof first === 'object') {
+      for (const child of flattenFieldPaths(first, parent ? `${parent}[]` : '[]')) {
+        paths.add(child);
+      }
+    }
+    return Array.from(paths);
   }
-  return path;
+  if (typeof input !== 'object') return parent ? [parent] : [];
+  const record = input as Record<string, unknown>;
+  const keys = Object.keys(record);
+  if (!keys.length) return parent ? [parent] : [];
+  const paths: string[] = [];
+  for (const key of keys) {
+    const next = parent ? `${parent}.${key}` : key;
+    const value = record[key];
+    if (value && typeof value === 'object') {
+      paths.push(...flattenFieldPaths(value, next));
+    } else {
+      paths.push(next);
+    }
+  }
+  return paths;
 }
 
 export async function listPages(ctx: ToolContext): Promise<ExecutedToolResult> {
@@ -39,7 +64,41 @@ export async function listPages(ctx: ToolContext): Promise<ExecutedToolResult> {
 export async function readPage(ctx: ToolContext, page: string): Promise<ExecutedToolResult> {
   const filePath = pagePath(page);
   const content = await readJson(ctx, filePath);
-  return { ok: true, tool: 'read_page', summary: `Loaded ${filePath}`, data: { page, content } };
+  const allFields = flattenFieldPaths(content)
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+  const previewFields = allFields.slice(0, 30);
+  return {
+    ok: true,
+    tool: 'read_page',
+    summary: `Loaded ${filePath} | editable fields: ${allFields.length} (showing ${previewFields.length})`,
+    data: { page, content },
+    preview: {
+      path: filePath,
+      fieldCount: allFields.length,
+      fieldsPreview: previewFields,
+      fieldsAll: allFields,
+    },
+  };
+}
+
+export async function listVariantOptions(
+  _ctx: ToolContext,
+  section?: string
+): Promise<ExecutedToolResult> {
+  const normalizedSection = (section || 'all').trim().toLowerCase();
+  const data = getVariantOptions(normalizedSection);
+  const sections = Object.keys(data);
+  const summary = sections.length
+    ? `Variant options loaded for: ${sections.join(', ')}`
+    : `No variant options found for section '${normalizedSection}'`;
+  return {
+    ok: true,
+    tool: 'list_variant_options',
+    summary,
+    data,
+    preview: data,
+  };
 }
 
 export async function updatePageField(
@@ -51,6 +110,10 @@ export async function updatePageField(
   const filePath = pagePath(page);
   const current = await readJson(ctx, filePath);
   const normalizedFieldPath = normalizePageFieldPath(current, fieldPath);
+  const resolutionNote =
+    normalizedFieldPath !== fieldPath.trim()
+      ? ` | resolved path: ${fieldPath.trim()} -> ${normalizedFieldPath}`
+      : '';
   const before =
     typeof current === 'object' && current
       ? JSON.parse(JSON.stringify(current))
@@ -60,9 +123,15 @@ export async function updatePageField(
   return {
     ok: true,
     tool: 'update_page_field',
-    summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated ${filePath}:${normalizedFieldPath}`,
+    summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated ${filePath}:${normalizedFieldPath}${resolutionNote}`,
     changedPaths: [filePath],
-    preview: { path: filePath, fieldPath: normalizedFieldPath, before, after: next },
+    preview: {
+      path: filePath,
+      fieldPathRaw: fieldPath.trim(),
+      fieldPath: normalizedFieldPath,
+      before,
+      after: next,
+    },
   };
 }
 
@@ -75,16 +144,25 @@ export async function updatePageFieldsBatch(
   let next = await readJson(ctx, filePath);
   const before =
     typeof next === 'object' && next ? JSON.parse(JSON.stringify(next)) : next;
+  const resolvedPairs: Array<{ from: string; to: string }> = [];
   for (const item of updates) {
     const normalizedFieldPath = normalizePageFieldPath(next, item.field_path);
+    if (normalizedFieldPath !== item.field_path.trim()) {
+      resolvedPairs.push({ from: item.field_path.trim(), to: normalizedFieldPath });
+    }
     next = setPathValue(next, normalizedFieldPath, item.new_value);
   }
   await writeJson(ctx, filePath, next);
+  const resolutionNote = resolvedPairs.length
+    ? ` | resolved path${resolvedPairs.length > 1 ? 's' : ''}: ${resolvedPairs
+        .map((pair) => `${pair.from} -> ${pair.to}`)
+        .join('; ')}`
+    : '';
   return {
     ok: true,
     tool: 'update_page_fields_batch',
-    summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated ${updates.length} fields in ${filePath}`,
+    summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated ${updates.length} fields in ${filePath}${resolutionNote}`,
     changedPaths: [filePath],
-    preview: { path: filePath, updates, before, after: next },
+    preview: { path: filePath, updates, resolvedPairs, before, after: next },
   };
 }

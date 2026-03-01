@@ -1,4 +1,5 @@
 import { setPathValue, slugify } from '@/lib/ai-chat/path-utils';
+import { resolveFriendlyFieldPath } from '@/lib/ai-chat/field-aliases';
 import type { ExecutedToolResult } from './shared';
 import { listByPrefix, readJson, removeJson, writeJson, type ToolContext } from './context';
 
@@ -75,25 +76,47 @@ export async function updateEntityField(
       return String(row.id || row.slug || '') === entityId;
     });
     if (index < 0) throw new Error(`Entity not found: ${entityId}`);
-    next[index] = setPathValue(next[index], fieldPath, newValue);
+    const normalizedFieldPath = resolveFriendlyFieldPath(next[index], fieldPath);
+    const resolutionNote =
+      normalizedFieldPath !== fieldPath.trim()
+        ? ` | resolved path: ${fieldPath.trim()} -> ${normalizedFieldPath}`
+        : '';
+    next[index] = setPathValue(next[index], normalizedFieldPath, newValue);
     await writeJson(ctx, 'testimonials.json', next);
     return {
       ok: true,
       tool: 'update_entity_field',
-      summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated testimonial ${entityId}:${fieldPath}`,
+      summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated testimonial ${entityId}:${normalizedFieldPath}${resolutionNote}`,
       changedPaths: ['testimonials.json'],
-      preview: { path: 'testimonials.json', entityId, fieldPath, newValue },
+      preview: {
+        path: 'testimonials.json',
+        entityId,
+        fieldPathRaw: fieldPath.trim(),
+        fieldPath: normalizedFieldPath,
+        newValue,
+      },
     };
   }
   const filePath = toPath(entityType, entityId);
-  const next = setPathValue(await readJson(ctx, filePath), fieldPath, newValue);
+  const current = await readJson(ctx, filePath);
+  const normalizedFieldPath = resolveFriendlyFieldPath(current, fieldPath);
+  const resolutionNote =
+    normalizedFieldPath !== fieldPath.trim()
+      ? ` | resolved path: ${fieldPath.trim()} -> ${normalizedFieldPath}`
+      : '';
+  const next = setPathValue(current, normalizedFieldPath, newValue);
   await writeJson(ctx, filePath, next);
   return {
     ok: true,
     tool: 'update_entity_field',
-    summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated ${filePath}:${fieldPath}`,
+    summary: `${ctx.dryRun ? '[dry-run] ' : ''}Updated ${filePath}:${normalizedFieldPath}${resolutionNote}`,
     changedPaths: [filePath],
-    preview: { path: filePath, fieldPath, newValue },
+    preview: {
+      path: filePath,
+      fieldPathRaw: fieldPath.trim(),
+      fieldPath: normalizedFieldPath,
+      newValue,
+    },
   };
 }
 

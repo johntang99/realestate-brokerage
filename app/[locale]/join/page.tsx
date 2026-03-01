@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
 import { AgentCard, type AgentData } from '@/components/ui/AgentCard';
+import { trackLeadEvent } from '@/lib/leads/client';
 
 const AGENT_FAQ = [
   { q: "What's the commission split?", a: "We offer competitive splits that we discuss in detail during your consultation. We believe splits should be part of a full conversation, not a one-line website pitch." },
@@ -49,17 +50,35 @@ export default function JoinPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); setSubmitting(true);
+    const siteId = process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template';
+    const source = d.leadCapture?.sourceTag || 'join-page';
+    await trackLeadEvent({ siteId, locale, eventName: 'form_submit', source, pagePath: `/${locale}/join` });
     await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ name:`${form.firstName} ${form.lastName}`, ...form, category:'join', locale }) }).catch(()=>{});
+      body: JSON.stringify({
+        name:`${form.firstName} ${form.lastName}`,
+        ...form,
+        category:'join',
+        locale,
+        siteId,
+        source,
+        pagePath: `/${locale}/join`,
+        consentAccepted: true,
+        consentText: d.leadCapture?.consentText || '',
+      }) }).catch(()=>{});
     setSubmitted(true); setSubmitting(false);
   };
+  const faqItems = d.faq?.items || AGENT_FAQ;
+  const offerItems = d.whatWeOffer?.items || WHAT_WE_OFFER;
+  const brokerMessage = d.brokerMessage || {};
+  const leadCapture = d.leadCapture || {};
+  const cta = d.cta || {};
 
   return (
     <>
       {/* RECRUITMENT HERO */}
       <section className="relative pt-20" style={{ minHeight: '58vh', background: 'var(--backdrop-dark)' }}>
         <div className="container-custom pt-14 pb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Careers</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{d.hero?.eyebrow || 'Careers'}</p>
           <h1 className="font-serif text-4xl md:text-6xl font-semibold text-white mb-4 max-w-3xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
             {d.hero?.headline || 'Build Your Real Estate Career Where It Matters.'}
           </h1>
@@ -68,14 +87,14 @@ export default function JoinPage() {
           </p>
           {/* Mini stats */}
           <div className="flex flex-wrap gap-6">
-            {[
+            {(d.proofStats?.items || [
               { v: site.stats?.agentCount || '18', l: 'Agents' },
               { v: site.stats?.totalVolume || '$180M+', l: 'Volume' },
               { v: site.stats?.yearsInBusiness || '12', l: 'Years in Business' },
-            ].map((s, i) => (
+            ]).map((s: any, i: number) => (
               <div key={i}>
-                <p className="font-serif text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--secondary)' }}>{s.v}</p>
-                <p className="text-xs" style={{ color: 'var(--text-on-dark-muted)' }}>{s.l}</p>
+                <p className="font-serif text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--secondary)' }}>{s.value || s.v}</p>
+                <p className="text-xs" style={{ color: 'var(--text-on-dark-muted)' }}>{s.label || s.l}</p>
               </div>
             ))}
           </div>
@@ -97,14 +116,16 @@ export default function JoinPage() {
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>A Message from the Broker</p>
               <h2 className="font-serif text-3xl font-semibold mb-5" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                Why I Started Pinnacle — and What We're Building
+                {brokerMessage.headline || "Why I Started Panorama — and What We're Building"}
               </h2>
-              <p className="text-base leading-relaxed mb-4" style={{ color: 'var(--text-secondary)', lineHeight: '1.85' }}>
-                I started Pinnacle because I believed there was a better way to run a real estate brokerage. Not just for clients — but for agents. Too many talented agents are trapped in franchise models that take a huge cut, provide minimal support, and treat them as interchangeable.
-              </p>
-              <p className="text-base leading-relaxed" style={{ color: 'var(--text-secondary)', lineHeight: '1.85' }}>
-                At Pinnacle, every agent on our team has real mentorship, marketing support, and the backing of a company that genuinely wants them to succeed. If that's what you're looking for, let's have a conversation.
-              </p>
+              {(Array.isArray(brokerMessage.paragraphs) ? brokerMessage.paragraphs : [
+                'I started Panorama because I believed there was a better way to run a real estate brokerage. Not just for clients — but for agents. Too many talented agents are trapped in franchise models that take a huge cut, provide minimal support, and treat them as interchangeable.',
+                "At Panorama, every agent on our team has real mentorship, marketing support, and the backing of a company that genuinely wants them to succeed. If that's what you're looking for, let's have a conversation.",
+              ]).map((paragraph: string, index: number) => (
+                <p key={index} className={`text-base leading-relaxed ${index === 0 ? 'mb-4' : ''}`} style={{ color: 'var(--text-secondary)', lineHeight: '1.85' }}>
+                  {paragraph}
+                </p>
+              ))}
               <p className="mt-5 font-serif text-lg font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
                 — {site.license?.principalBrokerName || 'Jane Smith'}, Principal Broker
               </p>
@@ -121,13 +142,13 @@ export default function JoinPage() {
             <h2 className="font-serif text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>What We Offer</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {WHAT_WE_OFFER.map((item, i) => (
+            {offerItems.map((item: any, i: number) => (
               <div key={i} className="flex gap-4 p-5 bg-white rounded-xl border border-[var(--border)]"
                 style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
                 <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--secondary)' }} />
                 <div>
                   <h3 className="font-semibold text-sm mb-1" style={{ color: 'var(--primary)' }}>{item.title}</h3>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{item.desc}</p>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{item.desc || item.description}</p>
                 </div>
               </div>
             ))}
@@ -157,7 +178,7 @@ export default function JoinPage() {
             <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Frequently Asked Questions</h2>
           </div>
           <div className="space-y-3">
-            {AGENT_FAQ.map((item, i) => (
+            {faqItems.map((item: any, i: number) => (
               <div key={i} className="bg-white rounded-xl border border-[var(--border)] overflow-hidden"
                 style={{ borderRadius: 'var(--effect-card-radius)' }}>
                 <button className="w-full flex items-center justify-between p-5 text-left"
@@ -180,9 +201,9 @@ export default function JoinPage() {
         <div className="container-custom max-w-2xl">
           <div className="text-center mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Apply</p>
-            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Let's Have a Conversation</h2>
+            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>{leadCapture.headline || "Let's Have a Conversation"}</h2>
             <p className="text-sm mt-2 max-w-md mx-auto" style={{ color: 'var(--text-secondary)' }}>
-              No pressure. No hard sell. Just an honest conversation about whether we're a good fit.
+              {leadCapture.subline || "No pressure. No hard sell. Just an honest conversation about whether we're a good fit."}
             </p>
           </div>
           {submitted ? (
@@ -194,15 +215,15 @@ export default function JoinPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input required value={form.firstName} onChange={e=>setForm(f=>({...f,firstName:e.target.value}))} placeholder="First Name" className="calc-input" />
                 <input required value={form.lastName} onChange={e=>setForm(f=>({...f,lastName:e.target.value}))} placeholder="Last Name" className="calc-input" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input required type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="Email" className="calc-input" />
                 <input required value={form.phone} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} placeholder="Phone" className="calc-input" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <select value={form.currentSituation} onChange={e=>setForm(f=>({...f,currentSituation:e.target.value}))} className="calc-input">
                   <option value="">Current Situation</option>
                   <option>Currently with another brokerage</option>
@@ -220,7 +241,7 @@ export default function JoinPage() {
                   <option>15+ years</option>
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <select value={form.lastYearVolume} onChange={e=>setForm(f=>({...f,lastYearVolume:e.target.value}))} className="calc-input">
                   <option value="">Last Year's Volume (optional)</option>
                   <option>Under $1M</option>
@@ -242,10 +263,16 @@ export default function JoinPage() {
                 {submitting ? 'Sending…' : 'Send My Information'}
               </button>
               <p className="text-xs text-center" style={{ color: 'var(--text-secondary)' }}>
-                Your inquiry is completely confidential. We will never contact your current broker.
+                {leadCapture.consentText || 'Your inquiry is completely confidential. We will never contact your current broker.'}
               </p>
             </form>
           )}
+        </div>
+      </section>
+      <section className="py-16" style={{ background: 'var(--primary)' }}>
+        <div className="container-custom text-center">
+          <h2 className="font-serif text-3xl font-semibold text-white mb-4" style={{ fontFamily: 'var(--font-heading)' }}>{cta.headline || 'Ready for the Next Step?'}</h2>
+          <p className="text-white/70 mb-7 max-w-md mx-auto">{cta.subline || 'Share your goals and schedule a confidential career conversation.'}</p>
         </div>
       </section>
     </>

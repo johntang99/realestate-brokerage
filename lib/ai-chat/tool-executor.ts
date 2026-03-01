@@ -1,7 +1,8 @@
-import { listPages, readPage, updatePageField, updatePageFieldsBatch } from './executors/pages';
+import { listPages, listVariantOptions, readPage, updatePageField, updatePageFieldsBatch } from './executors/pages';
 import { addEntity, listEntities, readEntity, removeEntity, updateEntityField } from './executors/entities';
 import { getImageUrl, listMedia } from './executors/media';
 import { getSiteSettings, updateBusinessHours, updateBusinessInfo, updateSeo, updateSocialLinks } from './executors/settings';
+import { getPreferences, setPreferenceValue } from './executors/preferences';
 import type { ToolContext } from './executors/context';
 import type { ExecutedToolResult } from './executors/shared';
 
@@ -30,6 +31,8 @@ export async function executeTool(
       return listPages(ctx);
     case 'read_page':
       return readPage(ctx, String(args.page || ''));
+    case 'list_variant_options':
+      return listVariantOptions(ctx, typeof args.section === 'string' ? args.section : 'all');
     case 'update_page_field':
       return updatePageField(ctx, String(args.page || ''), String(args.field_path || ''), args.new_value);
     case 'update_page_fields_batch':
@@ -82,6 +85,10 @@ export async function executeTool(
       );
     case 'get_image_url':
       return getImageUrl(ctx, String(args.search || ''));
+    case 'get_preferences':
+      return getPreferences(ctx);
+    case 'set_preference':
+      return setPreferenceValue(ctx, String(args.key || ''), args.value);
     default:
       throw new Error(`Unknown tool: ${toolName}`);
   }

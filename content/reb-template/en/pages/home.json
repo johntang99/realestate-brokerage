@@ -16,7 +16,7 @@
     ],
     "subline": "Clear strategy for buying, selling, relocating, and investing - with a local team that puts your goals first.",
     "variant": "gallery-background",
-    "headline": "Real Estate Guidance You Can Trust in Orange County, NY",
+    "headline": "Welcome to Panorama Realty",
     "ctaPrimary": {
       "href": "/properties",
       "label": "Search Properties"
@@ -138,11 +138,16 @@
     "subline": "Ready to buy, sell, relocate, or invest? Let's talk about your next move.",
     "ctaLabel": "Request Consultation",
     "headline": "Ready to Take the Next Step?",
-    "backgroundImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/23e46f2fd0956e055754.jpg"
+    "backgroundImage": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/23e46f2fd0956e055754.jpg",
+    "reviewQuote": {
+      "text": "Panorama sold our home in just 19 days and guided us into our next one with zero stress.",
+      "author": "The Carter Family",
+      "source": "Google Review"
+    }
   },
   "featuredListings": {
     "ctaHref": "/properties",
-    "subline": "Handpicked listings across Westchester's finest communities.",
+    "subline": "Handpicked listings across Orange County, NY communities.",
     "ctaLabel": "View All Properties",
     "headline": "Featured Properties",
     "maxDisplay": 6,

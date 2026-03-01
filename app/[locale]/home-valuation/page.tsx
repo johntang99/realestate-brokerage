@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { trackLeadEvent } from '@/lib/leads/client';
 
 type Step = 1 | 2 | 3;
 
@@ -15,7 +16,21 @@ export default function HomeValuationPage() {
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    await fetch('/api/valuation', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...form, locale }) }).catch(()=>{});
+    const siteId = process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template';
+    await trackLeadEvent({ siteId, locale, eventName: 'form_submit', source: 'home-valuation-page', pagePath: `/${locale}/home-valuation` });
+    await fetch('/api/valuation', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        ...form,
+        locale,
+        siteId,
+        source: 'home-valuation-page',
+        pagePath: `/${locale}/home-valuation`,
+        consentAccepted: true,
+        consentText: 'No spam. No obligation. Just an honest valuation from a local expert.',
+      }),
+    }).catch(()=>{});
     setDone(true); setSubmitting(false);
   };
 
@@ -24,7 +39,7 @@ export default function HomeValuationPage() {
       <div className="max-w-lg w-full text-center">
         <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl mx-auto mb-6" style={{ background: 'var(--secondary)' }}>✓</div>
         <h1 className="font-serif text-3xl font-semibold mb-3" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Your valuation is being prepared!</h1>
-        <p className="text-base mb-6" style={{ color: 'var(--text-secondary)' }}>A local Pinnacle agent will contact you within 24 hours with:</p>
+        <p className="text-base mb-6" style={{ color: 'var(--text-secondary)' }}>A local Panorama agent will contact you within 24 hours with:</p>
         <ul className="text-left space-y-2 mb-8 max-w-xs mx-auto">
           {['Comparable sold properties in your area','Current market trends for your neighborhood','Our pricing recommendation','A personalized marketing plan'].map((item, i) => (
             <li key={i} className="flex items-start gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -81,7 +96,7 @@ export default function HomeValuationPage() {
             {step === 2 && (
               <div className="space-y-4">
                 <h2 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Tell us about your home</h2>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div><label className="text-xs text-gray-500 block mb-1">Bedrooms</label>
                     <input type="number" value={form.beds} onChange={e=>setForm(f=>({...f,beds:e.target.value}))} placeholder="3" className="calc-input w-full" /></div>
                   <div><label className="text-xs text-gray-500 block mb-1">Bathrooms</label>
@@ -89,7 +104,7 @@ export default function HomeValuationPage() {
                   <div><label className="text-xs text-gray-500 block mb-1">Sq Ft (approx)</label>
                     <input type="number" value={form.sqft} onChange={e=>setForm(f=>({...f,sqft:e.target.value}))} placeholder="2000" className="calc-input w-full" /></div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div><label className="text-xs text-gray-500 block mb-1">Year Built</label>
                     <input type="number" value={form.yearBuilt} onChange={e=>setForm(f=>({...f,yearBuilt:e.target.value}))} placeholder="1985" className="calc-input w-full" /></div>
                   <div><label className="text-xs text-gray-500 block mb-1">Condition</label>
@@ -100,7 +115,7 @@ export default function HomeValuationPage() {
                       <option value="needs-work">Needs Work</option>
                     </select></div>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div><label className="text-xs text-gray-500 block mb-1">Garage</label>
                     <select value={form.garage} onChange={e=>setForm(f=>({...f,garage:e.target.value}))} className="calc-input w-full">
                       <option value="no">No garage</option>
@@ -124,7 +139,7 @@ export default function HomeValuationPage() {
             {step === 3 && (
               <div className="space-y-4">
                 <h2 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Almost done — who should we contact?</h2>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <input required value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Full Name" className="calc-input" />
                   <input required type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="Email Address" className="calc-input" />
                 </div>

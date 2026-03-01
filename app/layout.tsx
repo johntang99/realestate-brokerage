@@ -28,8 +28,8 @@ const notoSerifSC = Noto_Serif_SC({
 });
 
 export const metadata: Metadata = {
-  title: 'Pinnacle Realty Group — Westchester County Real Estate Brokerage',
-  description: 'Pinnacle Realty Group is Westchester County\'s premier independent real estate brokerage. 18 agents, $180M+ in sales. Buying, selling, investing, and relocating.',
+  title: 'Panorama Realty Group — Westchester County Real Estate Brokerage',
+  description: 'Panorama Realty Group is Westchester County\'s premier independent real estate brokerage. 18 agents, $180M+ in sales. Buying, selling, investing, and relocating.',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://pinnaclerealty.com'),
   icons: {
     icon: [
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     apple: [{ url: '/icon?v=3', type: 'image/png', sizes: '180x180' }],
   },
   alternates: { canonical: './' },
-  openGraph: { type: 'website', siteName: 'Pinnacle Realty Group' },
+  openGraph: { type: 'website', siteName: 'Panorama Realty Group' },
   robots: { index: true, follow: true },
 };
 

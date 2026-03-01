@@ -37,7 +37,7 @@ export default function Footer({ locale, footer, siteInfo }: FooterProps) {
   const tagline = tx(data.tagline, data.taglineCn)
     || ((data as any).columns?.[0]?.content as string | undefined)
     || '';
-  const brokerageName = (siteInfo as any)?.name || (siteInfo as any)?.brokerage?.name || 'Pinnacle Realty Group';
+  const brokerageName = (siteInfo as any)?.name || (siteInfo as any)?.brokerage?.name || 'Panorama Realty Group';
   const copyright = (data as any).compliance?.copyrightYear
     ? `© ${(data as any).compliance.copyrightYear} ${(data as any).compliance.brokerageName || brokerageName}. ${(data as any).compliance.copyrightSuffix || 'All rights reserved.'}`
     : data.copyright || `© ${year} ${brokerageName}. All rights reserved.`;
@@ -45,8 +45,13 @@ export default function Footer({ locale, footer, siteInfo }: FooterProps) {
   // Support both socialLinks and social field names
   const social = (siteInfo as any)?.social || (siteInfo as any)?.socialLinks || {};
 
-  const licenseNumber = (siteInfo as any)?.licenseNumber as string | undefined;
+  const licenseNumber =
+    ((siteInfo as any)?.licenseNumber as string | undefined) ||
+    ((siteInfo as any)?.license?.licenseNumber as string | undefined);
+  const principalBrokerLicense = (siteInfo as any)?.license?.principalBrokerLicense as string | undefined;
   const mlsDisclaimer = (siteInfo as any)?.compliance?.mlsDisclaimer as string | undefined;
+  const fairHousingStatement = (siteInfo as any)?.compliance?.fairHousingStatement as string | undefined;
+  const equalHousingText = (siteInfo as any)?.compliance?.equalHousingText as string | undefined;
 
   const defaultColumns: JuliaFooterData['columns'] = [
     { title: 'Properties', links: [
@@ -167,7 +172,7 @@ export default function Footer({ locale, footer, siteInfo }: FooterProps) {
       </div>
 
       {/* Compliance row — REQUIRED for real estate */}
-      {(compliance?.showEqualHousingLogo || compliance?.showLicenseNumber || compliance?.showMlsDisclaimer || licenseNumber) && (
+      {(compliance?.showEqualHousingLogo || compliance?.showLicenseNumber || compliance?.showMlsDisclaimer || licenseNumber || fairHousingStatement || equalHousingText) && (
         <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.2)' }}>
           <div className="container-custom py-6">
             <div className="flex flex-wrap items-start gap-6">
@@ -184,6 +189,21 @@ export default function Footer({ locale, footer, siteInfo }: FooterProps) {
                 {licenseNumber && compliance?.showLicenseNumber !== false && (
                   <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
                     License: {licenseNumber}
+                  </p>
+                )}
+                {principalBrokerLicense && (
+                  <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    Principal Broker License: {principalBrokerLicense}
+                  </p>
+                )}
+                {equalHousingText && (
+                  <p className="text-xs mb-2 leading-relaxed" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    {equalHousingText}
+                  </p>
+                )}
+                {fairHousingStatement && (
+                  <p className="text-xs mb-2 leading-relaxed" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                    {fairHousingStatement}
                   </p>
                 )}
                 {mlsDisclaimer && compliance?.showMlsDisclaimer !== false && (

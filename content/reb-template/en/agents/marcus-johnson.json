@@ -1,9 +1,9 @@
 {
-  "bio": "Marcus has been a licensed agent for 9 years and specializes in helping first-time buyers navigate the competitive Westchester market. Known for his patience, thoroughness, and deep knowledge of the buying process, Marcus has helped over 140 families find their perfect home. He holds a Buyer's Agent Certification and is fluent in English and Mandarin Chinese.",
+  "bio": "Marcus has been a licensed agent for 9 years and specializes in helping first-time buyers navigate the competitive Orange County, NY market. Known for his patience, thoroughness, and deep knowledge of the buying process, Marcus has helped over 140 families find their perfect home. He holds a Buyer's Agent Certification and is fluent in English and Mandarin Chinese.",
   "name": "Marcus Johnson",
   "role": "agent",
   "slug": "marcus-johnson",
-  "email": "marcus@pinnaclerealty.com",
+  "email": "marcus@panorama-nyrealty.com",
   "phone": "(845) 555-0192",
   "photo": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/86482f9ae4c65769ec03.jpg",
   "title": "Senior Real Estate Agent",
@@ -35,6 +35,15 @@
       "reviewer": "Wei & Lin Huang",
       "verified": true,
       "reviewDate": "2025-10",
+      "transactionType": "buyer"
+    },
+    {
+      "id": "t-mj-2",
+      "text": "Marcus helped us evaluate neighborhood trade-offs and move quickly on the right home without overpaying.",
+      "rating": 5,
+      "reviewer": "Rachel Thompson",
+      "verified": true,
+      "reviewDate": "2025-06",
       "transactionType": "buyer"
     }
   ],

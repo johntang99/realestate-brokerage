@@ -150,7 +150,7 @@ export function SitePanel({ formData, updateFormValue }: SitePanelProps) {
 
       <div className="border-t border-gray-100 pt-4">
         <div className="text-xs font-semibold text-gray-500 uppercase mb-3">Chat Widget</div>
-        <div className="grid gap-3 md:grid-cols-3 items-end">
+        <div className="grid gap-3 md:grid-cols-2 items-end">
           <label className="inline-flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"
@@ -164,13 +164,18 @@ export function SitePanel({ formData, updateFormValue }: SitePanelProps) {
           </label>
           <div>
             <label className="block text-xs text-gray-500">provider</label>
-            <input
+            <select
               className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
               value={formData.chatWidget?.provider || ''}
               onChange={(event) =>
                 updateFormValue(['chatWidget', 'provider'], event.target.value)
               }
-            />
+            >
+              <option value="">Select provider</option>
+              <option value="tidio">tidio</option>
+              <option value="intercom">intercom</option>
+              <option value="custom">custom</option>
+            </select>
           </div>
           <div>
             <label className="block text-xs text-gray-500">tidioKey</label>
@@ -180,6 +185,27 @@ export function SitePanel({ formData, updateFormValue }: SitePanelProps) {
               onChange={(event) =>
                 updateFormValue(['chatWidget', 'tidioKey'], event.target.value)
               }
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500">intercomAppId</label>
+            <input
+              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+              value={formData.chatWidget?.intercomAppId || ''}
+              onChange={(event) =>
+                updateFormValue(['chatWidget', 'intercomAppId'], event.target.value)
+              }
+            />
+          </div>
+          <div className="md:col-span-2">
+            <label className="block text-xs text-gray-500">customScriptUrl</label>
+            <input
+              className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+              value={formData.chatWidget?.customScriptUrl || ''}
+              onChange={(event) =>
+                updateFormValue(['chatWidget', 'customScriptUrl'], event.target.value)
+              }
+              placeholder="https://example.com/chat-widget.js"
             />
           </div>
         </div>

@@ -152,7 +152,7 @@ export default function SoldPage() {
             Want results like these?
           </h2>
           <p className="text-sm mb-6 max-w-md mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            Schedule a free consultation and we'll show you what Pinnacle Realty can achieve for your home.
+            Schedule a free consultation and we'll show you what Panorama Realty can achieve for your home.
           </p>
           <Link href={`/${locale}/contact`} className="btn-gold inline-block">Schedule a Free Consultation</Link>
         </div>

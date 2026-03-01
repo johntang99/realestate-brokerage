@@ -7,6 +7,28 @@ import { runChatTurn } from '@/lib/ai-chat/engine';
 import type { ChatRequestPayload } from '@/lib/ai-chat/types';
 import { encodeSseEvent, sseHeaders } from '@/lib/ai-chat/sse';
 
+function toAuditToolRuns(
+  toolRuns: Array<{
+    name: string;
+    ok: boolean;
+    summary: string;
+    rawPath?: string;
+    resolvedPath?: string;
+    errorMessage?: string;
+    failureTag?: string;
+  }>
+) {
+  return toolRuns.map((item) => ({
+    name: item.name,
+    ok: item.ok,
+    summary: item.summary,
+    rawPath: item.rawPath || null,
+    resolvedPath: item.resolvedPath || null,
+    errorMessage: item.errorMessage || null,
+    failureTag: item.failureTag || null,
+  }));
+}
+
 export async function POST(request: NextRequest) {
   const session = await getSessionFromRequest(request);
   if (!session) {
@@ -61,14 +83,12 @@ export async function POST(request: NextRequest) {
                 action: 'ai_chat_turn',
                 siteId: payload.siteId,
                 metadata: {
+                  prompt: payload.message,
                   locale: payload.locale,
                   conversationId: result.conversationId,
                   model: result.model,
                   dryRun: Boolean(payload.dryRun),
-                  toolRuns: result.toolRuns.map((item) => ({
-                    name: item.name,
-                    ok: item.ok,
-                  })),
+                  toolRuns: toAuditToolRuns(result.toolRuns),
                 },
               });
               send({
@@ -103,14 +123,12 @@ export async function POST(request: NextRequest) {
       action: 'ai_chat_turn',
       siteId: payload.siteId,
       metadata: {
+        prompt: payload.message,
         locale: payload.locale,
         conversationId: result.conversationId,
         model: result.model,
         dryRun: Boolean(payload.dryRun),
-        toolRuns: result.toolRuns.map((item) => ({
-          name: item.name,
-          ok: item.ok,
-        })),
+        toolRuns: toAuditToolRuns(result.toolRuns),
       },
     });
 

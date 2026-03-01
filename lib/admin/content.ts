@@ -2,6 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { getDefaultFooter } from '../footer';
 import { listContentEntries } from '@/lib/contentDb';
+import { defaultLocale } from '@/lib/i18n';
 
 export interface ContentFileItem {
   id: string;
@@ -162,6 +163,8 @@ export async function listContentFiles(
   locale: string
 ): Promise<ContentFileItem[]> {
   const items: ContentFileItem[] = [];
+  const localeCandidates =
+    locale === defaultLocale ? [locale] : [locale, defaultLocale];
   await ensureSeoFile(siteId, locale);
   await ensureFooterFile(siteId, locale);
   await ensureHeaderFile(siteId, locale);
@@ -172,7 +175,10 @@ export async function listContentFiles(
     }
   };
 
-  const dbEntries = await listContentEntries(siteId, locale);
+  let dbEntries = await listContentEntries(siteId, locale);
+  if (dbEntries.length === 0 && locale !== defaultLocale) {
+    dbEntries = await listContentEntries(siteId, defaultLocale);
+  }
   if (dbEntries.length > 0) {
     dbEntries.forEach((entry) => {
       if (entry.path.startsWith('pages/') && entry.path.endsWith('.json')) {
@@ -246,98 +252,107 @@ export async function listContentFiles(
     });
   }
 
-  const pagesDir = path.join(CONTENT_DIR, siteId, locale, 'pages');
-  try {
-    const files = await fs.readdir(pagesDir);
-    files
-      .filter((file) => file.endsWith('.json'))
-      .forEach((file) => {
-        const slug = file.replace('.json', '');
-        addItem({
-          id: `page-${slug}`,
-          label: `Page: ${titleCase(slug)}`,
-          path: `pages/${file}`,
-          scope: 'locale',
-        });
-      });
-  } catch (error) {
-    // ignore missing pages directory
-  }
-
-  const blogDir = path.join(CONTENT_DIR, siteId, locale, 'blog');
-  try {
-    const files = await fs.readdir(blogDir);
-    await Promise.all(
+  for (const candidateLocale of localeCandidates) {
+    const pagesDir = path.join(CONTENT_DIR, siteId, candidateLocale, 'pages');
+    try {
+      const files = await fs.readdir(pagesDir);
       files
         .filter((file) => file.endsWith('.json'))
-        .map(async (file) => {
+        .forEach((file) => {
           const slug = file.replace('.json', '');
-          let title = '';
-          let publishDate = '';
-          try {
-            const raw = await fs.readFile(path.join(blogDir, file), 'utf-8');
-            const parsed = JSON.parse(raw);
-            title = typeof parsed.title === 'string' ? parsed.title : '';
-            publishDate =
-              typeof parsed.publishDate === 'string' ? parsed.publishDate : '';
-          } catch (error) {
-            // ignore parse errors
-          }
           addItem({
-            id: `blog-${slug}`,
-            label: `Blog Post: ${title || titleCase(slug)}`,
-            path: `blog/${file}`,
+            id: `page-${slug}`,
+            label: `Page: ${titleCase(slug)}`,
+            path: `pages/${file}`,
             scope: 'locale',
-            publishDate: publishDate || undefined,
           });
-        })
-    );
-  } catch (error) {
-    // ignore missing blog directory
+        });
+    } catch (error) {
+      // ignore missing pages directory
+    }
   }
 
-  await Promise.all(
-    COLLECTION_DIRS.map(async (dirName) => {
-      const dirPath = path.join(CONTENT_DIR, siteId, locale, dirName);
-      try {
-        const files = await fs.readdir(dirPath);
-        await Promise.all(
-          files
-            .filter((file) => file.endsWith('.json'))
-            .map(async (file) => {
-              const filePath = `${dirName}/${file}`;
-              let parsed: unknown = null;
-              try {
-                const raw = await fs.readFile(path.join(dirPath, file), 'utf-8');
-                parsed = JSON.parse(raw);
-              } catch {
-                // ignore parse errors and fallback to slug label
-              }
-              addItem({
-                id: `collection-${dirName}-${file.replace('.json', '')}`,
-                label: getCollectionLabel(filePath, parsed),
-                path: filePath,
-                scope: 'locale',
-              });
-            })
-        );
-      } catch {
-        // ignore missing collection directories
-      }
-    })
-  );
+  for (const candidateLocale of localeCandidates) {
+    const blogDir = path.join(CONTENT_DIR, siteId, candidateLocale, 'blog');
+    try {
+      const files = await fs.readdir(blogDir);
+      await Promise.all(
+        files
+          .filter((file) => file.endsWith('.json'))
+          .map(async (file) => {
+            const slug = file.replace('.json', '');
+            let title = '';
+            let publishDate = '';
+            try {
+              const raw = await fs.readFile(path.join(blogDir, file), 'utf-8');
+              const parsed = JSON.parse(raw);
+              title = typeof parsed.title === 'string' ? parsed.title : '';
+              publishDate =
+                typeof parsed.publishDate === 'string' ? parsed.publishDate : '';
+            } catch (error) {
+              // ignore parse errors
+            }
+            addItem({
+              id: `blog-${slug}`,
+              label: `Blog Post: ${title || titleCase(slug)}`,
+              path: `blog/${file}`,
+              scope: 'locale',
+              publishDate: publishDate || undefined,
+            });
+          })
+      );
+    } catch (error) {
+      // ignore missing blog directory
+    }
+  }
 
-  const testimonialsPath = path.join(CONTENT_DIR, siteId, locale, 'testimonials.json');
-  try {
-    await fs.access(testimonialsPath);
-    addItem({
-      id: 'testimonials',
-      label: 'Client Testimonials',
-      path: 'testimonials.json',
-      scope: 'locale',
-    });
-  } catch {
-    // ignore missing testimonials.json
+  for (const candidateLocale of localeCandidates) {
+    await Promise.all(
+      COLLECTION_DIRS.map(async (dirName) => {
+        const dirPath = path.join(CONTENT_DIR, siteId, candidateLocale, dirName);
+        try {
+          const files = await fs.readdir(dirPath);
+          await Promise.all(
+            files
+              .filter((file) => file.endsWith('.json'))
+              .map(async (file) => {
+                const filePath = `${dirName}/${file}`;
+                let parsed: unknown = null;
+                try {
+                  const raw = await fs.readFile(path.join(dirPath, file), 'utf-8');
+                  parsed = JSON.parse(raw);
+                } catch {
+                  // ignore parse errors and fallback to slug label
+                }
+                addItem({
+                  id: `collection-${dirName}-${file.replace('.json', '')}`,
+                  label: getCollectionLabel(filePath, parsed),
+                  path: filePath,
+                  scope: 'locale',
+                });
+              })
+          );
+        } catch {
+          // ignore missing collection directories
+        }
+      })
+    );
+  }
+
+  for (const candidateLocale of localeCandidates) {
+    const testimonialsPath = path.join(CONTENT_DIR, siteId, candidateLocale, 'testimonials.json');
+    try {
+      await fs.access(testimonialsPath);
+      addItem({
+        id: 'testimonials',
+        label: 'Client Testimonials',
+        path: 'testimonials.json',
+        scope: 'locale',
+      });
+      break;
+    } catch {
+      // ignore missing testimonials.json
+    }
   }
 
   addItem({

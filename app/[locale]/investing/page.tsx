@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { trackLeadEvent } from '@/lib/leads/client';
+import { TrustPromise } from '@/components/sections/TrustPromise';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 
 export default function InvestingPage() {
+  const [d, setD] = useState<any>({});
   const [locale, setLocale] = useState('en');
   const [form, setForm] = useState({ name:'', email:'', phone:'', investmentType:'', budget:'', timeline:'', message:'' });
   const [submitted, setSubmitted] = useState(false);
@@ -11,7 +15,15 @@ export default function InvestingPage() {
   // CAP Rate Calculator state
   const [calc, setCalc] = useState({ price:'400000', rent:'3200', vacancy:'5', tax:'8000', insurance:'2400', maintenance:'4000', mgmtPct:'8', other:'0' });
 
-  useEffect(() => { setLocale(window.location.pathname.startsWith('/zh') ? 'zh' : 'en'); }, []);
+  useEffect(() => {
+    const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
+    setLocale(loc);
+    fetch(`/api/content/file?locale=${loc}&path=pages/investing.json`)
+      .then((r) => r.json())
+      .then((res) => {
+        try { setD(JSON.parse(res.content || '{}')); } catch {}
+      });
+  }, []);
 
   const annualRent = (parseFloat(calc.rent)||0) * 12;
   const effectiveGross = annualRent * (1 - (parseFloat(calc.vacancy)||0)/100);
@@ -27,22 +39,45 @@ export default function InvestingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...form, category:'investor', locale }) }).catch(()=>{});
+    const siteId = process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template';
+    const source = d.leadCapture?.sourceTag || 'investing-page';
+    await trackLeadEvent({ siteId, locale, eventName: 'form_submit', source, pagePath: `/${locale}/investing` });
+    await fetch('/api/contact', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        ...form,
+        category:'investor',
+        locale,
+        siteId,
+        source,
+        pagePath: `/${locale}/investing`,
+        consentAccepted: true,
+        consentText: d.leadCapture?.consentText || '',
+      }),
+    }).catch(()=>{});
     setSubmitted(true);
   };
 
-  const TYPES = ['Residential Rental','Multifamily (2–4 units)','Commercial','New Construction','Land / Subdivision','1031 Exchange'];
+  const TYPES = d.investmentTypes?.items || ['Residential Rental','Multifamily (2–4 units)','Commercial','New Construction','Land / Subdivision','1031 Exchange'];
+  const investorPlaybooks = d.investorPlaybooks?.items || [];
+  const marketOpportunities = d.marketOpportunities?.items || [];
+  const dueDiligenceChecklist = d.dueDiligenceChecklist?.items || [];
+  const investorResources = d.investorResources?.items || [];
+  const investorGuide = d.investorGuide || {};
+  const leadCapture = d.leadCapture || {};
+  const cta = d.cta || {};
 
   return (
     <>
       <section className="relative pt-20" style={{ minHeight: '46vh', background: 'var(--primary)' }}>
         <div className="container-custom pt-14 pb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Investing</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{d.hero?.eyebrow || 'Investing'}</p>
           <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-            Build Wealth Through Real Estate in Westchester County
+            {d.hero?.headline || 'Build Wealth Through Real Estate in Westchester County'}
           </h1>
-          <p className="text-white/75 max-w-xl mb-7">Data-driven investment strategy. Cap rate analysis. Off-market access.</p>
-          <Link href="#calculator" className="btn-gold px-7 py-3">Try the CAP Rate Calculator</Link>
+          <p className="text-white/75 max-w-xl mb-7">{d.hero?.subline || 'Data-driven investment strategy. Cap rate analysis. Off-market access.'}</p>
+          <Link href="#calculator" className="btn-gold px-7 py-3" onClick={() => trackLeadEvent({ siteId: process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template', locale, eventName: 'cta_click', source: 'investing-page', pagePath: `/${locale}/investing`, metadata: { cta: 'calculator' } })}>Try the CAP Rate Calculator</Link>
         </div>
       </section>
 
@@ -54,7 +89,7 @@ export default function InvestingPage() {
             <h2 className="font-serif text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Investment Types</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {TYPES.map((type, i) => (
+            {TYPES.map((type: string, i: number) => (
               <div key={i} className="p-5 rounded-xl border border-[var(--border)] text-center"
                 style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
                 <p className="font-semibold text-sm" style={{ color: 'var(--primary)' }}>{type}</p>
@@ -64,13 +99,21 @@ export default function InvestingPage() {
         </div>
       </section>
 
+      <TrustPromise
+        locale={locale}
+        title="Why Investors Trust Panorama for Data-Backed Decisions"
+        body="We pressure-test deals with realistic assumptions, local demand context, and strategy planning so you can invest with conviction."
+        ctaLabel="Request an Investor Consultation"
+        ctaHref="/contact"
+      />
+
       {/* CAP RATE CALCULATOR */}
       <section id="calculator" className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
         <div className="container-custom max-w-4xl">
           <div className="text-center mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Tools</p>
-            <h2 className="font-serif text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>CAP Rate Calculator</h2>
-            <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>Estimate the capitalization rate and NOI for any investment property.</p>
+            <h2 className="font-serif text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>{d.calculator?.headline || 'CAP Rate Calculator'}</h2>
+            <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{d.calculator?.subline || 'Estimate the capitalization rate and NOI for any investment property.'}</p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Inputs */}
@@ -137,11 +180,96 @@ export default function InvestingPage() {
         </div>
       </section>
 
+      {(investorPlaybooks.length > 0 || marketOpportunities.length > 0 || dueDiligenceChecklist.length > 0 || investorResources.length > 0) && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {investorPlaybooks.length > 0 && (
+                <div>
+                  <h3 className="font-serif text-2xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    {d.investorPlaybooks?.headline || 'Investor Playbooks'}
+                  </h3>
+                  <div className="space-y-3">
+                    {investorPlaybooks.map((item: any, i: number) => (
+                      <div key={i} className="p-4 rounded-lg border border-[var(--border)]">
+                        <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{item.title}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {marketOpportunities.length > 0 && (
+                <div>
+                  <h3 className="font-serif text-2xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    {d.marketOpportunities?.headline || 'Current Market Opportunities'}
+                  </h3>
+                  <div className="space-y-3">
+                    {marketOpportunities.map((item: any, i: number) => (
+                      <div key={i} className="p-4 rounded-lg border border-[var(--border)]">
+                        <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{item.title}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+              {dueDiligenceChecklist.length > 0 && (
+                <div>
+                  <h3 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    {d.dueDiligenceChecklist?.headline || 'Deal Due Diligence Checklist'}
+                  </h3>
+                  <div className="space-y-2">
+                    {dueDiligenceChecklist.map((item: string, i: number) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: 'var(--secondary)' }} />
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{item}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {investorResources.length > 0 && (
+                <div>
+                  <h3 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    {d.investorResources?.headline || 'Investor Resources'}
+                  </h3>
+                  <div className="space-y-3">
+                    {investorResources.map((item: any, i: number) => (
+                      <div key={i} className="p-4 rounded-lg border border-[var(--border)]">
+                        <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{item.title}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {investorGuide.headline ? (
+        <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
+          <div className="container-custom max-w-3xl text-center">
+            <h2 className="font-serif text-3xl font-semibold mb-3" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+              {investorGuide.headline}
+            </h2>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>{investorGuide.subline}</p>
+            <Link href={`/${locale}${investorGuide.ctaHref || '/contact'}`} className="btn-gold inline-flex items-center gap-2 px-7 py-3">
+              {investorGuide.ctaLabel || 'Request Investor Kit'} <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
       {/* INVESTOR CONSULTATION FORM */}
       <section className="section-padding bg-white">
         <div className="container-custom max-w-2xl">
           <div className="text-center mb-8">
-            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Ready to Build Your Portfolio?</h2>
+            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>{leadCapture.headline || 'Ready to Build Your Portfolio?'}</h2>
           </div>
           {submitted ? (
             <div className="text-center py-8">
@@ -149,18 +277,18 @@ export default function InvestingPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input required value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Full Name" className="calc-input" />
                 <input required type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="Email" className="calc-input" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input value={form.phone} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} placeholder="Phone (optional)" className="calc-input" />
                 <select value={form.investmentType} onChange={e=>setForm(f=>({...f,investmentType:e.target.value}))} className="calc-input">
                   <option value="">Investment Type</option>
-                  {TYPES.map(t => <option key={t}>{t}</option>)}
+                  {TYPES.map((t: string) => <option key={t}>{t}</option>)}
                 </select>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <select value={form.budget} onChange={e=>setForm(f=>({...f,budget:e.target.value}))} className="calc-input">
                   <option value="">Budget Range</option>
                   <option>Under $500K</option>
@@ -178,8 +306,16 @@ export default function InvestingPage() {
               </div>
               <textarea value={form.message} onChange={e=>setForm(f=>({...f,message:e.target.value}))} placeholder="Tell us about your investment goals…" className="calc-input w-full min-h-[80px]" />
               <button type="submit" className="btn-gold w-full py-3.5">Schedule an Investor Consultation</button>
+              {leadCapture.consentText ? <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{leadCapture.consentText}</p> : null}
             </form>
           )}
+        </div>
+      </section>
+      <section className="py-16" style={{ background: 'var(--primary)' }}>
+        <div className="container-custom text-center">
+          <h2 className="font-serif text-3xl font-semibold text-white mb-4" style={{ fontFamily: 'var(--font-heading)' }}>{cta.headline || 'Want Investor Deal Reviews?'}</h2>
+          <p className="text-white/70 mb-7 max-w-md mx-auto">{cta.subline || 'Schedule a consultation for strategy, underwriting, and sourcing.'}</p>
+          <Link href={`/${locale}/contact`} className="btn-gold inline-block px-8 py-3.5">Schedule an Investor Consultation</Link>
         </div>
       </section>
     </>

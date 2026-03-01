@@ -3,8 +3,35 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Bed, Bath, Maximize2, MapPin, Phone, Mail, Calendar } from 'lucide-react';
+import { ArrowLeft, Bed, Bath, Maximize2, MapPin, Phone, Mail, Calendar, PlayCircle } from 'lucide-react';
 import { AgentCard, type AgentData } from '@/components/ui/AgentCard';
+import { trackLeadEvent } from '@/lib/leads/client';
+import { MortgageCalculator } from '@/components/ui/MortgageCalculator';
+
+function toEmbedUrl(rawUrl: string | undefined) {
+  if (!rawUrl) return null;
+  const url = rawUrl.trim();
+  if (!url) return null;
+  if (url.includes('youtube.com/watch')) {
+    const match = url.match(/[?&]v=([^&]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  }
+  if (url.includes('youtu.be/')) {
+    const match = url.match(/youtu\.be\/([^?&/]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  }
+  if (url.includes('vimeo.com/')) {
+    const match = url.match(/vimeo\.com\/(\d+)/);
+    return match ? `https://player.vimeo.com/video/${match[1]}` : null;
+  }
+  if (url.includes('matterport.com/show/')) {
+    return url;
+  }
+  if (url.startsWith('https://') || url.startsWith('http://')) {
+    return url;
+  }
+  return null;
+}
 
 export default function PropertyDetailPage() {
   const [property, setProperty] = useState<any>(null);
@@ -14,10 +41,9 @@ export default function PropertyDetailPage() {
   const [activeImage, setActiveImage] = useState(0);
   const [form, setForm] = useState({ name:'', email:'', phone:'', message:'' });
   const [submitted, setSubmitted] = useState(false);
-  // Mortgage calculator
-  const [calcDown, setCalcDown] = useState('20');
-  const [calcRate, setCalcRate] = useState('6.75');
-  const [calcTerm, setCalcTerm] = useState('30');
+  const [showingForm, setShowingForm] = useState({ name:'', email:'', phone:'', preferredDate:'', preferredTime:'', message:'' });
+  const [showingSubmitted, setShowingSubmitted] = useState(false);
+  const [showingSubmitting, setShowingSubmitting] = useState(false);
 
   useEffect(() => {
     const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
@@ -45,21 +71,42 @@ export default function PropertyDetailPage() {
     setSubmitted(true);
   };
 
-  const monthly = (() => {
-    const price = property?.price || 0;
-    const down = parseFloat(calcDown)/100;
-    const r = parseFloat(calcRate)/100/12;
-    const n = parseInt(calcTerm)*12;
-    const principal = price*(1-down);
-    if (!principal||!r) return 0;
-    return principal*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);
-  })();
+  const handleShowingRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!property?.slug) return;
+    setShowingSubmitting(true);
+    await fetch('/api/showing-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...showingForm,
+        siteId: 'reb-template',
+        locale,
+        source: 'property-detail',
+        pagePath: window.location.pathname,
+        propertySlug: property.slug,
+        propertyAddress: property.address,
+        agentSlug: property.listingAgentSlug || '',
+      }),
+    }).catch(() => {});
+    trackLeadEvent({
+      siteId: 'reb-template',
+      locale,
+      eventName: 'property_showing_requested',
+      source: 'property-detail',
+      pagePath: window.location.pathname,
+      metadata: { propertySlug: property.slug },
+    });
+    setShowingSubmitting(false);
+    setShowingSubmitted(true);
+  };
 
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 rounded-full animate-spin" style={{ borderColor: 'var(--secondary)', borderTopColor: 'transparent' }} /></div>;
   if (!property) return <div className="min-h-screen flex items-center justify-center pt-20"><Link href={`/${locale}/properties`} className="btn-gold">← Back to Properties</Link></div>;
 
   const images = [property.coverImage, ...(property.gallery||[]).map((g: any) => g.image||g)].filter(Boolean);
   const STATUS_LABEL: Record<string,string> = { 'active':'For Sale','pending':'Pending','sold':'Sold','for-lease':'For Lease','coming-soon':'Coming Soon' };
+  const virtualTourEmbed = toEmbedUrl(property.virtualTourUrl);
 
   return (
     <>
@@ -168,24 +215,41 @@ export default function PropertyDetailPage() {
                 </div>
               )}
 
+              {/* Virtual tour */}
+              {virtualTourEmbed && (
+                <div className="mb-6 pb-6 border-b border-[var(--border)]">
+                  <h2 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    3D Tour & Walkthrough
+                  </h2>
+                  <div className="rounded-xl overflow-hidden border border-[var(--border)]">
+                    <iframe
+                      title="Property virtual tour"
+                      src={virtualTourEmbed}
+                      className="w-full aspect-video"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                  <a
+                    href={property.virtualTourUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 mt-3 text-sm font-medium hover:opacity-80 transition-opacity"
+                    style={{ color: 'var(--primary)' }}
+                  >
+                    <PlayCircle className="w-4 h-4" />
+                    Open virtual tour in new tab
+                  </a>
+                </div>
+              )}
+
               {/* Mortgage calculator */}
               <div className="mb-6">
-                <h2 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Estimate Your Payment</h2>
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  {[{l:'Down Payment (%)',k:'calcDown',v:calcDown,set:setCalcDown},{l:'Interest Rate (%)',k:'calcRate',v:calcRate,set:setCalcRate},{l:'Loan Term (yrs)',k:'calcTerm',v:calcTerm,set:setCalcTerm}].map(({l,k,v,set})=>(
-                    <div key={k}>
-                      <label className="text-xs text-gray-500 block mb-1">{l}</label>
-                      <input type="number" value={v} onChange={e=>set(e.target.value)} className="calc-input w-full" />
-                    </div>
-                  ))}
-                </div>
-                {monthly > 0 && (
-                  <div className="p-4 rounded-xl text-center" style={{ background: 'var(--backdrop-light)' }}>
-                    <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Est. Monthly Payment</p>
-                    <p className="font-serif text-3xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>${Math.round(monthly).toLocaleString()}/mo</p>
-                    <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Principal + interest only. Taxes and insurance not included.</p>
-                  </div>
-                )}
+                <MortgageCalculator
+                  title="Estimate Your Payment"
+                  subtitle="Includes principal, interest, taxes, insurance, HOA, and PMI for planning."
+                  defaultPrice={property?.price ? String(property.price) : ''}
+                />
               </div>
             </div>
 
@@ -233,14 +297,38 @@ export default function PropertyDetailPage() {
               </div>
 
               {/* Showing request */}
-              <Link href={`/${locale}/contact`} className="flex items-center justify-center gap-2 w-full py-3 border-2 border-[var(--primary)] text-sm font-semibold hover:bg-[var(--primary)] hover:text-white transition-colors"
-                style={{ borderRadius: 'var(--effect-button-radius)', color: 'var(--primary)' }}>
-                <Calendar className="w-4 h-4" /> Schedule a Showing
-              </Link>
+              <div className="p-5 bg-white rounded-xl border border-[var(--border)]"
+                style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
+                {showingSubmitted ? (
+                  <p className="text-sm text-center py-4 font-semibold" style={{ color: 'var(--primary)' }}>
+                    Showing request sent! We will confirm your appointment shortly.
+                  </p>
+                ) : (
+                  <form onSubmit={handleShowingRequest} className="space-y-3">
+                    <p className="font-semibold text-sm mb-3 flex items-center gap-1.5" style={{ color: 'var(--primary)' }}>
+                      <Calendar className="w-4 h-4" /> Schedule a Showing
+                    </p>
+                    <input required value={showingForm.name} onChange={e=>setShowingForm(f=>({...f,name:e.target.value}))} placeholder="Your Name" className="calc-input w-full text-sm" />
+                    <input required type="email" value={showingForm.email} onChange={e=>setShowingForm(f=>({...f,email:e.target.value}))} placeholder="Email" className="calc-input w-full text-sm" />
+                    <input value={showingForm.phone} onChange={e=>setShowingForm(f=>({...f,phone:e.target.value}))} placeholder="Phone (optional)" className="calc-input w-full text-sm" />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input type="date" value={showingForm.preferredDate} onChange={e=>setShowingForm(f=>({...f,preferredDate:e.target.value}))} className="calc-input w-full text-sm" />
+                      <input value={showingForm.preferredTime} onChange={e=>setShowingForm(f=>({...f,preferredTime:e.target.value}))} placeholder="Preferred time" className="calc-input w-full text-sm" />
+                    </div>
+                    <textarea value={showingForm.message} onChange={e=>setShowingForm(f=>({...f,message:e.target.value}))} placeholder="Any access notes or requests…" className="calc-input w-full text-sm min-h-[72px]" />
+                    <button disabled={showingSubmitting} type="submit" className="btn-gold w-full py-2.5 text-sm disabled:opacity-60">
+                      {showingSubmitting ? 'Submitting...' : 'Request Showing'}
+                    </button>
+                    <Link href={`/${locale}/contact`} className="block text-center text-xs hover:underline" style={{ color: 'var(--text-secondary)' }}>
+                      Prefer general contact? Use contact page
+                    </Link>
+                  </form>
+                )}
+              </div>
 
               {/* Compliance */}
               <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                Listed by Pinnacle Realty Group · License #{process.env.NEXT_PUBLIC_DEFAULT_SITE_ID||'—'} · All information deemed reliable but not guaranteed.
+                Listed by Panorama Realty Group · License #{process.env.NEXT_PUBLIC_DEFAULT_SITE_ID||'—'} · All information deemed reliable but not guaranteed.
               </p>
             </aside>
           </div>

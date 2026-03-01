@@ -3,7 +3,7 @@
   "name": "Sarah Rodriguez",
   "role": "agent",
   "slug": "sarah-rodriguez",
-  "email": "sarah@pinnaclerealty.com",
+  "email": "sarah@panorama-nyrealty.com",
   "phone": "(845) 555-0193",
   "photo": "https://rpwwafkpsdotglwzgbdf.supabase.co/storage/v1/object/public/media/reb-template/imported/1aed3bcbb922388dac21.jpg",
   "title": "Real Estate Agent & Investment Specialist",
@@ -38,6 +38,15 @@
       "reviewer": "Tom & Angela Voss",
       "verified": true,
       "reviewDate": "2025-08",
+      "transactionType": "buyer"
+    },
+    {
+      "id": "t-sr-2",
+      "text": "Her underwriting and negotiation support gave us confidence to close on a multifamily property that exceeded our targets.",
+      "rating": 5,
+      "reviewer": "N. Patel",
+      "verified": true,
+      "reviewDate": "2025-04",
       "transactionType": "buyer"
     }
   ],

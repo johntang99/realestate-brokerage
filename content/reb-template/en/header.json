@@ -19,34 +19,20 @@
       "label": "Neighborhoods"
     },
     {
-      "href": "#",
-      "label": "Buy & Sell",
-      "children": [
-        {
-          "href": "/buying",
-          "label": "Buying"
-        },
-        {
-          "href": "/selling",
-          "label": "Selling"
-        },
-        {
-          "href": "/home-valuation",
-          "label": "Home Valuation"
-        },
-        {
-          "href": "/new-construction",
-          "label": "New Construction"
-        }
-      ]
+      "href": "/buying",
+      "label": "Buy"
+    },
+    {
+      "href": "/selling",
+      "label": "Sell"
     },
     {
       "href": "/investing",
-      "label": "Investing"
+      "label": "Invest"
     },
     {
       "href": "/relocating",
-      "label": "Relocating"
+      "label": "Relocate"
     },
     {
       "href": "/team",
@@ -58,7 +44,7 @@
     },
     {
       "href": "/knowledge-center",
-      "label": "Knowledge Center"
+      "label": "Knowledge"
     },
     {
       "href": "/contact",

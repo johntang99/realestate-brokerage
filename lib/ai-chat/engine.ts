@@ -5,6 +5,7 @@ import { buildToolContext, executeTool } from './tool-executor';
 import { createConversationId, loadConversation, saveMessage } from './storage';
 import { getAiModel } from './config';
 import type { ChatStreamEvent } from './types';
+import { buildContextBlock, isWriteIntent } from './context-injection';
 
 type RunChatArgs = {
   siteId: string;
@@ -15,6 +16,25 @@ type RunChatArgs = {
   dryRun?: boolean;
   onEvent?: (event: ChatStreamEvent) => void;
 };
+
+type ToolRun = {
+  name: string;
+  ok: boolean;
+  summary: string;
+  preview?: unknown;
+  rawPath?: string;
+  resolvedPath?: string;
+  errorMessage?: string;
+  failureTag?: string;
+};
+
+function classifyFailureTag(args: Record<string, unknown>, summary: string) {
+  const text = summary.toLowerCase();
+  if (text.includes('variant')) return 'invalid_variant';
+  if (text.includes('path') || typeof args.field_path === 'string') return 'field_path_error';
+  if (text.includes('forbidden') || text.includes('not authenticated')) return 'auth_error';
+  return 'tool_error';
+}
 
 export async function runChatTurn(args: RunChatArgs) {
   const conversationId = args.conversationId || createConversationId();
@@ -29,7 +49,6 @@ export async function runChatTurn(args: RunChatArgs) {
     content: item.content,
     toolName: item.toolName,
   })) as Array<{ role: 'user' | 'assistant' | 'tool'; content: string; toolName?: string }>;
-  messages.push({ role: 'user', content: args.userMessage });
 
   const provider = createProvider();
   const model = getAiModel();
@@ -43,6 +62,15 @@ export async function runChatTurn(args: RunChatArgs) {
     type: 'status',
     message: `Running model ${model}${args.dryRun ? ' in dry-run mode' : ''}`,
   });
+  const writeIntent = isWriteIntent(args.userMessage);
+  const contextBlock = await buildContextBlock(ctx, args.userMessage);
+  const enrichedUserMessage = contextBlock
+    ? `${args.userMessage}\n\n[Execution Context]\n${contextBlock}`
+    : args.userMessage;
+  messages.push({ role: 'user', content: enrichedUserMessage });
+  if (contextBlock) {
+    args.onEvent?.({ type: 'status', message: 'Context injected for schema guidance.' });
+  }
 
   await saveMessage({
     siteId: args.siteId,
@@ -53,7 +81,7 @@ export async function runChatTurn(args: RunChatArgs) {
   });
 
   let assistantText = '';
-  const toolRuns: Array<{ name: string; ok: boolean; summary: string; preview?: unknown }> = [];
+  const toolRuns: ToolRun[] = [];
   const seenToolCalls = new Set<string>();
 
   for (let i = 0; i < 4; i += 1) {
@@ -85,7 +113,26 @@ export async function runChatTurn(args: RunChatArgs) {
       try {
         const result = await executeTool(ctx, call.name, call.args);
         const summary = `${result.summary}`;
-        toolRuns.push({ name: call.name, ok: true, summary, preview: result.preview });
+        const previewRecord =
+          result.preview && typeof result.preview === 'object'
+            ? (result.preview as Record<string, unknown>)
+            : null;
+        const rawPath =
+          previewRecord && typeof previewRecord.fieldPathRaw === 'string'
+            ? previewRecord.fieldPathRaw
+            : undefined;
+        const resolvedPath =
+          previewRecord && typeof previewRecord.fieldPath === 'string'
+            ? previewRecord.fieldPath
+            : undefined;
+        toolRuns.push({
+          name: call.name,
+          ok: true,
+          summary,
+          preview: result.preview,
+          rawPath,
+          resolvedPath,
+        });
         args.onEvent?.({
           type: 'tool_result',
           name: call.name,
@@ -108,7 +155,15 @@ export async function runChatTurn(args: RunChatArgs) {
         });
       } catch (error: any) {
         const summary = error?.message || 'Tool execution failed';
-        toolRuns.push({ name: call.name, ok: false, summary });
+        const rawPath = typeof call.args?.field_path === 'string' ? call.args.field_path : undefined;
+        toolRuns.push({
+          name: call.name,
+          ok: false,
+          summary,
+          rawPath,
+          errorMessage: summary,
+          failureTag: classifyFailureTag(call.args || {}, summary),
+        });
         args.onEvent?.({
           type: 'tool_result',
           name: call.name,
@@ -137,7 +192,9 @@ export async function runChatTurn(args: RunChatArgs) {
 
   const uniqueToolSummaries = Array.from(new Set(toolRuns.map((item) => item.summary)));
   const finalText =
-    assistantText ||
+    (writeIntent && !toolRuns.some((item) => item.ok)
+      ? 'No changes were applied. I could not complete a write tool action for this request.'
+      : assistantText) ||
     (uniqueToolSummaries.length
       ? `Tool results:\n${uniqueToolSummaries.map((item) => `- ${item}`).join('\n')}`
       : 'Done. I applied the requested changes.');

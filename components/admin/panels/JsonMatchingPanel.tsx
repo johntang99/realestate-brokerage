@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 interface JsonMatchingPanelProps {
   formData: any;
   updateFormValue: (path: string[], value: any) => void;
@@ -20,6 +22,33 @@ export function JsonMatchingPanel({
   updateFormValue,
   openImagePicker,
 }: JsonMatchingPanelProps) {
+  const [pendingFieldKeys, setPendingFieldKeys] = useState<Record<string, string>>({});
+  const [pendingFieldTypes, setPendingFieldTypes] = useState<Record<string, 'string' | 'number' | 'boolean' | 'object' | 'array'>>({});
+
+  const getPathId = (path: string[]) => (path.length ? path.join('.') : 'root');
+
+  const getDefaultValueForType = (type: 'string' | 'number' | 'boolean' | 'object' | 'array') => {
+    if (type === 'number') return 0;
+    if (type === 'boolean') return false;
+    if (type === 'object') return {};
+    if (type === 'array') return [];
+    return '';
+  };
+
+  const addObjectField = (path: string[], objectValue: Record<string, any>) => {
+    const pathId = getPathId(path);
+    const rawKey = (pendingFieldKeys[pathId] || '').trim();
+    if (!rawKey || rawKey in objectValue) return;
+    const valueType = pendingFieldTypes[pathId] || 'string';
+    const next = {
+      ...objectValue,
+      [rawKey]: getDefaultValueForType(valueType),
+    };
+    updateFormValue(path, next);
+    setPendingFieldKeys((current) => ({ ...current, [pathId]: '' }));
+    setPendingFieldTypes((current) => ({ ...current, [pathId]: 'string' }));
+  };
+
   const addArrayItem = (path: string[], arrayValue: any[]) => {
     const first = arrayValue[0];
     const nextItem =
@@ -81,8 +110,48 @@ export function JsonMatchingPanel({
 
     if (value && typeof value === 'object') {
       const entries = Object.entries(value);
+      const pathId = getPathId(path);
       return (
         <div className="space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+              {keyName}
+            </div>
+            <input
+              className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700"
+              placeholder="new_field_name"
+              value={pendingFieldKeys[pathId] || ''}
+              onChange={(event) =>
+                setPendingFieldKeys((current) => ({
+                  ...current,
+                  [pathId]: event.target.value,
+                }))
+              }
+            />
+            <select
+              className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700"
+              value={pendingFieldTypes[pathId] || 'string'}
+              onChange={(event) =>
+                setPendingFieldTypes((current) => ({
+                  ...current,
+                  [pathId]: event.target.value as 'string' | 'number' | 'boolean' | 'object' | 'array',
+                }))
+              }
+            >
+              <option value="string">string</option>
+              <option value="number">number</option>
+              <option value="boolean">boolean</option>
+              <option value="object">object</option>
+              <option value="array">array</option>
+            </select>
+            <button
+              type="button"
+              className="rounded-md border border-gray-200 px-2 py-1 text-xs text-gray-700 hover:bg-gray-50"
+              onClick={() => addObjectField(path, value as Record<string, any>)}
+            >
+              Add Field
+            </button>
+          </div>
           {entries.map(([childKey, childValue]) => (
             <div key={[...path, childKey].join('.')} className="rounded-lg border border-gray-100 p-3">
               {renderNode(childValue, [...path, childKey], childKey)}

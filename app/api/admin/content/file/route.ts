@@ -13,7 +13,7 @@ import {
 } from '@/lib/contentDb';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { canWriteContent, requireSiteAccess } from '@/lib/admin/permissions';
-import { locales } from '@/lib/i18n';
+import { defaultLocale, locales } from '@/lib/i18n';
 import { normalizeMediaUrlsInData } from '@/lib/media-url';
 
 const ALLOWED_TARGET_DIRS = [
@@ -178,14 +178,30 @@ export async function GET(request: NextRequest) {
 
   try {
     if (canUseContentDb()) {
-      const entry = await fetchContentEntry(siteId, locale, filePath);
+      let entry = await fetchContentEntry(siteId, locale, filePath);
+      if (!entry && locale !== defaultLocale) {
+        entry = await fetchContentEntry(siteId, defaultLocale, filePath);
+      }
       const entryContent = entry?.content ?? entry?.data;
       if (entryContent && !isEmptyHeaderPayload(filePath, entryContent)) {
         return NextResponse.json({ content: JSON.stringify(entryContent, null, 2) });
       }
     }
 
-    const content = await fs.readFile(resolved, 'utf-8');
+    let content: string | null = null;
+    try {
+      content = await fs.readFile(resolved, 'utf-8');
+    } catch {
+      if (locale !== defaultLocale) {
+        const fallbackResolved = resolveContentPath(siteId, defaultLocale, filePath);
+        if (fallbackResolved) {
+          content = await fs.readFile(fallbackResolved, 'utf-8');
+        }
+      }
+    }
+    if (content == null) {
+      throw new Error('file-not-found');
+    }
     if (canUseContentDb()) {
       try {
         const parsed = JSON.parse(content);
@@ -400,7 +416,15 @@ export async function POST(request: NextRequest) {
         updatedBy: session.user.email,
       });
       await upsertDedicatedCollectionRow(siteId, filePath, contentToCreate);
-      return NextResponse.json({ path: filePath });
+      if (shouldWriteThroughFile()) {
+        try {
+          await fs.mkdir(path.dirname(resolved), { recursive: true });
+          await fs.writeFile(resolved, JSON.stringify(contentToCreate, null, 2));
+        } catch (error) {
+          // DB write already succeeded; JSON sync can fail independently.
+        }
+      }
+      return NextResponse.json({ path: filePath, fileSync: shouldWriteThroughFile() ? 'attempted' : 'skipped' });
     }
 
     await fs.mkdir(path.dirname(resolved), { recursive: true });
@@ -486,6 +510,10 @@ export async function POST(request: NextRequest) {
       }
     }
     if (canUseContentDb()) {
+      const existingTarget = await fetchContentEntry(siteId, locale, targetPath);
+      if (existingTarget) {
+        return NextResponse.json({ message: 'Target file already exists' }, { status: 409 });
+      }
       const parsed = JSON.parse(nextContent);
       await upsertContentEntry({
         siteId,
@@ -495,7 +523,15 @@ export async function POST(request: NextRequest) {
         updatedBy: session.user.email,
       });
       await upsertDedicatedCollectionRow(siteId, targetPath, parsed);
-      return NextResponse.json({ path: targetPath });
+      if (shouldWriteThroughFile()) {
+        try {
+          await fs.mkdir(path.dirname(targetResolved), { recursive: true });
+          await fs.writeFile(targetResolved, nextContent);
+        } catch (error) {
+          // DB write already succeeded; JSON sync can fail independently.
+        }
+      }
+      return NextResponse.json({ path: targetPath, fileSync: shouldWriteThroughFile() ? 'attempted' : 'skipped' });
     }
 
     await fs.mkdir(path.dirname(targetResolved), { recursive: true });

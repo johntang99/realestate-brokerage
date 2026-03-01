@@ -1,6 +1,6 @@
 -- ============================================================
--- BAAM System H — REB Premium Supabase Schema
--- Run this in your "Real Estate Brokerage" Supabase project
+-- DEPRECATED: Use supabase/admin-schema.sql
+-- This file is kept only for historical reference.
 -- ============================================================
 
 -- CORE TABLES (same as REA base)
@@ -289,16 +289,16 @@ END $$;
 
 -- Insert the REB site
 INSERT INTO public.sites (id, name, domain, default_locale, supported_locales, enabled)
-VALUES ('reb-template', 'REB Premium Template', 'reb.local', 'en', '{en}', true)
+VALUES ('reb-template', 'Panorama Realty', 'panorama-realty.com', 'en', '{en}', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert broker admin user (password: admin123)
 INSERT INTO public.admin_users (site_id, email, password_hash, name, role, is_active)
 VALUES (
   'reb-template',
-  'admin@pinnaclerealty.com',
+  'admin@panorama-realty.com',
   '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-  'Jane Smith',
+  'Panorama Admin',
   'broker_admin',
   true
 )

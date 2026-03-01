@@ -1,114 +1,254 @@
--- Julia Studio — BAAM System F
--- Run this in your Supabase SQL editor (design project)
--- No booking tables — design studio, not a clinic
+-- ============================================================
+-- BAAM System H — Canonical Admin Schema (REB)
+-- Single source of truth for REB admin DB setup.
+-- This supersedes legacy minimal admin schema variants.
+-- ============================================================
 
 create extension if not exists pgcrypto;
 
--- ── Sites ──────────────────────────────────────────────────────────────────────
+-- ============================================================
+-- CORE TABLES
+-- ============================================================
+
 create table if not exists public.sites (
   id text primary key,
   name text not null,
   domain text,
-  enabled boolean not null default true,
-  default_locale text not null default 'en',
-  supported_locales text[] not null default array['en']::text[],
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  default_locale text default 'en',
+  supported_locales text[] default '{en}',
+  enabled boolean default true,
+  settings jsonb default '{}',
+  created_at timestamptz default now()
 );
 
 create table if not exists public.site_domains (
-  id uuid primary key default gen_random_uuid(),
+  id uuid default gen_random_uuid() primary key,
   site_id text not null references public.sites(id) on delete cascade,
-  domain text not null,
-  environment text not null default 'prod',
-  is_primary boolean not null default false,
-  enabled boolean not null default true,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (site_id, domain, environment)
+  domain text not null unique,
+  is_primary boolean default false,
+  created_at timestamptz default now()
 );
 
-create index if not exists site_domains_domain_idx on public.site_domains (domain);
-
--- ── Admin users ────────────────────────────────────────────────────────────────
 create table if not exists public.admin_users (
-  id text primary key,
+  id uuid default gen_random_uuid() primary key,
+  site_id text references public.sites(id) on delete cascade,
   email text not null unique,
-  name text not null,
-  role text not null,
-  sites text[] not null default '{}'::text[],
-  avatar text,
   password_hash text not null,
-  created_at timestamptz not null default now(),
-  last_login_at timestamptz not null default now()
+  name text,
+  role text default 'broker_admin',
+  is_active boolean default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
--- ── Media assets ───────────────────────────────────────────────────────────────
 create table if not exists public.media_assets (
-  id uuid primary key default gen_random_uuid(),
+  id uuid default gen_random_uuid() primary key,
   site_id text not null,
-  path text not null,
-  url text not null,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (site_id, path)
+  file_name text not null,
+  file_path text not null,
+  storage_url text not null,
+  mime_type text,
+  file_size bigint,
+  width integer,
+  height integer,
+  alt_text text,
+  uploaded_by uuid,
+  created_at timestamptz default now()
 );
 
--- ── Content entries (DB-first CMS) ─────────────────────────────────────────────
 create table if not exists public.content_entries (
-  id uuid primary key default gen_random_uuid(),
+  id uuid default gen_random_uuid() primary key,
   site_id text not null,
-  locale text not null,
+  locale text not null default 'en',
   path text not null,
-  data jsonb not null,
-  updated_at timestamptz not null default now(),
-  updated_by text,
-  unique (site_id, locale, path)
+  content jsonb default '{}',
+  data jsonb default '{}',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(site_id, locale, path)
 );
 
--- ── Content revisions (audit trail) ───────────────────────────────────────────
 create table if not exists public.content_revisions (
-  id uuid primary key default gen_random_uuid(),
-  entry_id uuid not null references public.content_entries(id) on delete cascade,
-  data jsonb not null,
-  created_at timestamptz not null default now(),
-  created_by text,
-  note text
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  locale text not null default 'en',
+  path text not null,
+  content jsonb not null default '{}',
+  created_by uuid,
+  created_at timestamptz default now()
 );
 
--- ── Consultation requests (contact form submissions) ───────────────────────────
+create table if not exists public.admin_audit_logs (
+  id uuid default gen_random_uuid() primary key,
+  site_id text,
+  user_id uuid,
+  action text not null,
+  resource_type text,
+  resource_id text,
+  details jsonb default '{}',
+  ip_address text,
+  created_at timestamptz default now()
+);
+
+-- ============================================================
+-- LEAD / FORM TABLES
+-- ============================================================
+
 create table if not exists public.consultation_requests (
-  id uuid primary key default gen_random_uuid(),
+  id uuid default gen_random_uuid() primary key,
   site_id text not null,
+  created_at timestamptz default now(),
   name text not null,
   email text not null,
   phone text,
-  project_type text,
-  scope text,
-  budget text,
-  location text,
-  referral text,
-  preferred_language text default 'en',
-  message text not null,
-  status text not null default 'new',
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  message text,
+  preferred_time text,
+  status text default 'new'
 );
 
-create index if not exists consultation_requests_site_idx on public.consultation_requests (site_id, created_at desc);
-
--- ── Admin audit logs ───────────────────────────────────────────────────────────
-create table if not exists public.admin_audit_logs (
-  id uuid primary key default gen_random_uuid(),
-  actor_id text,
-  actor_email text,
-  action text not null,
-  site_id text,
-  metadata jsonb not null default '{}'::jsonb,
-  created_at timestamptz not null default now()
+create table if not exists public.valuation_requests (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  created_at timestamptz default now(),
+  name text not null,
+  email text not null,
+  phone text,
+  address text,
+  city text,
+  beds text,
+  baths text,
+  sqft text,
+  year_built text,
+  condition text,
+  timeline text,
+  message text,
+  status text default 'new'
 );
 
--- ── AI chat messages ────────────────────────────────────────────────────────────
+create table if not exists public.property_inquiries (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  created_at timestamptz default now(),
+  name text not null,
+  email text not null,
+  phone text,
+  property_slug text,
+  agent_slug text,
+  message text,
+  inquiry_type text,
+  status text default 'new'
+);
+
+create table if not exists public.showing_requests (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  created_at timestamptz default now(),
+  name text not null,
+  email text not null,
+  phone text,
+  property_address text,
+  agent_slug text,
+  preferred_date text,
+  preferred_time text,
+  message text,
+  status text default 'new'
+);
+
+create table if not exists public.newsletter_subscribers (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  created_at timestamptz default now(),
+  email text not null,
+  first_name text,
+  source text default 'newsletter',
+  is_active boolean default true,
+  unique(site_id, email)
+);
+
+-- ============================================================
+-- REB-SPECIFIC TABLES
+-- ============================================================
+
+create table if not exists public.agents (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  slug text not null,
+  data jsonb not null default '{}',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(site_id, slug)
+);
+
+create table if not exists public.agent_users (
+  agent_id uuid references public.agents(id) on delete cascade,
+  user_id uuid references public.admin_users(id) on delete cascade,
+  primary key (agent_id, user_id)
+);
+
+create table if not exists public.new_construction (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  slug text not null,
+  data jsonb not null default '{}',
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(site_id, slug)
+);
+
+create table if not exists public.events (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  slug text not null,
+  data jsonb not null default '{}',
+  event_date date,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(site_id, slug)
+);
+
+create table if not exists public.join_requests (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  created_at timestamptz default now(),
+  name text not null,
+  email text not null,
+  phone text,
+  current_situation text,
+  years_experience text,
+  current_volume text,
+  best_time_to_chat text,
+  message text,
+  status text default 'new'
+);
+
+create table if not exists public.investor_inquiries (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  created_at timestamptz default now(),
+  name text not null,
+  email text not null,
+  phone text,
+  investment_type text,
+  budget_range text,
+  timeline text,
+  message text,
+  status text default 'new'
+);
+
+create table if not exists public.gated_downloads (
+  id uuid default gen_random_uuid() primary key,
+  site_id text not null,
+  created_at timestamptz default now(),
+  email text not null,
+  first_name text,
+  guide_slug text not null,
+  download_sent boolean default false
+);
+
+-- ============================================================
+-- AI CHAT TABLES
+-- ============================================================
+
 create table if not exists public.chat_messages (
   id uuid primary key default gen_random_uuid(),
   site_id text not null,
@@ -123,7 +263,99 @@ create table if not exists public.chat_messages (
 create index if not exists chat_messages_lookup_idx
   on public.chat_messages (site_id, locale, conversation_id, created_at asc);
 
--- ── Seed Julia Studio site entry ───────────────────────────────────────────────
-insert into public.sites (id, name, domain, enabled, default_locale, supported_locales)
-values ('julia-studio', 'Julia Studio', 'studio-julia.com', true, 'en', array['en','zh']::text[])
+create table if not exists public.ai_chat_preferences (
+  id uuid primary key default gen_random_uuid(),
+  site_id text not null,
+  locale text not null default 'en',
+  preference_key text not null,
+  preference_value jsonb not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (site_id, locale, preference_key)
+);
+
+create index if not exists ai_chat_preferences_lookup_idx
+  on public.ai_chat_preferences (site_id, locale, preference_key);
+
+-- ============================================================
+-- ROW LEVEL SECURITY
+-- ============================================================
+
+alter table public.sites enable row level security;
+alter table public.site_domains enable row level security;
+alter table public.admin_users enable row level security;
+alter table public.media_assets enable row level security;
+alter table public.content_entries enable row level security;
+alter table public.content_revisions enable row level security;
+alter table public.admin_audit_logs enable row level security;
+alter table public.consultation_requests enable row level security;
+alter table public.valuation_requests enable row level security;
+alter table public.property_inquiries enable row level security;
+alter table public.showing_requests enable row level security;
+alter table public.newsletter_subscribers enable row level security;
+alter table public.agents enable row level security;
+alter table public.agent_users enable row level security;
+alter table public.new_construction enable row level security;
+alter table public.events enable row level security;
+alter table public.join_requests enable row level security;
+alter table public.investor_inquiries enable row level security;
+alter table public.gated_downloads enable row level security;
+alter table public.chat_messages enable row level security;
+alter table public.ai_chat_preferences enable row level security;
+
+drop policy if exists "Public read content_entries" on public.content_entries;
+create policy "Public read content_entries" on public.content_entries for select using (true);
+
+drop policy if exists "Public read agents" on public.agents;
+create policy "Public read agents" on public.agents for select using (true);
+
+drop policy if exists "Public read new_construction" on public.new_construction;
+create policy "Public read new_construction" on public.new_construction for select using (true);
+
+drop policy if exists "Public read events" on public.events;
+create policy "Public read events" on public.events for select using (true);
+
+drop policy if exists "Public read sites" on public.sites;
+create policy "Public read sites" on public.sites for select using (true);
+
+drop policy if exists "Public read site_domains" on public.site_domains;
+create policy "Public read site_domains" on public.site_domains for select using (true);
+
+do $$
+declare
+  t text;
+begin
+  foreach t in array array[
+    'sites','site_domains','admin_users','media_assets','content_entries','content_revisions',
+    'admin_audit_logs','consultation_requests','valuation_requests','property_inquiries',
+    'showing_requests','newsletter_subscribers','agents','agent_users','new_construction',
+    'events','join_requests','investor_inquiries','gated_downloads','chat_messages',
+    'ai_chat_preferences'
+  ] loop
+    execute format('drop policy if exists "Service role full access %s" on public.%s;', t, t);
+    execute format(
+      'create policy "Service role full access %s" on public.%s using (auth.role() = ''service_role'');',
+      t, t
+    );
+  end loop;
+end $$;
+
+-- ============================================================
+-- SEED DATA
+-- ============================================================
+
+insert into public.sites (id, name, domain, default_locale, supported_locales, enabled)
+values ('reb-template', 'Panorama Realty', 'panorama-realty.com', 'en', '{en}', true)
 on conflict (id) do nothing;
+
+-- password: admin123
+insert into public.admin_users (site_id, email, password_hash, name, role, is_active)
+values (
+  'reb-template',
+  'admin@panorama-realty.com',
+  '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+  'Panorama Admin',
+  'broker_admin',
+  true
+)
+on conflict (email) do nothing;

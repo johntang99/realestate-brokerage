@@ -1,8 +1,145 @@
 {
   "hero": {
     "image": "",
-    "subline": "Pinnacle Realty Group — Westchester County's trusted real estate brokerage.",
+    "subline": "Expert buyer representation, off-market access, and proven negotiation in Orange County, NY.",
     "variant": "photo-background",
-    "headline": "Buying"
+    "headline": "Find Your Perfect Home in Orange County, NY",
+    "eyebrow": "Buying"
+  },
+  "seo": {
+    "title": "Buy a Home in Orange County, NY | Panorama Realty",
+    "description": "Work with Panorama Realty buyer specialists to find and win the right home in Orange County, NY.",
+    "keywords": "westchester buyer agent, buy home westchester, first time buyer"
+  },
+  "proofStats": {
+    "items": [
+      { "value": "103%", "label": "Avg sale-to-list ratio" },
+      { "value": "24 days", "label": "Avg days to contract" },
+      { "value": "620+", "label": "Homes closed" }
+    ]
+  },
+  "whyBuyWithUs": {
+    "items": [
+      { "heading": "Deep Local Expertise", "description": "We know every school district, commute corridor, and micro-market in Orange County, NY." },
+      { "heading": "Off-Market Access", "description": "Our network surfaces opportunities before they hit public portals." },
+      { "heading": "Proven Negotiation", "description": "We structure clean, competitive offers designed to win in multiple-offer situations." },
+      { "heading": "First-Time Buyer Guidance", "description": "Clear step-by-step support from financing prep to closing day." },
+      { "heading": "Smart Offer Strategy", "description": "We use pricing, timing, and terms to protect your downside while staying competitive." },
+      { "heading": "Trusted Vendor Network", "description": "Inspectors, attorneys, and lenders you can rely on from day one." }
+    ]
+  },
+  "successStories": {
+    "headline": "Buyer Success Stories",
+    "items": [
+      {
+        "name": "A. Kim",
+        "summary": "Won in a multiple-offer situation with stronger terms but controlled downside."
+      },
+      {
+        "name": "The Martins",
+        "summary": "Relocated from out of state and closed on schedule with school-focused neighborhood matching."
+      }
+    ]
+  },
+  "process": {
+    "title": "How Buying Works",
+    "steps": [
+      { "number": "01", "name": "Get Pre-Approved", "description": "Secure financing before your search so your offer is market-ready." },
+      { "number": "02", "name": "Define Your Search", "description": "Prioritize schools, commute, home style, and budget with your advisor." },
+      { "number": "03", "name": "Tour Properties", "description": "Tour on-market and private opportunities that match your criteria." },
+      { "number": "04", "name": "Make an Offer", "description": "Submit a strategic offer with terms designed to win and protect you." },
+      { "number": "05", "name": "Due Diligence", "description": "Inspection, attorney review, and contingency management handled with precision." },
+      { "number": "06", "name": "Close and Move", "description": "Coordinate with all parties to close smoothly and on schedule." }
+    ]
+  },
+  "buyerGuides": {
+    "headline": "Buyer Guide Library",
+    "items": [
+      {
+        "title": "First-Time Home Buyer Guide",
+        "description": "Financing prep, offer strategy, and due-diligence basics for first-time buyers."
+      },
+      {
+        "title": "Newlywed Home Buying Guide",
+        "description": "How to align budget, lifestyle, and long-term planning when buying together."
+      },
+      {
+        "title": "Step-by-Step Buying Guide",
+        "description": "Our complete timeline from pre-approval to closing day."
+      }
+    ],
+    "ctaLabel": "Request Buyer Guides",
+    "ctaHref": "/contact"
+  },
+  "mistakesToAvoid": {
+    "headline": "Common Mistakes to Avoid",
+    "items": [
+      "Touring before financing is fully prepared.",
+      "Focusing only on list price and ignoring total monthly cost.",
+      "Skipping neighborhood and commute due diligence.",
+      "Waiving protections without a clear risk strategy."
+    ]
+  },
+  "financingEducation": {
+    "headline": "Financing Education",
+    "items": [
+      "Pre-qualification vs pre-approval and why it matters.",
+      "Rate buy-downs, points, and payment sensitivity.",
+      "Closing cost planning and reserve strategy.",
+      "How contingencies impact negotiating power."
+    ]
+  },
+  "newToAreaResources": {
+    "headline": "New to the Area Resources",
+    "items": [
+      {
+        "title": "Neighborhood Fit",
+        "description": "Compare schools, commute patterns, and lifestyle trade-offs."
+      },
+      {
+        "title": "Activities and Local Living",
+        "description": "Family activities, dining, parks, and everyday convenience factors."
+      }
+    ]
+  },
+  "vendorTips": {
+    "headline": "Trusted Vendor Connections",
+    "items": [
+      {
+        "title": "Lenders and Mortgage Advisors",
+        "description": "Professionals for conventional, jumbo, and specialized financing paths."
+      },
+      {
+        "title": "Inspectors and Attorneys",
+        "description": "Reliable partners for due diligence and contract-to-close execution."
+      }
+    ]
+  },
+  "faq": {
+    "items": [
+      { "q": "Do I need a buyer's agent?", "a": "In New York, a buyer's agent protects your interests and is typically paid through the transaction structure." },
+      { "q": "How long does buying take?", "a": "From accepted offer to closing, most transactions complete in about 60-90 days." },
+      { "q": "Pre-qualification vs pre-approval?", "a": "Pre-approval is stronger because it includes full lender underwriting review." },
+      { "q": "Can I buy and sell at the same time?", "a": "Yes. We coordinate timing, contingencies, and negotiations for both sides." }
+    ]
+  },
+  "leadCapture": {
+    "sourceTag": "buying-page",
+    "consentText": "By submitting, you agree to be contacted by Panorama Realty about your home search.",
+    "primaryActionLabel": "Find a Buyer's Agent",
+    "primaryActionHref": "/team",
+    "secondaryActionLabel": "Browse Properties",
+    "secondaryActionHref": "/properties"
+  },
+  "showingRequest": {
+    "sourceTag": "buying-showing-request",
+    "headline": "Plan Your Private Showings",
+    "subline": "Tell us your areas and must-haves, and we will coordinate the right tour plan.",
+    "ctaLabel": "Request Showings"
+  },
+  "cta": {
+    "variant": "centered",
+    "headline": "Ready to Start Your Search?",
+    "subline": "Get matched with a local expert who specializes in your goals and price range."
   }
 }

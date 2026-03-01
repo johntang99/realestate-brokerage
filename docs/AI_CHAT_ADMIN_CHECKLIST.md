@@ -36,6 +36,14 @@ Use this checklist after every AI chat update.
   - `list_entities` pass (agents/events/guides)
   - `list_media` pass
 
+## 3.5) Telemetry Report
+
+- Call: `/api/admin/ai-chat/report?siteId=<id>&days=7`
+- Review:
+  - `topFailurePatterns` for recurring tool/path errors
+  - `perTool` failure rates
+  - `recentTrace` for prompt -> resolvedPath -> success/failure
+
 ## 4) Safety Checks
 
 - Deletion requires explicit confirm in tool arguments.
@@ -48,3 +56,6 @@ Use this checklist after every AI chat update.
 - Keep AI modules split by domain (`providers`, `executors`, `api`, `ui`).
 - Avoid large monolithic files and large in-memory payloads.
 - Keep self-test read-only (no write-heavy loops).
+- Verify `ai_chat_preferences` table exists and memory tools work:
+  - `set_preference`
+  - `get_preferences`

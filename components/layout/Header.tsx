@@ -3,7 +3,18 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Phone,
+  MessageSquare,
+  MapPin,
+  Mail,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Youtube,
+} from 'lucide-react';
 import type { Locale } from '@/lib/i18n';
 
 export interface JuliaHeaderConfig {
@@ -34,6 +45,14 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
   const config = headerConfig || {};
   const transparentOnHero = config.transparentOnHero !== false;
   const phone = (siteInfo as any)?.phone as string | undefined;
+  const smsPhone = (siteInfo as any)?.smsPhone as string | undefined;
+  const email = (siteInfo as any)?.email as string | undefined;
+  const address =
+    (siteInfo as any)?.address?.full ||
+    [((siteInfo as any)?.address?.street || ''), ((siteInfo as any)?.address?.city || ''), ((siteInfo as any)?.address?.state || '')]
+      .filter(Boolean)
+      .join(', ');
+  const social = ((siteInfo as any)?.social || {}) as Record<string, string>;
   const navItems = config.navigation || [
     { label: 'Properties', href: '/properties' },
     { label: 'Neighborhoods', href: '/neighborhoods' },
@@ -55,21 +74,121 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
   const isHomeRoute = pathWithoutLocale === '/';
   const allowTransparent = transparentOnHero && isHomeRoute;
   const isSolid = !allowTransparent || scrolled || mobileOpen;
+  const showLanguageSwitcher = config.showLanguageSwitcher !== false;
+  const enHref = `/en${pathWithoutLocale}`;
+  const zhHref = `/zh${pathWithoutLocale}`;
+  const transparentHeaderBackground =
+    'linear-gradient(to bottom, rgba(7, 16, 30, 0.52) 0%, rgba(7, 16, 30, 0.3) 45%, rgba(7, 16, 30, 0) 100%)';
 
   const navLink = `text-sm font-medium transition-colors hover:opacity-70 ${isSolid ? '' : 'text-white'}`;
+  const topbarLinkColor = isSolid ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.9)';
+  const topbarTextColor = isSolid ? 'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.78)';
+  const socialLinks = [
+    { key: 'facebook', href: social.facebook, Icon: Facebook, label: 'Facebook' },
+    { key: 'instagram', href: social.instagram, Icon: Instagram, label: 'Instagram' },
+    { key: 'linkedin', href: social.linkedin, Icon: Linkedin, label: 'LinkedIn' },
+    { key: 'youtube', href: social.youtube, Icon: Youtube, label: 'YouTube' },
+  ].filter((item) => typeof item.href === 'string' && item.href.trim().length > 0);
+  const showTopbar = Boolean(address || email || phone || smsPhone || socialLinks.length > 0);
 
   return (
     <>
       <header
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style={{
-          background: isSolid ? 'white' : 'rgba(15, 23, 42, 0.18)',
-          boxShadow: isSolid ? '0 1px 20px rgba(0,0,0,0.08)' : '0 1px 10px rgba(0,0,0,0.10)',
-          backdropFilter: isSolid ? 'none' : 'blur(6px) saturate(120%)',
-          borderBottom: isSolid ? '1px solid rgba(0,0,0,0.06)' : '1px solid rgba(255,255,255,0.16)',
+          background: isSolid ? 'white' : transparentHeaderBackground,
+          boxShadow: isSolid ? '0 1px 20px rgba(0,0,0,0.08)' : 'none',
+          backdropFilter: 'none',
+          borderBottom: 'none',
         }}
       >
-        <div className="container-custom flex items-center justify-between h-16 md:h-18">
+        {showTopbar && (
+          <div
+            className="hidden lg:block border-b border-white/15"
+            style={{ background: isSolid ? 'var(--primary)' : 'rgba(10, 20, 35, 0.72)' }}
+          >
+            <div className="container-custom h-9 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-4 xl:gap-5 min-w-0">
+                {address ? (
+                  <span className="flex items-center gap-1.5 truncate" style={{ color: topbarTextColor }}>
+                    <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                    <span className="truncate">{address}</span>
+                  </span>
+                ) : null}
+                {email ? (
+                  <a
+                    href={`mailto:${email}`}
+                    className="hidden xl:flex items-center gap-1.5 transition-opacity hover:opacity-75"
+                    style={{ color: topbarLinkColor }}
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    {email}
+                  </a>
+                ) : null}
+                {phone ? (
+                  <a
+                    href={`tel:${phone.replace(/\D/g, '')}`}
+                    className="flex items-center gap-1.5 transition-opacity hover:opacity-75"
+                    style={{ color: topbarLinkColor }}
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    {phone}
+                  </a>
+                ) : null}
+                {smsPhone ? (
+                  <a
+                    href={`sms:${smsPhone.replace(/\D/g, '')}`}
+                    className="flex items-center gap-1.5 transition-opacity hover:opacity-75"
+                    style={{ color: topbarLinkColor }}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    Text
+                  </a>
+                ) : null}
+              </div>
+              <div className="flex items-center gap-3">
+                {socialLinks.length > 0 ? (
+                  <div className="flex items-center gap-2.5">
+                    {socialLinks.map(({ key, href, Icon, label }) => (
+                      <a
+                        key={key}
+                        href={href}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={label}
+                        className="transition-opacity hover:opacity-75"
+                        style={{ color: topbarLinkColor }}
+                      >
+                        <Icon className="w-3.5 h-3.5" />
+                      </a>
+                    ))}
+                  </div>
+                ) : null}
+                {showLanguageSwitcher ? (
+                  <div className="flex items-center gap-1.5 pl-3 border-l border-white/20">
+                    <Link
+                      href={enHref}
+                      className="text-[11px] font-semibold tracking-wide transition-opacity hover:opacity-75"
+                      style={{ color: locale === 'en' ? topbarLinkColor : topbarTextColor }}
+                    >
+                      EN
+                    </Link>
+                    <span style={{ color: topbarTextColor }}>/</span>
+                    <Link
+                      href={zhHref}
+                      className="text-[11px] font-semibold tracking-wide transition-opacity hover:opacity-75"
+                      style={{ color: locale === 'zh' ? topbarLinkColor : topbarTextColor }}
+                    >
+                      中文
+                    </Link>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="container-custom flex items-center justify-between h-16">
 
           {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-3 flex-shrink-0">
@@ -91,7 +210,7 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
             {navItems.map(item => (
               <Link key={item.href} href={`/${locale}${item.href}`}
                 className={navLink}
-                style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', textShadow: isSolid ? 'none' : '0 1px 8px rgba(0,0,0,0.35)' }}>
+                style={{ color: isSolid ? 'var(--primary)' : '#ffffff', textShadow: isSolid ? 'none' : '0 1px 2px rgba(0,0,0,0.45)' }}>
                 {locale === 'zh' ? (item.labelCn || item.label) : item.label}
               </Link>
             ))}
@@ -99,13 +218,6 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
 
           {/* Desktop right */}
           <div className="hidden lg:flex items-center gap-4">
-            {config.showPhone && phone && (
-              <a href={`tel:${phone.replace(/\D/g, '')}`}
-                className="flex items-center gap-1.5 text-sm font-medium transition-colors hover:opacity-70"
-                style={{ color: isSolid ? 'var(--primary)' : 'rgba(255,255,255,0.96)', textShadow: isSolid ? 'none' : '0 1px 8px rgba(0,0,0,0.35)' }}>
-                <Phone className="w-3.5 h-3.5" />{phone}
-              </a>
-            )}
             {cta.href && (
               <Link href={`/${locale}${cta.href}`} className="btn-gold text-xs px-5 py-2.5">
                 {locale === 'zh' ? (cta.labelCn || cta.label) : (cta.label || 'Schedule Consultation')}
@@ -151,6 +263,12 @@ export default function Header({ locale, siteInfo, headerConfig }: HeaderProps) 
             <a href={`tel:${phone.replace(/\D/g, '')}`}
               className="flex items-center gap-2 text-white/70 text-sm font-medium">
               <Phone className="w-4 h-4" />{phone}
+            </a>
+          )}
+          {(siteInfo as any)?.smsPhone && (
+            <a href={`sms:${String((siteInfo as any).smsPhone).replace(/\D/g, '')}`}
+              className="flex items-center gap-2 text-white/70 text-sm font-medium">
+              <MessageSquare className="w-4 h-4" />Text
             </a>
           )}
           {cta.href && (

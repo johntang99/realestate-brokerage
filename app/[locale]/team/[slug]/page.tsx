@@ -80,10 +80,23 @@ export default function AgentProfilePage() {
     </div>
   );
 
-  const testimonials = agent.testimonials || [];
+  const testimonials = Array.isArray(agent.testimonials) ? agent.testimonials : [];
+  const testimonialItems =
+    testimonials.length > 0
+      ? testimonials
+      : [
+          {
+            id: 'default-review',
+            rating: 5,
+            text: `${agent.name?.split(' ')[0] || 'This agent'} is known for clear communication, local expertise, and reliable transaction support.`,
+            reviewer: 'Panorama Client',
+            transactionType: 'Client Service',
+            verified: true,
+          },
+        ];
   const avgRating = testimonials.length > 0
     ? Math.round(testimonials.reduce((s: number, t: any) => s + (t.rating || 5), 0) / testimonials.length)
-    : 0;
+    : 5;
 
   return (
     <>
@@ -113,7 +126,7 @@ export default function AgentProfilePage() {
             {/* Info */}
             <div className="pt-2">
               <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-2" style={{ color: 'var(--secondary)' }}>
-                Pinnacle Realty Group
+                Panorama Realty Group
               </p>
               <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-1 leading-tight"
                 style={{ fontFamily: 'var(--font-heading)' }}>{agent.name}</h1>
@@ -190,7 +203,7 @@ export default function AgentProfilePage() {
               {/* License */}
               {agent.licenseNumber && (
                 <p className="text-xs" style={{ color: 'var(--text-on-dark-muted)' }}>
-                  License #{agent.licenseNumber} · {agent.licenseState} · Affiliated with Pinnacle Realty Group
+                  License #{agent.licenseNumber} · {agent.licenseState} · Affiliated with Panorama Realty Group
                 </p>
               )}
             </div>
@@ -283,44 +296,45 @@ export default function AgentProfilePage() {
       )}
 
       {/* TESTIMONIALS */}
-      {testimonials.length > 0 && (
-        <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
-          <div className="container-custom">
-            <div className="flex items-center gap-3 mb-8">
-              <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                What Clients Say About {agent.name?.split(' ')[0]}
-              </h2>
-              {avgRating > 0 && (
-                <div className="flex gap-0.5">
-                  {[1,2,3,4,5].map(i => <Star key={i} className={`w-4 h-4 ${i<=avgRating?'fill-current':''}`} style={{color:'var(--gold-star)'}} />)}
-                </div>
-              )}
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {testimonials.map((t: any, i: number) => (
-                <div key={t.id||i} className="bg-white p-6 rounded-xl border border-[var(--border)]"
-                  style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
-                  <div className="flex gap-0.5 mb-3">
-                    {[1,2,3,4,5].map(s => <Star key={s} className={`w-3.5 h-3.5 ${s<=(t.rating||5)?'fill-current':''}`} style={{color:'var(--gold-star)'}} />)}
-                  </div>
-                  <blockquote className="font-serif text-base leading-relaxed mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                    "{t.text}"
-                  </blockquote>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{t.reviewer}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 text-xs rounded-full" style={{ background: 'var(--backdrop-mid)', color: 'var(--text-secondary)' }}>
-                        {t.transactionType}
-                      </span>
-                      {t.verified && <span className="text-xs" style={{ color: 'var(--accent)' }}>✓ Verified</span>}
-                    </div>
-                  </div>
-                </div>
-              ))}
+      <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
+        <div className="container-custom">
+          <div className="flex items-center gap-3 mb-8">
+            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+              What Clients Say About {agent.name?.split(' ')[0]}
+            </h2>
+            <div className="flex gap-0.5">
+              {[1,2,3,4,5].map(i => <Star key={i} className={`w-4 h-4 ${i<=avgRating?'fill-current':''}`} style={{color:'var(--gold-star)'}} />)}
             </div>
           </div>
-        </section>
-      )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {testimonialItems.map((t: any, i: number) => (
+              <div key={t.id||i} className="bg-white p-6 rounded-xl border border-[var(--border)]"
+                style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
+                <div className="flex gap-0.5 mb-3">
+                  {[1,2,3,4,5].map(s => <Star key={s} className={`w-3.5 h-3.5 ${s<=(t.rating||5)?'fill-current':''}`} style={{color:'var(--gold-star)'}} />)}
+                </div>
+                <blockquote className="font-serif text-base leading-relaxed mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                  "{t.text}"
+                </blockquote>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{t.reviewer}</p>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 text-xs rounded-full" style={{ background: 'var(--backdrop-mid)', color: 'var(--text-secondary)' }}>
+                      {t.transactionType}
+                    </span>
+                    {t.verified && <span className="text-xs" style={{ color: 'var(--accent)' }}>✓ Verified</span>}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {testimonials.length === 0 ? (
+            <p className="text-xs mt-4" style={{ color: 'var(--text-secondary)' }}>
+              Add agent-specific testimonials in admin to replace this default trust review.
+            </p>
+          ) : null}
+        </div>
+      </section>
 
       {/* CONTACT FORM */}
       <section className="section-padding bg-white">

@@ -19,6 +19,8 @@
     "qa:seo": "node scripts/qa/check-seo.mjs",
     "qa:content": "node scripts/qa/check-content.mjs",
     "qa:bilingual": "node scripts/qa/check-bilingual.mjs",
+    "qa:p3": "node scripts/qa/check-p3-flow.mjs",
+    "qa:p3:writes": "node scripts/qa/check-p3-flow.mjs --with-writes",
     "qa:all": "npm run qa:content && npm run qa:bilingual && npm run qa:routes && npm run qa:seo"
   },
   "dependencies": {

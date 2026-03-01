@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { TrustPromise } from '@/components/sections/TrustPromise';
 import { AgentCard, type AgentData } from '@/components/ui/AgentCard';
 
 const SPECIALTY_OPTIONS = ['Buyers','Sellers','Luxury','Investment','First-Time Buyers','Relocation','Commercial','New Construction','Multifamily','1031 Exchange'];
@@ -71,13 +72,13 @@ export default function TeamPage() {
             {pageData.hero?.headline || 'Meet Our Agents'}
           </h1>
           <p className="text-lg text-white/75 max-w-xl">
-            {pageData.hero?.subline || `A team of ${agents.length} dedicated specialists across Westchester County.`}
+            {pageData.hero?.subline || `A team of ${agents.length} dedicated specialists across Orange County, NY.`}
           </p>
         </div>
       </section>
 
       {/* FILTER BAR */}
-      <section className="sticky top-0 z-30 bg-white border-b border-[var(--border)] shadow-sm">
+      <section className="sticky top-[var(--sticky-filter-top-mobile)] md:top-[var(--sticky-filter-top-desktop)] z-30 bg-white border-b border-[var(--border)] shadow-sm">
         <div className="container-custom py-3">
           {/* Desktop filters */}
           <div className="hidden md:flex items-center gap-3">
@@ -161,6 +162,14 @@ export default function TeamPage() {
         </div>
       </section>
 
+      <TrustPromise
+        locale={locale}
+        title="Why Clients Trust the Panorama Team"
+        body="Every client is backed by a full team with local expertise, clear communication, and practical negotiation support."
+        ctaLabel="Work With Our Team"
+        ctaHref="/contact"
+      />
+
       {/* BROKERAGE TESTIMONIALS */}
       <section className="section-padding bg-white">
         <div className="container-custom max-w-3xl mx-auto text-center">
@@ -168,10 +177,38 @@ export default function TeamPage() {
           <h2 className="font-serif text-2xl font-semibold mb-8" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
             What Clients Say About Our Team
           </h2>
-          <p className="text-sm leading-relaxed mb-8" style={{ color: 'var(--text-secondary)' }}>
-            Our agents' collective expertise, honest counsel, and genuine care for clients is what sets Pinnacle apart. Read their stories.
-          </p>
-          <Link href={`/${locale}/contact`} className="btn-gold inline-block">Work With Our Team</Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 text-left">
+            {(pageData.brokerageTestimonials?.items || [
+              {
+                name: 'Emily Carter',
+                context: 'Goshen Seller',
+                quote: 'Panorama gave us a clear strategy, communicated constantly, and helped us close above asking without surprises.',
+              },
+              {
+                name: 'David Nguyen',
+                context: 'Warwick Buyer',
+                quote: 'In a competitive market, Panorama helped us win the right home with the right terms and zero pressure.',
+              },
+              {
+                name: 'Priya Shah',
+                context: 'Relocating Family',
+                quote: 'Their local guidance on neighborhoods and schools saved us months of trial and error.',
+              },
+            ]).map((item: any, i: number) => (
+              <div key={i} className="p-5 rounded-xl border border-[var(--border)]" style={{ borderRadius: 'var(--effect-card-radius)' }}>
+                <p className="text-sm leading-relaxed mb-3" style={{ color: 'var(--text-secondary)' }}>
+                  "{item.quote}"
+                </p>
+                <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{item.name}</p>
+                {item.context ? (
+                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{item.context}</p>
+                ) : null}
+              </div>
+            ))}
+          </div>
+          <div className="mt-8">
+            <Link href={`/${locale}/contact`} className="btn-gold inline-block">Work With Our Team</Link>
+          </div>
         </div>
       </section>
 
@@ -181,7 +218,7 @@ export default function TeamPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Careers</p>
           <h2 className="font-serif text-2xl font-semibold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>Are You a Real Estate Agent?</h2>
           <p className="text-white/70 text-sm mb-6 max-w-md mx-auto">We're always looking for talented agents to join our growing team.</p>
-          <Link href={`/${locale}/join`} className="btn-gold inline-block">Learn About Joining Pinnacle</Link>
+          <Link href={`/${locale}/join`} className="btn-gold inline-block">Learn About Joining Panorama</Link>
         </div>
       </section>
     </>

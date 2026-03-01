@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Award, Heart, Shield, MapPin } from 'lucide-react';
 import { AgentCard, type AgentData } from '@/components/ui/AgentCard';
+import { TrustPromise } from '@/components/sections/TrustPromise';
 
 const ICON_MAP: Record<string, React.ElementType> = { Heart, Shield, MapPin, Award };
 
@@ -46,7 +47,7 @@ export default function AboutPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>About Us</p>
           <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3 max-w-2xl leading-tight"
             style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-            {d.hero?.headline || 'About Pinnacle Realty Group'}
+            {d.hero?.headline || 'About Panorama Realty Group'}
           </h1>
           <p className="text-lg text-white/75 max-w-xl">{d.hero?.subline}</p>
         </div>
@@ -109,6 +110,40 @@ export default function AboutPage() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <TrustPromise
+        locale={locale}
+        title="Why Clients Trust Panorama's Advice"
+        body="Our recommendations are grounded in local market reality, not sales pressure. We focus on clarity, accountability, and long-term outcomes."
+        ctaLabel="Start With a Consultation"
+        ctaHref="/contact"
+      />
+
+      {/* 3B. DIFFERENTIATORS */}
+      {d.differentiators?.items?.length > 0 && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            <div className="text-center mb-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Why Choose Us</p>
+              <h2 className="font-serif text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                {d.differentiators.headline || 'Our Differentiators'}
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+              {d.differentiators.items.map((item: any, i: number) => (
+                <div key={i} className="p-6 rounded-xl border border-[var(--border)]" style={{ borderRadius: 'var(--effect-card-radius)' }}>
+                  <h3 className="font-serif text-xl font-semibold mb-2" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    {item.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                    {item.description}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
         </section>

@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
 
   for (const step of [
     { tool: 'list_pages', args: {} },
+    { tool: 'list_variant_options', args: { section: 'hero' } },
     { tool: 'get_site_settings', args: {} },
     { tool: 'list_entities', args: { entity_type: 'agents' } },
     { tool: 'list_entities', args: { entity_type: 'events' } },

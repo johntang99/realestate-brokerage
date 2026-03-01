@@ -14,6 +14,7 @@ import {
   BookOpen,
   Hammer,
   Calendar,
+  CalendarCheck2,
   Download,
   UserCircle,
   Globe,
@@ -35,6 +36,7 @@ const brokerAdminNav = [
   { name: 'New Construction', href: '/admin/new-construction', icon: Hammer },
   { name: 'Events', href: '/admin/events', icon: Calendar },
   { name: 'Guides', href: '/admin/guides', icon: Download },
+  { name: 'Showing Requests', href: '/admin/showing-requests', icon: CalendarCheck2 },
   { name: 'Media', href: '/admin/media', icon: Image },
   { name: 'Variants', href: '/admin/variants', icon: Layers },
   { name: 'Users', href: '/admin/users', icon: Users },
@@ -84,7 +86,7 @@ export async function AdminSidebar() {
       {role === 'agent' && (
         <div className="px-4 py-4 border-t border-gray-100">
           <p className="text-xs text-gray-400 text-center">
-            Pinnacle Realty Group<br />Agent Portal
+            Panorama Realty Group<br />Agent Portal
           </p>
         </div>
       )}

@@ -28,8 +28,8 @@ const DEFAULT_FAQ = {
     { q: 'Can international buyers purchase property in Westchester?', a: 'Yes — foreigners can purchase US real estate. Requirements differ for financing. We can connect you with lenders and attorneys experienced in international transactions.' },
   ],
   'Joining the Team': [
-    { q: 'Is Pinnacle hiring new agents?', a: 'We\'re always evaluating qualified candidates. Fill out the form on our Join page and our broker will be in touch.' },
-    { q: 'What makes Pinnacle different from a franchise?', a: 'Independent model, personal mentorship, competitive splits, real marketing support, and a culture where agents are treated as professionals — not numbers.' },
+    { q: 'Is Panorama hiring new agents?', a: 'We\'re always evaluating qualified candidates. Fill out the form on our Join page and our broker will be in touch.' },
+    { q: 'What makes Panorama different from a franchise?', a: 'Independent model, personal mentorship, competitive splits, real marketing support, and a culture where agents are treated as professionals — not numbers.' },
   ],
 };
 

@@ -7,6 +7,8 @@ import { getRequestSiteId, loadContent, loadFooter, loadSeo, loadTheme, loadSite
 import type { SeoConfig, SiteInfo } from '@/lib/types';
 import Header, { type JuliaHeaderConfig } from '@/components/layout/Header';
 import Footer, { type JuliaFooterData } from '@/components/layout/Footer';
+import { PersistentContactCtas } from '@/components/layout/PersistentContactCtas';
+import { ChatWidgetLoader } from '@/components/layout/ChatWidgetLoader';
 import { getBaseUrlFromHost } from '@/lib/seo';
 
 const cormorant = Cormorant_Garamond({
@@ -154,7 +156,19 @@ export default async function LocaleLayout({
           siteInfo={siteInfo as Record<string, unknown> | null}
           headerConfig={headerConfig}
         />
-        <main className="flex-grow">{children}</main>
+        <main className="flex-grow pb-16 md:pb-0">{children}</main>
+        <PersistentContactCtas
+          locale={locale}
+          phone={(siteInfo as any)?.phone}
+          smsPhone={(siteInfo as any)?.smsPhone}
+          ctaHref={(headerConfig as any)?.ctaButton?.href || '/contact'}
+          ctaLabel={(headerConfig as any)?.ctaButton?.label || 'Schedule Consultation'}
+        />
+        <ChatWidgetLoader
+          siteId={site.id}
+          locale={locale}
+          chatWidget={(siteInfo as any)?.chatWidget || null}
+        />
         <Footer
           locale={locale as Locale}
           siteId={site.id}

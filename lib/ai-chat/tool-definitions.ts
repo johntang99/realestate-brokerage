@@ -36,6 +36,17 @@ export const allTools: ToolSchema[] = [
     },
   },
   {
+    name: 'list_variant_options',
+    description: 'List available variant IDs for a section (hero, cta, testimonials, services) or all.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        section: { type: 'string', description: "Section name, e.g. 'hero' or 'all'" },
+      },
+      required: [],
+    },
+  },
+  {
     name: 'update_page_field',
     description: 'Update one field in a page JSON using dot-path notation.',
     input_schema: {
@@ -230,6 +241,23 @@ export const allTools: ToolSchema[] = [
       type: 'object',
       properties: { search: { type: 'string' } },
       required: ['search'],
+    },
+  },
+  {
+    name: 'get_preferences',
+    description: 'Get stored AI assistant preferences for current site and locale.',
+    input_schema: { type: 'object', properties: {}, required: [] },
+  },
+  {
+    name: 'set_preference',
+    description: 'Set one AI assistant preference for current site and locale.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        key: { type: 'string' },
+        value: {},
+      },
+      required: ['key', 'value'],
     },
   },
 ];

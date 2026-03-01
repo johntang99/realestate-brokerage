@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
+import { trackLeadEvent } from '@/lib/leads/client';
+import { TrustPromise } from '@/components/sections/TrustPromise';
 
 export default function RelocatingPage() {
   const [d, setD] = useState<any>({});
@@ -26,7 +28,23 @@ export default function RelocatingPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch('/api/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ...form, category:'relocate', locale }) }).catch(()=>{});
+    const siteId = process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template';
+    const source = d.leadCapture?.sourceTag || 'relocating-page';
+    await trackLeadEvent({ siteId, locale, eventName: 'form_submit', source, pagePath: `/${locale}/relocating` });
+    await fetch('/api/contact', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        ...form,
+        category:'relocate',
+        locale,
+        siteId,
+        source,
+        pagePath: `/${locale}/relocating`,
+        consentAccepted: true,
+        consentText: d.leadCapture?.consentText || '',
+      }),
+    }).catch(()=>{});
     setSubmitted(true);
   };
 
@@ -37,12 +55,26 @@ export default function RelocatingPage() {
     { name: 'Ardsley High School', district: 'Ardsley UFSD', grades: '9–12', rating: '9/10' },
     { name: 'Mamaroneck High School', district: 'Mamaroneck UFSD', grades: '9–12', rating: '9/10' },
   ];
+  const heroEyebrow = d.hero?.eyebrow || 'Relocating';
+  const areaFacts = d.areaFacts?.items || [
+    { label: 'Distance to Midtown NYC', value: '16–45 min', note: 'Via Metro-North' },
+    { label: 'County Population', value: '1M+', note: 'Westchester County' },
+    { label: 'Top-Ranked School Districts', value: '10+', note: 'Nationally recognized' },
+    { label: 'Median Household Income', value: '$110K+', note: 'Above national avg' },
+  ];
+  const schools = d.schools?.items || SCHOOLS;
+  const relocationRoadmap = d.relocationRoadmap?.steps || [];
+  const costOfLivingGuide = d.costOfLivingGuide?.items || [];
+  const relocationResources = d.relocationResources?.items || [];
+  const newcomerGuide = d.newcomerGuide || {};
+  const leadCapture = d.leadCapture || {};
+  const cta = d.cta || {};
 
   return (
     <>
       <section className="relative pt-20" style={{ minHeight: '50vh', background: 'var(--primary)' }}>
         <div className="container-custom pt-14 pb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Relocating</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{heroEyebrow}</p>
           <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
             {d.hero?.headline || 'Welcome to Westchester County. We Know This Place.'}
           </h1>
@@ -91,12 +123,7 @@ export default function RelocatingPage() {
             <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Area Quick Facts</h2>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {[
-              { label: 'Distance to Midtown NYC', value: '16–45 min', note: 'Via Metro-North' },
-              { label: 'County Population', value: '1M+', note: 'Westchester County' },
-              { label: 'Top-Ranked School Districts', value: '10+', note: 'Nationally recognized' },
-              { label: 'Median Household Income', value: '$110K+', note: 'Above national avg' },
-            ].map((f, i) => (
+            {areaFacts.map((f: any, i: number) => (
               <div key={i} className="bg-white p-5 rounded-xl border border-[var(--border)] text-center"
                 style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
                 <p className="font-serif text-2xl font-bold mb-1" style={{ fontFamily: 'var(--font-heading)', color: 'var(--secondary)' }}>{f.value}</p>
@@ -108,13 +135,21 @@ export default function RelocatingPage() {
         </div>
       </section>
 
+      <TrustPromise
+        locale={locale}
+        title="Why Relocating Families Trust Panorama"
+        body="We pair neighborhood-level insight with practical relocation planning, so your move is coordinated, informed, and less overwhelming."
+        ctaLabel="Schedule Relocation Help"
+        ctaHref="/contact"
+      />
+
       {/* SCHOOLS */}
       <section className="section-padding bg-white">
         <div className="container-custom">
           <div className="text-center mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Education</p>
-            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Top School Districts</h2>
-            <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>Westchester is home to some of New York's highest-rated public schools.</p>
+            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>{d.schools?.title || 'Top School Districts'}</h2>
+            <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{d.schools?.subline || "Westchester is home to some of New York's highest-rated public schools."}</p>
           </div>
           <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
             <table className="w-full text-sm">
@@ -127,7 +162,7 @@ export default function RelocatingPage() {
                 </tr>
               </thead>
               <tbody>
-                {SCHOOLS.map((s, i) => (
+                {schools.map((s: any, i: number) => (
                   <tr key={i} className={i%2===0?'bg-white':'bg-gray-50'}>
                     <td className="px-4 py-3 font-medium" style={{ color: 'var(--primary)' }}>{s.name}</td>
                     <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>{s.district}</td>
@@ -142,12 +177,81 @@ export default function RelocatingPage() {
         </div>
       </section>
 
+      {(relocationRoadmap.length > 0 || costOfLivingGuide.length > 0 || relocationResources.length > 0) && (
+        <section className="section-padding bg-white">
+          <div className="container-custom">
+            {relocationRoadmap.length > 0 && (
+              <div className="mb-10">
+                <h2 className="font-serif text-2xl font-semibold mb-5" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                  {d.relocationRoadmap?.headline || 'Relocation Roadmap'}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                  {relocationRoadmap.map((step: any, i: number) => (
+                    <div key={i} className="p-4 rounded-xl border border-[var(--border)]" style={{ borderRadius: 'var(--effect-card-radius)' }}>
+                      <p className="text-xs font-semibold mb-2" style={{ color: 'var(--secondary)' }}>{String(i + 1).padStart(2, '0')}</p>
+                      <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--primary)' }}>{step.title}</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{step.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {costOfLivingGuide.length > 0 && (
+                <div>
+                  <h3 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    {d.costOfLivingGuide?.headline || 'Cost of Living Guide'}
+                  </h3>
+                  <div className="space-y-3">
+                    {costOfLivingGuide.map((item: any, i: number) => (
+                      <div key={i} className="p-4 rounded-lg border border-[var(--border)]">
+                        <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{item.title}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {relocationResources.length > 0 && (
+                <div>
+                  <h3 className="font-serif text-xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+                    {d.relocationResources?.headline || 'Relocation Resources'}
+                  </h3>
+                  <div className="space-y-3">
+                    {relocationResources.map((item: any, i: number) => (
+                      <div key={i} className="p-4 rounded-lg border border-[var(--border)]">
+                        <p className="text-sm font-semibold" style={{ color: 'var(--primary)' }}>{item.title}</p>
+                        <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {newcomerGuide.headline ? (
+        <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
+          <div className="container-custom max-w-3xl text-center">
+            <h2 className="font-serif text-3xl font-semibold mb-3" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
+              {newcomerGuide.headline}
+            </h2>
+            <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>{newcomerGuide.subline}</p>
+            <Link href={`/${locale}${newcomerGuide.ctaHref || '/contact'}`} className="btn-gold inline-flex items-center gap-2 px-7 py-3">
+              {newcomerGuide.ctaLabel || 'Get Relocation Guide'} <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
       {/* RELOCATION FORM */}
       <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
         <div className="container-custom max-w-2xl">
           <div className="text-center mb-8">
-            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>Moving to Westchester?</h2>
-            <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>Let's find the right neighborhood for your family.</p>
+            <h2 className="font-serif text-2xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>{leadCapture.headline || 'Moving to Westchester?'}</h2>
+            <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{leadCapture.subline || "Let's find the right neighborhood for your family."}</p>
           </div>
           {submitted ? (
             <div className="text-center py-6 bg-white rounded-2xl border border-[var(--border)]" style={{ borderRadius: 'var(--effect-card-radius)' }}>
@@ -156,18 +260,30 @@ export default function RelocatingPage() {
           ) : (
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl border border-[var(--border)] space-y-4"
               style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input required value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} placeholder="Full Name" className="calc-input" />
                 <input required type="email" value={form.email} onChange={e=>setForm(f=>({...f,email:e.target.value}))} placeholder="Email" className="calc-input" />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input value={form.phone} onChange={e=>setForm(f=>({...f,phone:e.target.value}))} placeholder="Phone (optional)" className="calc-input" />
                 <input value={form.movingFrom} onChange={e=>setForm(f=>({...f,movingFrom:e.target.value}))} placeholder="Moving from (city/country)" className="calc-input" />
               </div>
               <textarea value={form.message} onChange={e=>setForm(f=>({...f,message:e.target.value}))} placeholder="Tell us about your family's priorities — schools, commute, lifestyle…" className="calc-input w-full min-h-[80px]" />
               <button type="submit" className="btn-gold w-full py-3.5">Schedule a Relocation Consultation</button>
+              {leadCapture.consentText ? <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{leadCapture.consentText}</p> : null}
             </form>
           )}
+        </div>
+      </section>
+      <section className="py-16" style={{ background: 'var(--primary)' }}>
+        <div className="container-custom text-center">
+          <h2 className="font-serif text-3xl font-semibold text-white mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
+            {cta.headline || 'Plan Your Move With Confidence'}
+          </h2>
+          <p className="text-white/70 mb-7 max-w-md mx-auto">{cta.subline || 'Talk with a relocation specialist who understands your priorities.'}</p>
+          <Link href={`/${locale}${cta.primaryActionHref || '/contact'}`} className="btn-gold inline-block px-8 py-3.5">
+            {cta.primaryActionLabel || 'Schedule a Relocation Consultation'}
+          </Link>
         </div>
       </section>
     </>

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Star, Search, Bed, Bath, Maximize2, MapPin, Phone } from 'lucide-react';
 import { GoalEntryPaths } from '@/components/sections/GoalEntryPaths';
+import { TrustPromise } from '@/components/sections/TrustPromise';
 import { AgentCard, type AgentData } from '@/components/ui/AgentCard';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -33,17 +34,28 @@ interface HomeData {
   neighborhoodSpotlight?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string; neighborhoodSlugs?: string[] }
   marketReportTeaser?: { headline?: string; subline?: string; keyStat?: string; ctaLabel?: string; ctaHref?: string }
   knowledgeCenterPreview?: { headline?: string; ctaLabel?: string; ctaHref?: string; postSlugs?: string[] }
-  consultationCta?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string; backgroundImage?: string }
+  consultationCta?: {
+    headline?: string;
+    subline?: string;
+    ctaLabel?: string;
+    ctaHref?: string;
+    backgroundImage?: string;
+    reviewQuote?: { text?: string; author?: string; source?: string };
+  }
   contactForm?: { headline?: string; subline?: string }
   featuredListings?: { headline?: string; subline?: string; ctaLabel?: string; ctaHref?: string; maxDisplay?: number; propertySlugs?: string[] }
 }
 
 // ── Status helpers ─────────────────────────────────────────────────────────────
 const STATUS_BADGE: Record<string,string> = { 'active':'bg-[var(--status-active)]', 'pending':'bg-[var(--status-pending)]', 'sold':'bg-[var(--status-sold)]', 'for-lease':'bg-[var(--status-lease)]', 'coming-soon':'bg-[var(--status-coming-soon)]' };
-const STATUS_LABEL: Record<string,string> = { 'active':'For Sale', 'pending':'Pending', 'sold':'Sold', 'for-lease':'For Lease', 'coming-soon':'Coming Soon' };
+const STATUS_LABELS: Record<string, Record<string, string>> = {
+  en: { 'active':'For Sale', 'pending':'Pending', 'sold':'Sold', 'for-lease':'For Lease', 'coming-soon':'Coming Soon' },
+  zh: { 'active':'在售', 'pending':'待定', 'sold':'已售', 'for-lease':'出租', 'coming-soon':'即将上市' },
+};
 
 // ── Property Card ──────────────────────────────────────────────────────────────
 function PropertyCard({ p, locale }: { p: Property; locale: string }) {
+  const statusLabels = locale === 'zh' ? STATUS_LABELS.zh : STATUS_LABELS.en;
   return (
     <Link href={`/${locale}/properties/${p.slug}`} className="group block bg-white border border-[var(--border)] hover:border-[var(--secondary)] transition-all"
       style={{ borderRadius: 'var(--effect-card-radius)', boxShadow: 'var(--effect-card-shadow)' }}>
@@ -54,7 +66,7 @@ function PropertyCard({ p, locale }: { p: Property; locale: string }) {
         <div className="absolute top-3 left-3">
           <span className={`px-2 py-1 text-xs font-semibold text-white rounded ${STATUS_BADGE[p.status||'']||'bg-gray-500'}`}
             style={{ borderRadius: 'var(--effect-badge-radius)' }}>
-            {STATUS_LABEL[p.status||''] || p.status}
+            {statusLabels[p.status||''] || p.status}
           </span>
         </div>
       </div>
@@ -144,10 +156,10 @@ function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, lo
       {/* Content panel */}
       <div className="relative z-10 w-full pb-24 md:pb-32 pl-4 sm:pl-8 md:pl-12 lg:pl-16">
         <div className="max-w-2xl rounded-sm px-6 py-6 md:px-8 md:py-8" style={{ background: 'rgba(26,39,68,0.12)', boxShadow: '0 10px 30px rgba(0,0,0,0.18)' }}>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Pinnacle Realty Group</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Panorama Realty Group</p>
           <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-semibold text-white mb-4 leading-tight"
             style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 10px rgba(0,0,0,0.35)' }}>
-            {headline || 'Find Your Home in Westchester County'}
+            {headline || 'Find Your Home in Orange County, NY'}
           </h1>
           <p className="text-lg text-white/85 mb-7 max-w-xl" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.28)' }}>
             {subline}
@@ -171,7 +183,7 @@ function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, lo
       {/* Scroll indicator */}
       <div className="absolute bottom-8 right-8 z-20 flex flex-col items-center gap-1.5">
         <div className="w-px h-10 bg-white/40" />
-        <span className="text-white/50 text-[10px] rotate-90 tracking-widest">SCROLL</span>
+        <span className="text-white/50 text-[10px] rotate-90 tracking-widest">{locale === 'zh' ? '下滑' : 'SCROLL'}</span>
       </div>
     </section>
   );
@@ -179,6 +191,25 @@ function HeroSlideshow({ slides, headline, subline, ctaPrimary, ctaSecondary, lo
 
 // ── Contact Form ───────────────────────────────────────────────────────────────
 function InlineContactForm({ locale, headline, subline }: { locale: string; headline?: string; subline?: string }) {
+  const isZh = locale === 'zh';
+  const copy = {
+    thankYou: isZh ? '谢谢您！' : 'Thank you!',
+    followup: isZh ? '我们会在 2 个工作小时内与您联系。' : "We'll be in touch within 2 business hours.",
+    firstName: isZh ? '名' : 'First Name',
+    lastName: isZh ? '姓' : 'Last Name',
+    email: isZh ? '邮箱地址' : 'Email Address',
+    phone: isZh ? '电话（可选）' : 'Phone (optional)',
+    categoryPrompt: isZh ? '请告诉我们您的需求' : 'How can we help?',
+    buy: isZh ? '我想买房' : 'I want to buy',
+    sell: isZh ? '我想卖房' : 'I want to sell',
+    invest: isZh ? '我是投资者' : "I'm an investor",
+    relocate: isZh ? '我正在搬迁' : "I'm relocating",
+    join: isZh ? '我想加入你们团队' : "I'm interested in joining your team",
+    other: isZh ? '其他' : 'Other',
+    message: isZh ? '留言（可选）' : 'Message (optional)',
+    sending: isZh ? '发送中…' : 'Sending…',
+    send: isZh ? '发送消息' : 'Send Message',
+  };
   const [form, setForm] = useState({ firstName:'', lastName:'', email:'', phone:'', category:'', message:'' });
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -199,33 +230,33 @@ function InlineContactForm({ locale, headline, subline }: { locale: string; head
 
   if (done) return (
     <div className="text-center py-8">
-      <p className="text-lg font-semibold" style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)' }}>Thank you!</p>
-      <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>We'll be in touch within 2 business hours.</p>
+      <p className="text-lg font-semibold" style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)' }}>{copy.thankYou}</p>
+      <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>{copy.followup}</p>
     </div>
   );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input required value={form.firstName} onChange={e => setForm(f => ({...f, firstName: e.target.value}))} placeholder="First Name" className="calc-input" />
-        <input required value={form.lastName} onChange={e => setForm(f => ({...f, lastName: e.target.value}))} placeholder="Last Name" className="calc-input" />
+        <input required value={form.firstName} onChange={e => setForm(f => ({...f, firstName: e.target.value}))} placeholder={copy.firstName} className="calc-input" />
+        <input required value={form.lastName} onChange={e => setForm(f => ({...f, lastName: e.target.value}))} placeholder={copy.lastName} className="calc-input" />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input required type="email" value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))} placeholder="Email Address" className="calc-input" />
-        <input value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))} placeholder="Phone (optional)" className="calc-input" />
+        <input required type="email" value={form.email} onChange={e => setForm(f => ({...f, email: e.target.value}))} placeholder={copy.email} className="calc-input" />
+        <input value={form.phone} onChange={e => setForm(f => ({...f, phone: e.target.value}))} placeholder={copy.phone} className="calc-input" />
       </div>
       <select value={form.category} onChange={e => setForm(f => ({...f, category: e.target.value}))} className="calc-input w-full">
-        <option value="">How can we help?</option>
-        <option value="buy">I want to buy</option>
-        <option value="sell">I want to sell</option>
-        <option value="invest">I'm an investor</option>
-        <option value="relocate">I'm relocating</option>
-        <option value="join">I'm interested in joining your team</option>
-        <option value="other">Other</option>
+        <option value="">{copy.categoryPrompt}</option>
+        <option value="buy">{copy.buy}</option>
+        <option value="sell">{copy.sell}</option>
+        <option value="invest">{copy.invest}</option>
+        <option value="relocate">{copy.relocate}</option>
+        <option value="join">{copy.join}</option>
+        <option value="other">{copy.other}</option>
       </select>
-      <textarea value={form.message} onChange={e => setForm(f => ({...f, message: e.target.value}))} placeholder="Message (optional)" className="calc-input w-full min-h-[100px]" />
+      <textarea value={form.message} onChange={e => setForm(f => ({...f, message: e.target.value}))} placeholder={copy.message} className="calc-input w-full min-h-[100px]" />
       <button type="submit" disabled={submitting} className="btn-gold w-full py-3.5 font-semibold">
-        {submitting ? 'Sending…' : 'Send Message'}
+        {submitting ? copy.sending : copy.send}
       </button>
     </form>
   );
@@ -243,6 +274,48 @@ export default function HomePage() {
   const [locale, setLocale] = useState('en');
   const [loading, setLoading] = useState(true);
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const isZh = locale === 'zh';
+  const ui = {
+    loading: isZh ? '加载中…' : 'Loading…',
+    fallbackHeroTitle: isZh ? '在 Orange County, NY 找到理想之家' : 'Find Your Home in Orange County, NY',
+    searchProperties: isZh ? '搜索房源' : 'Search Properties',
+    freeConsultation: isZh ? '免费咨询' : 'Free Consultation',
+    goalPathsHeadline: isZh ? '我们如何帮助您？' : 'How Can We Help You?',
+    ourStoryTag: isZh ? '我们的故事' : 'Our Story',
+    introFallbackHeadline: isZh ? '以专业与信任为核心的精品地产团队' : 'An Independent Brokerage Built on Expertise',
+    listingsTag: isZh ? '房源推荐' : 'Listings',
+    featuredListingsFallbackHeadline: isZh ? '精选房源' : 'Featured Properties',
+    viewAll: isZh ? '查看全部' : 'View All',
+    whyPanoramaTag: isZh ? '为什么选择 Panorama' : 'Why Panorama',
+    whyPanoramaFallbackHeadline: isZh ? '为什么选择 Panorama Realty Group' : 'Why Choose Panorama Realty Group',
+    ourAgentsTag: isZh ? '经纪人团队' : 'Our Agents',
+    meetOurAgents: isZh ? '认识我们的经纪人' : 'Meet Our Agents',
+    meetFullTeam: isZh ? '查看完整团队' : 'Meet the Full Team',
+    testimonialFallbackHeadline: isZh ? '客户怎么说' : 'What Our Clients Say',
+    localExpertiseTag: isZh ? '本地洞察' : 'Local Expertise',
+    exploreNeighborhoods: isZh ? '探索社区' : 'Explore Neighborhoods',
+    allNeighborhoods: isZh ? '全部社区' : 'All Neighborhoods',
+    median: isZh ? '中位价' : 'Median',
+    marketReport: isZh ? '市场报告' : 'Market Report',
+    marketReportFallbackSubline: isZh ? 'Orange County, NY — 最新更新' : 'Orange County, NY — Latest Update',
+    readFullReport: isZh ? '阅读完整报告' : 'Read Full Report',
+    mlsSearchTag: isZh ? 'MLS 搜索' : 'MLS Search',
+    mlsSearchHeadline: isZh ? '搜索全部在售房源' : 'Search All Available Homes',
+    mlsSearchBody: isZh ? '浏览 Orange County, NY 及周边区域 MLS 数据库中的全部房源。' : 'Browse the complete MLS database for Orange County, NY and surrounding areas.',
+    browseAllProperties: isZh ? '浏览全部房源' : 'Browse All Properties',
+    listingCountSuffix: isZh ? '套房源可浏览' : 'listings currently available',
+    mlsUpdated: isZh ? 'MLS 数据持续更新' : 'Updated regularly from MLS',
+    insightsTag: isZh ? '洞察' : 'Insights',
+    knowledgeFallbackHeadline: isZh ? '知识中心精选' : 'From Our Knowledge Center',
+    allPosts: isZh ? '全部文章' : 'All Posts',
+    getStartedTag: isZh ? '立即开始' : 'Get Started',
+    consultationFallbackHeadline: isZh ? '准备好迈出下一步了吗？' : 'Ready to Take the Next Step?',
+    consultationFallbackSubline: isZh ? '我们的团队已准备就绪，欢迎预约免费咨询。' : 'Our team is ready to help. Schedule your free consultation today.',
+    scheduleConsultation: isZh ? '预约咨询' : 'Schedule Consultation',
+    reviewAuthorFallback: isZh ? '客户' : 'Client',
+    contactUsTag: isZh ? '联系我们' : 'Contact Us',
+    getInTouch: isZh ? '联系咨询' : 'Get in Touch',
+  };
 
   useEffect(() => {
     const loc = window.location.pathname.startsWith('/zh') ? 'zh' : 'en';
@@ -310,7 +383,7 @@ export default function HomePage() {
     <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--backdrop-light)' }}>
       <div className="text-center">
         <div className="w-10 h-10 border-2 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: 'var(--secondary)', borderTopColor: 'transparent' }} />
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading…</p>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{ui.loading}</p>
       </div>
     </div>
   );
@@ -326,19 +399,21 @@ export default function HomePage() {
         <section className="relative min-h-[70vh] flex items-end" style={{ background: 'var(--primary)' }}>
           <div className="relative z-10 w-full pb-20 pl-8 md:pl-16">
             <h1 className="font-serif text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-              {h.hero?.headline || 'Find Your Home in Westchester County'}
+              {h.hero?.headline || ui.fallbackHeroTitle}
             </h1>
             <p className="text-lg text-white/80 mb-7 max-w-xl">{h.hero?.subline}</p>
             <div className="flex gap-3">
-              <Link href={`/${locale}/properties`} className="btn-gold px-7 py-3">Search Properties</Link>
-              <Link href={`/${locale}/contact`} className="border-2 border-white text-white px-7 py-3 hover:bg-white/10 transition-colors" style={{ borderRadius: 'var(--effect-button-radius)' }}>Free Consultation</Link>
+              <Link href={`/${locale}/properties`} className="btn-gold px-7 py-3">{ui.searchProperties}</Link>
+              <Link href={`/${locale}/contact`} className="border-2 border-white text-white px-7 py-3 hover:bg-white/10 transition-colors" style={{ borderRadius: 'var(--effect-button-radius)' }}>{ui.freeConsultation}</Link>
             </div>
           </div>
         </section>
       )}
 
       {/* 2. GOAL ENTRY PATHS */}
-      <GoalEntryPaths headline={h.goalPaths?.headline || 'How Can We Help You?'} items={h.goalPaths?.items} locale={locale} />
+      <GoalEntryPaths headline={h.goalPaths?.headline || ui.goalPathsHeadline} items={h.goalPaths?.items} locale={locale} />
+
+      <TrustPromise locale={locale} />
 
       {/* 3. STATS BAR */}
       <section className="py-14" style={{ background: 'var(--backdrop-dark)' }}>
@@ -355,20 +430,20 @@ export default function HomePage() {
           <div className="container-custom">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-4" style={{ color: 'var(--secondary)' }}>Our Story</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-4" style={{ color: 'var(--secondary)' }}>{ui.ourStoryTag}</p>
                 <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-6" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                  {h.intro.headline || 'An Independent Brokerage Built on Expertise'}
+                  {h.intro.headline || ui.introFallbackHeadline}
                 </h2>
                 <p className="text-base leading-relaxed mb-7" style={{ color: 'var(--text-secondary)', lineHeight: '1.85' }}>{h.intro.body}</p>
                 {h.intro.ctaHref && (
                   <Link href={`/${locale}${h.intro.ctaHref}`} className="inline-flex items-center gap-2 font-semibold group" style={{ color: 'var(--secondary)' }}>
-                    {h.intro.ctaLabel || 'Our Story'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    {h.intro.ctaLabel || ui.ourStoryTag} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 )}
               </div>
               <div className="relative aspect-[4/3] rounded-xl overflow-hidden" style={{ boxShadow: 'var(--photo-shadow)' }}>
                 {h.intro.image
-                  ? <Image src={h.intro.image} alt="Pinnacle Realty Group" fill className="object-cover" sizes="50vw" />
+                  ? <Image src={h.intro.image} alt="Panorama Realty Group" fill className="object-cover" sizes="50vw" />
                   : <div className="w-full h-full" style={{ background: 'var(--backdrop-mid)' }} />}
               </div>
             </div>
@@ -382,15 +457,15 @@ export default function HomePage() {
           <div className="container-custom">
             <div className="flex items-end justify-between mb-8">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Listings</p>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>{ui.listingsTag}</p>
                 <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                  {h.featuredListings?.headline || 'Featured Properties'}
+                  {h.featuredListings?.headline || ui.featuredListingsFallbackHeadline}
                 </h2>
                 {h.featuredListings?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.featuredListings.subline}</p>}
               </div>
               <Link href={`/${locale}${h.featuredListings?.ctaHref || '/properties'}`}
                 className="hidden md:flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
-                {h.featuredListings?.ctaLabel || 'View All'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {h.featuredListings?.ctaLabel || ui.viewAll} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -405,9 +480,9 @@ export default function HomePage() {
         <section className="section-padding bg-white">
           <div className="container-custom">
             <div className="text-center mb-12">
-              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Why Pinnacle</p>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>{ui.whyPanoramaTag}</p>
               <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                {h.whyChooseUs.headline || 'Why Choose Pinnacle Realty Group'}
+                {h.whyChooseUs.headline || ui.whyPanoramaFallbackHeadline}
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -431,22 +506,22 @@ export default function HomePage() {
           <div className="container-custom">
             <div className="flex items-end justify-between mb-8">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Our Agents</p>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>{ui.ourAgentsTag}</p>
                 <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                  {h.teamPreview?.headline || 'Meet Our Agents'}
+                  {h.teamPreview?.headline || ui.meetOurAgents}
                 </h2>
                 {h.teamPreview?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.teamPreview.subline}</p>}
               </div>
               <Link href={`/${locale}${h.teamPreview?.ctaHref || '/team'}`}
                 className="hidden md:flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
-                {h.teamPreview?.ctaLabel || 'Meet the Full Team'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {h.teamPreview?.ctaLabel || ui.meetFullTeam} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {previewAgents.map(agent => <AgentCard key={agent.slug} agent={agent} locale={locale} variant="detailed" />)}
             </div>
             <div className="text-center mt-8 md:hidden">
-              <Link href={`/${locale}/team`} className="btn-gold inline-block">{h.teamPreview?.ctaLabel || 'Meet the Full Team'}</Link>
+              <Link href={`/${locale}/team`} className="btn-gold inline-block">{h.teamPreview?.ctaLabel || ui.meetFullTeam}</Link>
             </div>
           </div>
         </section>
@@ -457,7 +532,7 @@ export default function HomePage() {
         <section className="py-20 overflow-hidden" style={{ background: 'var(--primary)' }}>
           <div className="container-custom max-w-4xl mx-auto">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-8 text-center" style={{ color: 'var(--secondary)' }}>
-              {h.testimonialStrip?.headline || 'What Our Clients Say'}
+              {h.testimonialStrip?.headline || ui.testimonialFallbackHeadline}
             </p>
             <div className="relative min-h-[200px]">
               {stripTests.map((t, i) => (
@@ -492,15 +567,15 @@ export default function HomePage() {
           <div className="container-custom">
             <div className="flex items-end justify-between mb-8">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Local Expertise</p>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>{ui.localExpertiseTag}</p>
                 <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                  {h.neighborhoodSpotlight?.headline || 'Explore Neighborhoods'}
+                  {h.neighborhoodSpotlight?.headline || ui.exploreNeighborhoods}
                 </h2>
                 {h.neighborhoodSpotlight?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.neighborhoodSpotlight.subline}</p>}
               </div>
               <Link href={`/${locale}${h.neighborhoodSpotlight?.ctaHref || '/neighborhoods'}`}
                 className="hidden md:flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
-                {h.neighborhoodSpotlight?.ctaLabel || 'All Neighborhoods'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {h.neighborhoodSpotlight?.ctaLabel || ui.allNeighborhoods} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -517,7 +592,7 @@ export default function HomePage() {
                       <h3 className="font-serif text-xl font-semibold text-white mb-1" style={{ fontFamily: 'var(--font-heading)' }}>{nb.name}</h3>
                       <p className="text-white/80 text-sm mb-1 truncate">{nb.tagline}</p>
                       {nb.marketSnapshot?.medianPrice && (
-                        <p className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>Median: {nb.marketSnapshot.medianPrice}</p>
+                        <p className="text-xs font-semibold" style={{ color: 'var(--secondary)' }}>{ui.median}: {nb.marketSnapshot.medianPrice}</p>
                       )}
                     </div>
                   </div>
@@ -535,10 +610,10 @@ export default function HomePage() {
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>
-                  {h.marketReportTeaser.headline || 'Market Report'}
+                  {h.marketReportTeaser.headline || ui.marketReport}
                 </p>
                 <h2 className="font-serif text-2xl md:text-3xl font-semibold text-white mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {h.marketReportTeaser.subline || 'Westchester County — Latest Update'}
+                  {h.marketReportTeaser.subline || ui.marketReportFallbackSubline}
                 </h2>
                 {h.marketReportTeaser.keyStat && (
                   <p className="text-lg font-semibold mb-4" style={{ color: 'var(--secondary)' }}>{h.marketReportTeaser.keyStat}</p>
@@ -546,7 +621,7 @@ export default function HomePage() {
               </div>
               <Link href={`/${locale}${h.marketReportTeaser.ctaHref || '/market-reports'}`}
                 className="btn-gold flex-shrink-0 px-8 py-3.5">
-                {h.marketReportTeaser.ctaLabel || 'Read Full Report'}
+                {h.marketReportTeaser.ctaLabel || ui.readFullReport}
               </Link>
             </div>
           </div>
@@ -556,18 +631,18 @@ export default function HomePage() {
       {/* 11. IDX SEARCH CTA */}
       <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
         <div className="container-custom text-center">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>MLS Search</p>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>{ui.mlsSearchTag}</p>
           <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-4" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-            Search All Available Homes
+            {ui.mlsSearchHeadline}
           </h2>
           <p className="text-base mb-7 max-w-xl mx-auto" style={{ color: 'var(--text-secondary)' }}>
-            Browse the complete MLS database for Westchester County and surrounding areas.
+            {ui.mlsSearchBody}
           </p>
           <Link href={`/${locale}/properties`} className="btn-gold inline-flex items-center gap-2 px-8 py-4 text-base font-semibold">
-            <Search className="w-4 h-4" /> Browse All Properties
+            <Search className="w-4 h-4" /> {ui.browseAllProperties}
           </Link>
           <p className="text-xs mt-3" style={{ color: 'var(--text-secondary)' }}>
-            {properties.length > 0 ? `${properties.length} listings currently available` : 'Updated regularly from MLS'}
+            {properties.length > 0 ? `${properties.length} ${ui.listingCountSuffix}` : ui.mlsUpdated}
           </p>
         </div>
       </section>
@@ -578,14 +653,14 @@ export default function HomePage() {
           <div className="container-custom">
             <div className="flex items-end justify-between mb-8">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>Insights</p>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--secondary)' }}>{ui.insightsTag}</p>
                 <h2 className="font-serif text-3xl md:text-4xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-                  {h.knowledgeCenterPreview?.headline || 'From Our Knowledge Center'}
+                  {h.knowledgeCenterPreview?.headline || ui.knowledgeFallbackHeadline}
                 </h2>
               </div>
               <Link href={`/${locale}${h.knowledgeCenterPreview?.ctaHref || '/knowledge-center'}`}
                 className="hidden md:flex items-center gap-2 text-sm font-semibold group" style={{ color: 'var(--secondary)' }}>
-                {h.knowledgeCenterPreview?.ctaLabel || 'All Posts'} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                {h.knowledgeCenterPreview?.ctaLabel || ui.allPosts} <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -624,17 +699,17 @@ export default function HomePage() {
         <div className="relative z-10 w-full pb-12 md:pb-16 pr-4 sm:pr-8 md:pr-12 lg:pr-20 flex justify-end text-left"
           style={{ background: !h.consultationCta?.backgroundImage ? 'var(--primary)' : undefined }}>
           <div className="max-w-2xl">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Get Started</p>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>{ui.getStartedTag}</p>
             <h2 className="font-serif text-3xl md:text-5xl font-semibold text-white mb-4 leading-tight"
               style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-              {h.consultationCta?.headline || 'Ready to Take the Next Step?'}
+              {h.consultationCta?.headline || ui.consultationFallbackHeadline}
             </h2>
             <p className="text-lg text-white/85 mb-8" style={{ textShadow: '0 1px 6px rgba(0,0,0,0.25)' }}>
-              {h.consultationCta?.subline || 'Our team is ready to help. Schedule your free consultation today.'}
+              {h.consultationCta?.subline || ui.consultationFallbackSubline}
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href={`/${locale}${h.consultationCta?.ctaHref || '/contact'}`} className="btn-gold text-sm px-8 py-3.5">
-                {h.consultationCta?.ctaLabel || 'Schedule Consultation'}
+                {h.consultationCta?.ctaLabel || ui.scheduleConsultation}
               </Link>
               {site.phone && (
                 <a href={`tel:${site.phone?.replace(/\D/g,'')}`}
@@ -644,6 +719,19 @@ export default function HomePage() {
                 </a>
               )}
             </div>
+            {h.consultationCta?.reviewQuote?.text && (
+              <div className="mt-6 p-4 rounded-lg border border-white/20 bg-black/20 backdrop-blur-[1px] max-w-xl">
+                <p className="text-sm md:text-base text-white/90 leading-relaxed">
+                  "{h.consultationCta.reviewQuote.text}"
+                </p>
+                <p className="text-xs mt-2 text-white/70">
+                  {h.consultationCta.reviewQuote.author || ui.reviewAuthorFallback}
+                  {h.consultationCta.reviewQuote.source
+                    ? ` · ${h.consultationCta.reviewQuote.source}`
+                    : ''}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -652,9 +740,9 @@ export default function HomePage() {
       <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
         <div className="container-custom max-w-2xl mx-auto">
           <div className="text-center mb-8">
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>Contact Us</p>
+            <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'var(--secondary)' }}>{ui.contactUsTag}</p>
             <h2 className="font-serif text-3xl font-semibold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--primary)' }}>
-              {h.contactForm?.headline || 'Get in Touch'}
+              {h.contactForm?.headline || ui.getInTouch}
             </h2>
             {h.contactForm?.subline && <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>{h.contactForm.subline}</p>}
           </div>

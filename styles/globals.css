@@ -662,3 +662,21 @@ html {
 .metric-up   { color: var(--status-active, #059669); }
 .metric-down { color: var(--status-sold, #C53030); }
 .metric-flat { color: var(--text-secondary, #6B7280); }
+
+/* Mobile hardening for CTA stack + touch targets */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (max-width: 768px) {
+  .section-padding {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  button,
+  .btn-gold,
+  a[role='button'] {
+    min-height: 40px;
+  }
+}

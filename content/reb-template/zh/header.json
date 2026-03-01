@@ -1,0 +1,61 @@
+{
+  "logo": {
+    "alt": "Panorama NY, Inc",
+    "src": "",
+    "width": 160,
+    "height": 48
+  },
+  "phone": "(845) 555-0190",
+  "logoText": "PANAROMA",
+  "navigation": [
+    {
+      "href": "/properties",
+      "label": "房源"
+    },
+    {
+      "href": "/neighborhoods",
+      "label": "社区"
+    },
+    {
+      "href": "/buying",
+      "label": "买房"
+    },
+    {
+      "href": "/selling",
+      "label": "卖房"
+    },
+    {
+      "href": "/investing",
+      "label": "投资"
+    },
+    {
+      "href": "/relocating",
+      "label": "搬迁"
+    },
+    {
+      "href": "/team",
+      "label": "团队"
+    },
+    {
+      "href": "/about",
+      "label": "关于我们"
+    },
+    {
+      "href": "/knowledge-center",
+      "label": "知识中心"
+    },
+    {
+      "href": "/contact",
+      "label": "联系我们"
+    }
+  ],
+  "ctaButton": {
+    "label": "预约咨询",
+    "labelCn": "预约咨询",
+    "href": "/contact"
+  },
+  "stickyCtaPhone": true,
+  "scrollThreshold": 80,
+  "stickyCtaButton": true,
+  "transparentOnHero": true
+}

@@ -134,6 +134,7 @@ export function ContentEditor({
   const [status, setStatus] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'form' | 'json'>('form');
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [showDynamicFields, setShowDynamicFields] = useState(false);
   const [imageFieldPath, setImageFieldPath] = useState<string[] | null>(null);
   const [markdownPreview, setMarkdownPreview] = useState<Record<string, boolean>>({});
   const [seoPopulating, setSeoPopulating] = useState(false);
@@ -217,13 +218,22 @@ export function ContentEditor({
     () => sites.find((item) => item.id === siteId),
     [sites, siteId]
   );
+  const availableLocales = useMemo<Locale[]>(() => {
+    const seeded = [
+      ...(site?.supportedLocales || []),
+      site?.defaultLocale || 'en',
+      'en',
+      'zh',
+    ].filter(Boolean) as Locale[];
+    return Array.from(new Set(seeded));
+  }, [site]);
 
   useEffect(() => {
     if (!site) return;
-    if (!site.supportedLocales.includes(locale)) {
+    if (!availableLocales.includes(locale as Locale)) {
       setLocale(site.defaultLocale);
     }
-  }, [site, locale]);
+  }, [site, locale, availableLocales]);
 
   useEffect(() => {
     if (!siteId || !locale) return;
@@ -1197,6 +1207,11 @@ export function ContentEditor({
 
   const updateFormValue = (path: string[], value: any) => {
     if (!formData) return;
+    if (path.length === 0) {
+      setFormData(value);
+      setContent(JSON.stringify(value, null, 2));
+      return;
+    }
     const next = { ...formData };
     let cursor: any = next;
     path.forEach((key, index) => {
@@ -1673,7 +1688,7 @@ export function ContentEditor({
               value={locale}
               onChange={(event) => setLocale(event.target.value as Locale)}
             >
-              {(site?.supportedLocales || ['en']).map((item) => (
+              {availableLocales.map((item) => (
                 <option key={item} value={item}>
                   {item === 'en' ? 'English' : item === 'zh' ? 'Chinese' : item}
                 </option>
@@ -1846,6 +1861,17 @@ export function ContentEditor({
               }`}
             >
               JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowDynamicFields((current) => !current)}
+              className={`px-3 py-1.5 rounded-md text-xs ${
+                showDynamicFields
+                  ? 'bg-gray-900 text-white'
+                  : 'border border-gray-200 text-gray-700'
+              }`}
+            >
+              Dynamic Fields
             </button>
           </div>
 
@@ -2067,6 +2093,22 @@ export function ContentEditor({
                   updateFormValue={updateFormValue}
                   openImagePicker={openImagePicker}
                 />
+              )}
+
+              {showDynamicFields && formData && typeof formData === 'object' && (
+                <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+                  <div className="text-xs font-semibold text-gray-500 uppercase">
+                    Dynamic Fields (Advanced)
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Use this to add/edit arbitrary JSON keys that are not covered by fixed panels.
+                  </p>
+                  <JsonMatchingPanel
+                    formData={formData}
+                    updateFormValue={updateFormValue}
+                    openImagePicker={openImagePicker}
+                  />
+                </div>
               )}
 
               {isTestimonialsFile && formData && (

@@ -107,18 +107,32 @@ export async function loadContent<T>(
     if (entry?.content ?? entry?.data) {
       return (entry.content ?? entry.data) as T;
     }
+    // Locale parity fallback: if localized row is missing, use default locale.
+    if (locale !== defaultLocale) {
+      const fallbackEntry = await fetchContentEntry(siteId, defaultLocale, contentPath);
+      if (fallbackEntry?.content ?? fallbackEntry?.data) {
+        return (fallbackEntry.content ?? fallbackEntry.data) as T;
+      }
+    }
   }
 
   try {
     const filePath = path.join(CONTENT_DIR, siteId, locale, contentPath);
-    
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
+
+    // Locale parity fallback to default locale when localized file is absent.
+    const fallbackPath = path.join(CONTENT_DIR, siteId, defaultLocale, contentPath);
+    const readablePath = fs.existsSync(filePath)
+      ? filePath
+      : locale !== defaultLocale && fs.existsSync(fallbackPath)
+        ? fallbackPath
+        : null;
+
+    if (!readablePath) {
       console.warn(`Content file not found: ${filePath}`);
       return null;
     }
-    
-    const data = await fs.promises.readFile(filePath, 'utf-8');
+
+    const data = await fs.promises.readFile(readablePath, 'utf-8');
     return JSON.parse(data) as T;
   } catch (error) {
     console.error(`Error loading content from ${contentPath}:`, error);
@@ -203,33 +217,47 @@ export async function loadAllItems<T>(
 ): Promise<T[]> {
   if (canUseContentDb()) {
     const resolvedSiteId = await resolveSiteId(siteId);
-    const entries = await listContentEntriesByPrefix(
+    let entries = await listContentEntriesByPrefix(
       resolvedSiteId,
       locale,
       `${directory}/`
     );
+    if (entries.length === 0 && locale !== defaultLocale) {
+      entries = await listContentEntriesByPrefix(
+        resolvedSiteId,
+        defaultLocale,
+        `${directory}/`
+      );
+    }
     return entries.map((entry) => (entry.content ?? entry.data) as T);
   }
 
   try {
     const resolvedSiteId = await resolveSiteId(siteId);
     const dirPath = path.join(CONTENT_DIR, resolvedSiteId, locale, directory);
-    
-    if (!fs.existsSync(dirPath)) {
+
+    const fallbackDirPath = path.join(CONTENT_DIR, resolvedSiteId, defaultLocale, directory);
+    const readableDirPath = fs.existsSync(dirPath)
+      ? dirPath
+      : locale !== defaultLocale && fs.existsSync(fallbackDirPath)
+        ? fallbackDirPath
+        : null;
+
+    if (!readableDirPath) {
       return [];
     }
-    
-    const files = await fs.promises.readdir(dirPath);
+
+    const files = await fs.promises.readdir(readableDirPath);
     const jsonFiles = files.filter(file => file.endsWith('.json'));
-    
+
     const items = await Promise.all(
       jsonFiles.map(async (file) => {
-        const filePath = path.join(dirPath, file);
+        const filePath = path.join(readableDirPath, file);
         const data = await fs.promises.readFile(filePath, 'utf-8');
         return JSON.parse(data) as T;
       })
     );
-    
+
     return items;
   } catch (error) {
     console.error(`Error loading items from ${directory}:`, error);
