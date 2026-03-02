@@ -9,10 +9,22 @@ import { writeAuditLog } from '@/lib/admin/audit';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 const CONTENT_DIR = path.join(process.cwd(), 'content');
+const SITES_FILE = path.join(CONTENT_DIR, '_sites.json');
 
 async function readJson(filePath: string) {
   const raw = await fs.readFile(filePath, 'utf-8');
   return JSON.parse(raw);
+}
+
+async function isProjectSiteAllowed(siteId: string): Promise<boolean> {
+  try {
+    const raw = await fs.readFile(SITES_FILE, 'utf-8');
+    const parsed = JSON.parse(raw) as { sites?: Array<{ id?: string }> };
+    const sites = Array.isArray(parsed.sites) ? parsed.sites : [];
+    return sites.some((site) => site?.id === siteId);
+  } catch {
+    return false;
+  }
 }
 
 interface ImportCandidate {
@@ -221,6 +233,13 @@ export async function POST(request: NextRequest) {
   if (!siteId || !locale) {
     return NextResponse.json(
       { message: 'siteId and locale are required' },
+      { status: 400 }
+    );
+  }
+
+  if (!(await isProjectSiteAllowed(siteId))) {
+    return NextResponse.json(
+      { message: `Site "${siteId}" is not declared in this project and cannot be imported.` },
       { status: 400 }
     );
   }
