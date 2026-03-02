@@ -66,24 +66,26 @@ export default function SellingPage() {
 
   return (
     <>
-      <section className="relative pt-20" style={{ minHeight: '52vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-16 pb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{heroEyebrow}</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-            {d.hero?.headline || 'We Sell Homes Faster and For More.'}
-          </h1>
-          <div className="flex gap-6 mb-7">
-            {stats.map((s: any, i: number) => (
-              <div key={i}>
-                <p className="font-serif text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--secondary)' }}>{s.value || s.v}</p>
-                <p className="text-xs" style={{ color: 'var(--text-on-dark-muted)' }}>{s.label || s.l}</p>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href={`/${locale}/home-valuation`} className="btn-gold px-7 py-3" onClick={() => trackLeadEvent({ siteId: process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template', locale, eventName: 'cta_click', source: 'selling-page', pagePath: `/${locale}/selling`, metadata: { cta: 'home-valuation' } })}>Get My Home's Value</Link>
-            <Link href={`/${locale}/contact`} className="border-2 border-white text-white hover:bg-white/10 transition-colors px-7 py-3 text-sm font-semibold"
-              style={{ borderRadius: 'var(--effect-button-radius)' }}>Talk to a Listing Agent</Link>
+      <section className="relative pt-20 overflow-hidden" style={{ minHeight: '52vh', background: 'var(--primary)' }}>
+        <div className="container-custom flex items-end pb-12 md:pb-16" style={{ minHeight: 'calc(52vh - 5rem)' }}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{heroEyebrow}</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+              {d.hero?.headline || 'We Sell Homes Faster and For More.'}
+            </h1>
+            <div className="flex gap-6 mb-7">
+              {stats.map((s: any, i: number) => (
+                <div key={i}>
+                  <p className="font-serif text-2xl font-bold" style={{ fontFamily: 'var(--font-heading)', color: 'var(--secondary)' }}>{s.value || s.v}</p>
+                  <p className="text-xs" style={{ color: 'var(--text-on-dark-muted)' }}>{s.label || s.l}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link href={`/${locale}/home-valuation`} className="btn-gold px-7 py-3" onClick={() => trackLeadEvent({ siteId: process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template', locale, eventName: 'cta_click', source: 'selling-page', pagePath: `/${locale}/selling`, metadata: { cta: 'home-valuation' } })}>Get My Home's Value</Link>
+              <Link href={`/${locale}/contact`} className="border-2 border-white text-white hover:bg-white/10 transition-colors px-7 py-3 text-sm font-semibold"
+                style={{ borderRadius: 'var(--effect-button-radius)' }}>Talk to a Listing Agent</Link>
+            </div>
           </div>
         </div>
       </section>

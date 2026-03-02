@@ -70,14 +70,16 @@ export default function InvestingPage() {
 
   return (
     <>
-      <section className="relative pt-20" style={{ minHeight: '46vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-14 pb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{d.hero?.eyebrow || 'Investing'}</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-            {d.hero?.headline || 'Build Wealth Through Real Estate in Westchester County'}
-          </h1>
-          <p className="text-white/75 max-w-xl mb-7">{d.hero?.subline || 'Data-driven investment strategy. Cap rate analysis. Off-market access.'}</p>
-          <Link href="#calculator" className="btn-gold px-7 py-3" onClick={() => trackLeadEvent({ siteId: process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template', locale, eventName: 'cta_click', source: 'investing-page', pagePath: `/${locale}/investing`, metadata: { cta: 'calculator' } })}>Try the CAP Rate Calculator</Link>
+      <section className="relative pt-20 overflow-hidden" style={{ minHeight: '46vh', background: 'var(--primary)' }}>
+        <div className="container-custom flex items-end pb-12 md:pb-14" style={{ minHeight: 'calc(46vh - 5rem)' }}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{d.hero?.eyebrow || 'Investing'}</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+              {d.hero?.headline || 'Build Wealth Through Real Estate in Westchester County'}
+            </h1>
+            <p className="text-white/75 max-w-xl mb-7">{d.hero?.subline || 'Data-driven investment strategy. Cap rate analysis. Off-market access.'}</p>
+            <Link href="#calculator" className="btn-gold px-7 py-3" onClick={() => trackLeadEvent({ siteId: process.env.NEXT_PUBLIC_DEFAULT_SITE_ID || 'reb-template', locale, eventName: 'cta_click', source: 'investing-page', pagePath: `/${locale}/investing`, metadata: { cta: 'calculator' } })}>Try the CAP Rate Calculator</Link>
+          </div>
         </div>
       </section>
 

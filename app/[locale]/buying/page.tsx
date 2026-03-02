@@ -39,6 +39,18 @@ export default function BuyingPage() {
   }, []);
 
   const heroEyebrow = d.hero?.eyebrow || 'Buying';
+  const heroVariant = d.hero?.variant || 'centered';
+  const heroImage = typeof d.hero?.image === 'string' ? d.hero.image : '';
+  const usePhotoBackground = heroVariant === 'photo-background' && heroImage.trim().length > 0;
+  const parsedHeroHeightVh = Number(d.hero?.heightVh);
+  const heroHeightVh =
+    Number.isFinite(parsedHeroHeightVh) && parsedHeroHeightVh > 0
+      ? Math.min(95, Math.max(52, parsedHeroHeightVh))
+      : 82;
+  const heroOverlayOpacity =
+    typeof d.hero?.overlayOpacity === 'number'
+      ? Math.max(0, Math.min(0.9, d.hero.overlayOpacity))
+      : 0.45;
   const whyItems = d.whyBuyWithUs?.items || [
     { heading: 'Deep Local Expertise', description: 'We know every school district, street, and micro-market in Orange County, NY.' },
     { heading: 'Off-Market Access', description: 'Our agent network surfaces properties before they hit the MLS.' },
@@ -86,17 +98,46 @@ export default function BuyingPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative pt-20" style={{ minHeight: '52vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-16 pb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{heroEyebrow}</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-            {d.hero?.headline || 'Find Your Perfect Home in Orange County, NY'}
-          </h1>
-          <p className="text-lg text-white/75 mb-8 max-w-xl">{d.hero?.subline || 'Expert buyer representation. Off-market access. Proven negotiation.'}</p>
-          <div className="flex flex-wrap gap-3">
-            <Link href={`/${locale}${leadCapture.secondaryActionHref || '/properties'}`} className="btn-gold px-7 py-3">{leadCapture.secondaryActionLabel || 'Search Properties'}</Link>
-            <Link href={`/${locale}${leadCapture.primaryActionHref || '/team'}`} className="border-2 border-white text-white hover:bg-white/10 transition-colors px-7 py-3 text-sm font-semibold"
-              style={{ borderRadius: 'var(--effect-button-radius)' }}>Talk to a Buyer's Agent</Link>
+      <section
+        className="relative pt-20 overflow-hidden"
+        style={{
+          minHeight: usePhotoBackground ? `${heroHeightVh}vh` : '52vh',
+          background: usePhotoBackground ? undefined : 'var(--primary)',
+        }}
+      >
+        {usePhotoBackground && (
+          <>
+            <div
+              className="absolute inset-0 bg-no-repeat"
+              style={{
+                backgroundImage: `url("${heroImage}")`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
+              }}
+            />
+            <div
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(to top right, rgba(26,39,68,${heroOverlayOpacity}) 0%, rgba(26,39,68,0.18) 55%, rgba(26,39,68,0.08) 100%)`,
+              }}
+            />
+          </>
+        )}
+        <div
+          className="container-custom relative z-10 flex items-end pb-12 md:pb-16"
+          style={{ minHeight: usePhotoBackground ? `calc(${heroHeightVh}vh - 5rem)` : undefined }}
+        >
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{heroEyebrow}</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+              {d.hero?.headline || 'Find Your Perfect Home in Orange County, NY'}
+            </h1>
+            <p className="text-lg text-white/75 mb-8 max-w-xl">{d.hero?.subline || 'Expert buyer representation. Off-market access. Proven negotiation.'}</p>
+            <div className="flex flex-wrap gap-3">
+              <Link href={`/${locale}${leadCapture.secondaryActionHref || '/properties'}`} className="btn-gold px-7 py-3">{leadCapture.secondaryActionLabel || 'Search Properties'}</Link>
+              <Link href={`/${locale}${leadCapture.primaryActionHref || '/team'}`} className="border-2 border-white text-white hover:bg-white/10 transition-colors px-7 py-3 text-sm font-semibold"
+                style={{ borderRadius: 'var(--effect-button-radius)' }}>Talk to a Buyer's Agent</Link>
+            </div>
           </div>
         </div>
       </section>

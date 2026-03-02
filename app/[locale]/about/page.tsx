@@ -43,13 +43,15 @@ export default function AboutPage() {
       <section className="relative pt-20 overflow-hidden" style={{ minHeight: '52vh', background: 'var(--primary)' }}>
         {d.hero?.image && <Image src={d.hero.image} alt={d.hero.imageAlt || ''} fill className="object-cover opacity-30" priority />}
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(26,39,68,0.7) 0%, rgba(26,39,68,0.3) 60%, transparent 100%)' }} />
-        <div className="relative z-10 container-custom pt-20 pb-16 md:pt-28 md:pb-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>About Us</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3 max-w-2xl leading-tight"
-            style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-            {d.hero?.headline || 'About Panorama Realty Group'}
-          </h1>
-          <p className="text-lg text-white/75 max-w-xl">{d.hero?.subline}</p>
+        <div className="relative z-10 container-custom flex items-end pb-12 md:pb-16" style={{ minHeight: 'calc(52vh - 5rem)' }}>
+          <div className="max-w-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>About Us</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3 leading-tight"
+              style={{ fontFamily: 'var(--font-heading)', textShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
+              {d.hero?.headline || 'About Panorama Realty Group'}
+            </h1>
+            <p className="text-lg text-white/75">{d.hero?.subline}</p>
+          </div>
         </div>
       </section>
 

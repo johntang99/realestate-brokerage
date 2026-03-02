@@ -25,11 +25,13 @@ export default function ContactPage() {
 
   return (
     <>
-      <section className="relative pt-20" style={{ minHeight: '36vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-14 pb-12">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Get in Touch</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white" style={{ fontFamily: 'var(--font-heading)' }}>Let's Talk</h1>
-          <p className="text-white/70 mt-3 max-w-xl">We respond to every inquiry within 2 business hours.</p>
+      <section className="relative pt-20 overflow-hidden" style={{ minHeight: '36vh', background: 'var(--primary)' }}>
+        <div className="container-custom flex items-end pb-10 md:pb-12" style={{ minHeight: 'calc(36vh - 5rem)' }}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Get in Touch</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white" style={{ fontFamily: 'var(--font-heading)' }}>Let's Talk</h1>
+            <p className="text-white/70 mt-3 max-w-xl">We respond to every inquiry within 2 business hours.</p>
+          </div>
         </div>
       </section>
 

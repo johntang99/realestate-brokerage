@@ -72,13 +72,15 @@ export default function RelocatingPage() {
 
   return (
     <>
-      <section className="relative pt-20" style={{ minHeight: '50vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-14 pb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{heroEyebrow}</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
-            {d.hero?.headline || 'Welcome to Westchester County. We Know This Place.'}
-          </h1>
-          <p className="text-white/75 max-w-xl">{d.hero?.subline || 'Deep local knowledge. School guidance. Community insight. Your complete relocation resource.'}</p>
+      <section className="relative pt-20 overflow-hidden" style={{ minHeight: '50vh', background: 'var(--primary)' }}>
+        <div className="container-custom flex items-end pb-12 md:pb-14" style={{ minHeight: 'calc(50vh - 5rem)' }}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>{heroEyebrow}</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-4 max-w-2xl leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+              {d.hero?.headline || 'Welcome to Westchester County. We Know This Place.'}
+            </h1>
+            <p className="text-white/75 max-w-xl">{d.hero?.subline || 'Deep local knowledge. School guidance. Community insight. Your complete relocation resource.'}</p>
+          </div>
         </div>
       </section>
 

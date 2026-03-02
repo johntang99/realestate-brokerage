@@ -70,3 +70,15 @@ Payload:
   ]
 }
 ```
+
+## Post-P3 completion notes (implemented)
+
+- [x] Showing requests admin status update flow verified end-to-end (submit -> list -> status update -> audit).
+- [x] Buyer confirmation email enabled for showing requests and localized by request locale (`en`/`zh`).
+- [x] Chinese parity improvements shipped for key global assets:
+  - [x] `zh` locale availability in admin selector
+  - [x] `zh/header.json` + `zh/footer.json` aligned to REB schema and synced to DB
+- [x] Buyer page hero controls improved:
+  - [x] `photo-background` variant now renders selected hero image
+  - [x] `hero.heightVh` supported in runtime and exposed in Form mode
+  - [x] hero text alignment moved to middle-below pattern

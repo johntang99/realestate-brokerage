@@ -153,11 +153,13 @@ export default function PropertiesPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative pt-20" style={{ minHeight: '38vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-14 pb-12">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Listings</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>Properties</h1>
-          <p className="text-white/70">Westchester County's finest homes, curated by Panorama Realty Group.</p>
+      <section className="relative pt-20 overflow-hidden" style={{ minHeight: '38vh', background: 'var(--primary)' }}>
+        <div className="container-custom flex items-end pb-10 md:pb-12" style={{ minHeight: 'calc(38vh - 5rem)' }}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Listings</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>Properties</h1>
+            <p className="text-white/70">Westchester County's finest homes, curated by Panorama Realty Group.</p>
+          </div>
         </div>
       </section>
 

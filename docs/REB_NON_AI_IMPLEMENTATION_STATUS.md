@@ -45,3 +45,33 @@ This file tracks scoped completion for the non-AI phase plan.
 
 - **Done:** Reusable admin SOP checklist for one-pass verification/fix flow.
   - Evidence: `docs/ADMIN_SOP_CHECKLIST.md`
+
+## Phase F — P3 Engineering Completion
+
+- **Done:** Property-detail conversion completion for P3.
+  - Includes virtual tour rendering + schedule showing request flow + admin visibility.
+  - Evidence: `app/[locale]/properties/[slug]/page.tsx`, `app/api/showing-request/route.ts`, `app/admin/(dashboard)/showing-requests/page.tsx`
+- **Done:** CRM sink normalization + retry/backoff + dead-letter audit logging.
+  - Evidence: `lib/leads/server.ts`, `app/api/contact/route.ts`, `app/api/valuation/route.ts`, `app/api/lead-events/route.ts`
+- **Done:** Provider-agnostic MLS ingest foundation and property schema parity.
+  - Evidence: `lib/mls/providers/*`, `app/api/admin/mls/ingest/route.ts`, `components/admin/panels/PropertyItemPanel.tsx`
+
+## Phase G — Localization and Header/Footer Parity
+
+- **Done:** Locale parity fallback active (`zh` falls back to `en` when localized content is missing).
+  - Evidence: `lib/content.ts`, `app/api/content/file/route.ts`, `app/api/content/items/route.ts`
+- **Done:** Admin locale selection fixed to reliably include Chinese.
+  - Evidence: `components/admin/ContentEditor.tsx`, `sites.supported_locales` updated for `reb-template`
+- **Done:** Chinese header/footer global content wired with valid REB schema and DB upserted.
+  - Evidence: `content/reb-template/zh/header.json`, `content/reb-template/zh/footer.json`
+
+## Phase H — UX Polish and Hero Controls
+
+- **Done:** Header/menu visual polish on transparent hero states (top fade, reduced heavy treatment, crisp nav text).
+  - Evidence: `components/layout/Header.tsx`
+- **Done:** Buying hero now respects `photo-background` + `hero.image` and supports JSON-driven height.
+  - Evidence: `app/[locale]/buying/page.tsx`, `content/reb-template/en/pages/buying.json`
+- **Done:** Hero height is now editable in Form mode via `Hero Height (vh)`.
+  - Evidence: `components/admin/panels/HeroPanel.tsx`
+- **Done:** Hero copy vertical alignment moved to middle-below across top menu pages.
+  - Evidence: `app/[locale]/{properties,neighborhoods,buying,selling,investing,relocating,team,about,knowledge-center,contact}/page.tsx`

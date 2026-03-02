@@ -130,6 +130,22 @@ export function HeroPanel({
           </div>
         </div>
       )}
+      {formData.hero && typeof formData.hero === 'object' && (
+        <div className="mt-3">
+          <label className="block text-xs text-gray-500">Hero Height (vh)</label>
+          <input
+            type="number"
+            min={52}
+            max={95}
+            className="mt-1 w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+            value={typeof formData.hero.heightVh === 'number' ? formData.hero.heightVh : 82}
+            onChange={(event) =>
+              updateFormValue(['hero', 'heightVh'], Number(event.target.value || 82))
+            }
+          />
+          <p className="mt-1 text-xs text-gray-400">Used by photo-background variant (recommended 68-90).</p>
+        </div>
+      )}
     </div>
   );
 }

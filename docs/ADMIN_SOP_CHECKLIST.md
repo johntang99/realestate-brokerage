@@ -7,6 +7,7 @@ This checklist is for one-pass setup QA on new real-estate sites using the REB a
 - Confirm environment is DB-enabled (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` present).
 - Confirm `siteId` is correct in admin site selector.
 - Confirm locale(s) expected for launch are available.
+- Confirm `zh` appears in locale dropdown when bilingual launch is expected.
 - Run `npm run type-check` before and after change batch.
 
 ## 2) Content Action Reliability (Per Sidebar Section)
@@ -59,6 +60,8 @@ Validate these routes on desktop + mobile viewport:
 Checks:
 
 - Hero readability and CTA visibility.
+- For pages using hero variants, verify selected variant/image render correctly (especially `photo-background`).
+- Where configured, verify hero height follows JSON (`hero.heightVh`) and Form mode edits apply after save.
 - No overflow/clip issues.
 - Buttons are tappable on mobile.
 - Persistent CTA stack (call/text/schedule) is visible and non-blocking.
@@ -72,6 +75,7 @@ Validate footer + site compliance fields render and are editable:
 - Fair housing statement.
 - MLS disclaimer.
 - Privacy and terms links.
+- If bilingual, verify `header.json` and `footer.json` render correctly on both `/en` and `/zh`.
 
 Pass criteria:
 

@@ -65,15 +65,17 @@ export default function TeamPage() {
   return (
     <>
       {/* HERO */}
-      <section className="relative pt-20" style={{ minHeight: '40vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-16 pb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Our Agents</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
-            {pageData.hero?.headline || 'Meet Our Agents'}
-          </h1>
-          <p className="text-lg text-white/75 max-w-xl">
-            {pageData.hero?.subline || `A team of ${agents.length} dedicated specialists across Orange County, NY.`}
-          </p>
+      <section className="relative pt-20 overflow-hidden" style={{ minHeight: '40vh', background: 'var(--primary)' }}>
+        <div className="container-custom flex items-end pb-12 md:pb-14" style={{ minHeight: 'calc(40vh - 5rem)' }}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Our Agents</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              {pageData.hero?.headline || 'Meet Our Agents'}
+            </h1>
+            <p className="text-lg text-white/75 max-w-xl">
+              {pageData.hero?.subline || `A team of ${agents.length} dedicated specialists across Orange County, NY.`}
+            </p>
+          </div>
         </div>
       </section>
 

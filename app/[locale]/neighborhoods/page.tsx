@@ -21,11 +21,13 @@ export default function NeighborhoodsPage() {
 
   return (
     <>
-      <section className="relative pt-20" style={{ minHeight: '40vh', background: 'var(--primary)' }}>
-        <div className="container-custom pt-14 pb-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Local Expertise</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>Westchester Neighborhoods</h1>
-          <p className="text-white/70 max-w-xl">Local knowledge that no algorithm can replicate. Explore Westchester County's most sought-after communities.</p>
+      <section className="relative pt-20 overflow-hidden" style={{ minHeight: '40vh', background: 'var(--primary)' }}>
+        <div className="container-custom flex items-end pb-12 md:pb-14" style={{ minHeight: 'calc(40vh - 5rem)' }}>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] mb-3" style={{ color: 'var(--secondary)' }}>Local Expertise</p>
+            <h1 className="font-serif text-4xl md:text-5xl font-semibold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>Westchester Neighborhoods</h1>
+            <p className="text-white/70 max-w-xl">Local knowledge that no algorithm can replicate. Explore Westchester County's most sought-after communities.</p>
+          </div>
         </div>
       </section>
       <section className="section-padding" style={{ background: 'var(--backdrop-light)' }}>
