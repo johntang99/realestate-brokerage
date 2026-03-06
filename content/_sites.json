@@ -5,7 +5,10 @@
       "name": "Panorama NY, Inc",
       "domain": "www.panorama-nyrealty.com",
       "defaultLocale": "en",
-      "supportedLocales": ["en", "zh"],
+      "supportedLocales": [
+        "en",
+        "zh"
+      ],
       "enabled": true,
       "type": "brokerage"
     }

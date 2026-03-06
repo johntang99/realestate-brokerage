@@ -18,6 +18,7 @@ import {
   Download,
   UserCircle,
   Globe,
+  Rocket,
 } from 'lucide-react';
 import { getSession } from '@/lib/admin/auth';
 import { canManageUsers, isSuperAdmin } from '@/lib/admin/permissions';
@@ -26,6 +27,7 @@ const brokerAdminNav = [
   { name: 'Sites', href: '/admin/sites', icon: Building2 },
   { name: 'Domains', href: '/admin/sites', icon: Globe },
   { name: 'Site Settings', href: '/admin/site-settings', icon: SlidersHorizontal },
+  { name: 'Onboarding', href: '/admin/onboarding', icon: Rocket },
   { name: 'Content', href: '/admin/content', icon: FileText },
   { name: 'Agents', href: '/admin/agents', icon: Users },
   { name: 'Properties', href: '/admin/properties', icon: Home },
